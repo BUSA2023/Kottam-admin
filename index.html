@@ -3,21 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fest Admin Portal</title>
+    <title>ലദൽ മദീന - Admin Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@400;600;700;800&family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
     
     <style>
-        body { font-family: 'Anek Malayalam', sans-serif; background-color: #0f172a; color: #f8fafc; overflow-x: hidden; }
+        body { font-family: 'Anek Malayalam', sans-serif; background-color: #450a0a; color: #f8fafc; overflow-x: hidden; }
         .num-font { font-family: 'Outfit', sans-serif; }
-        .tab-active { border-bottom: 2px solid #6366f1; color: #6366f1; }
-        .tab-inactive { border-bottom: 2px solid transparent; color: #94a3b8; }
+        .tab-active { border-bottom: 2px solid #fbbf24; color: #fbbf24; }
+        .tab-inactive { border-bottom: 2px solid transparent; color: #fca5a5; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #020617; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #475569; }
-        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        ::-webkit-scrollbar-track { background: #1a0202; }
+        ::-webkit-scrollbar-thumb { background: #7f1d1d; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #991b1b; }
+        .glass-card { background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(16px); border: 1px solid rgba(251, 191, 36, 0.15); }
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .fest-logo-img { height: 35px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.5)); display: inline-block; border-radius: 5px; }
+        .fest-logo-img-large { height: 60px; object-fit: contain; filter: drop-shadow(0 0 15px rgba(251, 191, 36, 0.6)); display: inline-block; border-radius: 8px;}
     </style>
 </head>
 <body>
@@ -28,28 +30,28 @@
     </div>
 
     <!-- Modals -->
-    <div id="assignModal" style="display: none;" class="fixed inset-0 bg-black/80 z-[200] items-center justify-center p-4 backdrop-blur-sm">
+    <div id="assignModal" style="display: none;" class="fixed inset-0 bg-black/90 z-[200] items-center justify-center p-4 backdrop-blur-sm">
         <div class="glass-card p-6 rounded-2xl max-w-md w-full shadow-2xl flex flex-col max-h-[85vh]">
             <h3 class="text-lg font-bold text-white mb-1" id="assignTitle">മത്സരങ്ങൾ ചേർക്കുക</h3>
-            <p class="text-xs text-indigo-400 mb-4 font-bold tracking-widest uppercase" id="assignSubtitle"></p>
-            <div class="bg-slate-950/50 border border-slate-800 rounded-xl p-4 flex-1 overflow-y-auto mb-4 custom-scrollbar">
+            <p class="text-xs text-amber-400 mb-4 font-bold tracking-widest uppercase" id="assignSubtitle"></p>
+            <div class="bg-black/50 border border-red-900 rounded-xl p-4 flex-1 overflow-y-auto mb-4 custom-scrollbar">
                 <div id="assignCheckboxes" class="space-y-3"></div>
             </div>
             <div class="flex gap-3 justify-end pt-2">
-                <button onclick="closeAssign()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-sm font-semibold transition border border-slate-600">റദ്ദാക്കുക</button>
-                <button id="saveAssignBtn" onclick="saveAssign()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-sm font-semibold transition shadow-lg">സേവ് ചെയ്യുക</button>
+                <button onclick="closeAssign()" class="px-4 py-2 bg-red-950 hover:bg-red-900 text-white rounded-lg text-sm font-semibold transition border border-red-800">റദ്ദാക്കുക</button>
+                <button id="saveAssignBtn" onclick="saveAssign()" class="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-sm font-semibold transition shadow-lg">സേവ് ചെയ്യുക</button>
             </div>
         </div>
     </div>
 
-    <div id="enrolledModal" style="display: none;" class="fixed inset-0 bg-black/80 z-[200] items-center justify-center p-4 backdrop-blur-sm">
+    <div id="enrolledModal" style="display: none;" class="fixed inset-0 bg-black/90 z-[200] items-center justify-center p-4 backdrop-blur-sm">
         <div class="glass-card p-6 rounded-2xl max-w-md w-full shadow-2xl flex flex-col max-h-[85vh]">
             <div class="flex justify-between items-center mb-1">
                 <h3 class="text-lg font-bold text-white" id="enrolledTitle">രജിസ്റ്റർ ചെയ്തവർ</h3>
-                <button onclick="closeEnrolled()" class="text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-full w-8 h-8 flex items-center justify-center transition">✕</button>
+                <button onclick="closeEnrolled()" class="text-red-300 hover:text-white bg-red-950 hover:bg-red-900 rounded-full w-8 h-8 flex items-center justify-center transition">✕</button>
             </div>
-            <p class="text-xs text-indigo-400 mb-4 font-bold tracking-widest uppercase" id="enrolledSubtitle"></p>
-            <div class="bg-slate-950/50 border border-slate-800 rounded-xl p-4 flex-1 overflow-y-auto custom-scrollbar">
+            <p class="text-xs text-amber-200 mb-4 font-bold tracking-widest uppercase" id="enrolledSubtitle"></p>
+            <div class="bg-black/50 border border-red-900 rounded-xl p-4 flex-1 overflow-y-auto custom-scrollbar">
                 <div id="enrolledList" class="space-y-2"></div>
             </div>
         </div>
@@ -80,51 +82,59 @@
         const CATEGORIES = ['Sub Junior', 'Junior', 'Senior', 'Super Senior'];
         const CAT_PREFIX = { 'Sub Junior': 'SJ', 'Junior': 'J', 'Senior': 'S', 'Super Senior': 'SS' };
         
-        // Single Admin Password setup (No team panels)
-        const ADMIN_PASSWORD = "admin"; // Change this if you want a different password
+        const ADMIN_PASSWORD = "admin"; 
 
         let state = {
             isAuthenticated: sessionStorage.getItem('admin_auth') === 'true',
-            tab: 'dashboard',
-            candidates: [], 
-            programs: [],
-            results: []
+            tab: 'dashboard', candidates: [], programs: [], results: []
         };
 
         window.showAlert = (msg, type = 'success') => {
             const toast = document.getElementById('toast'); 
             document.getElementById('toastMsg').innerText = msg;
             document.getElementById('toastIcon').innerText = type === 'error' ? '⚠️' : '✨';
-            toast.className = `fixed top-5 right-5 z-[100] transform transition-transform duration-300 px-6 py-3 rounded-xl shadow-2xl font-semibold flex items-center space-x-3 text-sm translate-y-0 ${type === 'error' ? 'bg-red-950/90 border border-red-500/50 text-red-200' : 'bg-indigo-950/90 border border-indigo-500/50 text-indigo-200'}`;
-            setTimeout(() => { toast.classList.add('translate-y-[-200%]'); toast.classList.remove('translate-y-0'); }, 4000); 
+            toast.className = `fixed top-5 right-5 z-[100] transform transition-transform duration-300 px-6 py-3 rounded-xl shadow-2xl font-semibold flex items-center space-x-3 text-sm translate-y-0 ${type === 'error' ? 'bg-red-950/90 border border-red-500/50 text-red-200' : 'bg-yellow-900/90 border border-yellow-500/50 text-yellow-200'}`;
+            setTimeout(() => { toast.classList.add('translate-y-[-200%]'); toast.classList.remove('translate-y-0'); }, 6000); 
         };
 
         const initDB = async () => {
-            try { await signInAnonymously(auth); } 
-            catch (e) { window.showAlert("Database Connection Failed.", "error"); }
+            try { 
+                await signInAnonymously(auth); 
+            } 
+            catch (e) { 
+                console.error("Firebase Login Failed:", e);
+                if(e.code === 'auth/configuration-not-found' || e.code === 'auth/admin-restricted-operation') {
+                    window.showAlert("Error: Please enable 'Anonymous' Sign-in in Firebase Authentication Console.", "error"); 
+                } else {
+                    window.showAlert("DB Auth Error: " + e.message, "error"); 
+                }
+            }
         };
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // Listen to Programs
                 onSnapshot(doc(db, 'settings', 'config'), (snap) => {
                     if (snap.exists()) { state.programs = snap.data().programs || []; } 
-                    else { setDoc(doc(db, 'settings', 'config'), { programs: [] }); }
+                    else { setDoc(doc(db, 'settings', 'config'), { programs: [] }).catch(e=>{}); }
                     if(state.isAuthenticated) render();
+                }, (error) => {
+                    window.showAlert("Firestore Rules Error: Please create Firestore Database in test mode.", "error");
                 });
-                // Listen to Candidates
+
                 onSnapshot(collection(db, 'candidates'), (snap) => {
                     state.candidates = snap.docs.map(d => ({ id: d.id, assignedPrograms: [], ...d.data() }));
                     if(state.isAuthenticated) render();
                 });
-                // Listen to Results
+
                 onSnapshot(collection(db, 'results'), (snap) => {
                     state.results = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                     if(state.isAuthenticated) render();
                 });
             }
         });
+        
         initDB(); 
+        render();
 
         window.handleLogin = (e) => {
             e.preventDefault();
@@ -139,16 +149,8 @@
             }
         };
 
-        window.handleLogout = () => { 
-            state.isAuthenticated = false; 
-            sessionStorage.removeItem('admin_auth'); 
-            render(); 
-        };
-
-        window.switchTab = (tab) => { 
-            state.tab = tab; 
-            render(); 
-        };
+        window.handleLogout = () => { state.isAuthenticated = false; sessionStorage.removeItem('admin_auth'); render(); };
+        window.switchTab = (tab) => { state.tab = tab; render(); };
 
         // --- PROGRAM MANAGEMENT ---
         window.addNewProgram = async (e) => {
@@ -160,22 +162,17 @@
             const newProg = { id: 'p' + Date.now(), name, cat, type, timestamp: Date.now() }; 
             const updatedProgs = [...state.programs, newProg]; 
             
-            const btn = document.getElementById('addProgBtn');
-            btn.disabled = true; btn.innerText = 'Saving...';
-            try { 
-                await updateDoc(doc(db, 'settings', 'config'), { programs: updatedProgs }); 
-                window.showAlert("മത്സരം ചേർത്തു!"); e.target.reset(); 
-            } catch(err) { window.showAlert("പരാജയപ്പെട്ടു", "error"); }
+            const btn = document.getElementById('addProgBtn'); btn.disabled = true; btn.innerText = 'Saving...';
+            try { await updateDoc(doc(db, 'settings', 'config'), { programs: updatedProgs }); window.showAlert("മത്സരം ചേർത്തു!"); e.target.reset(); } 
+            catch(err) { window.showAlert("Error: " + err.message, "error"); }
             finally { btn.disabled = false; btn.innerText = '+ ചേർക്കുക'; }
         };
 
         window.deleteProgram = async (id) => {
             if(confirm("ഈ മത്സരം ഡിലീറ്റ് ചെയ്യണോ?")) {
                 const updatedProgs = state.programs.filter(p => p.id !== id); 
-                try { 
-                    await updateDoc(doc(db, 'settings', 'config'), { programs: updatedProgs }); 
-                    window.showAlert("ഡിലീറ്റ് ചെയ്തു!"); 
-                } catch(e) { window.showAlert("പരാജയപ്പെട്ടു.", "error"); }
+                try { await updateDoc(doc(db, 'settings', 'config'), { programs: updatedProgs }); window.showAlert("ഡിലീറ്റ് ചെയ്തു!"); } 
+                catch(e) { window.showAlert("പരാജയപ്പെട്ടു.", "error"); }
             }
         };
 
@@ -184,19 +181,16 @@
             e.preventDefault(); 
             const name = document.getElementById('cName').value; 
             const cat = document.getElementById('cCat').value; 
-            
             const prefix = CAT_PREFIX[cat]; 
             const catCount = state.candidates.filter(c => c.cat === cat).length; 
             const regNo = prefix + (101 + catCount); 
             
-            const btn = document.getElementById('addCandBtn'); 
-            btn.innerText = "Saving..."; btn.disabled = true; 
+            const btn = document.getElementById('addCandBtn'); btn.innerText = "Saving..."; btn.disabled = true; 
             
             try { 
                 await addDoc(collection(db, 'candidates'), { name, regNo, cat, assignedPrograms: [], timestamp: Date.now() }); 
-                window.showAlert(`കുട്ടിയെ ചേർത്തു! (No: ${regNo})`); 
-                e.target.reset(); document.getElementById('cCat').value = cat; // retain category selection
-            } catch (err) { window.showAlert("പരാജയപ്പെട്ടു.", "error"); } 
+                window.showAlert(`കുട്ടിയെ ചേർത്തു! (No: ${regNo})`); e.target.reset(); document.getElementById('cCat').value = cat;
+            } catch (err) { window.showAlert("Error: " + err.message, "error"); } 
             finally { btn.innerText = "സേവ് ചെയ്യുക"; btn.disabled = false; } 
         };
 
@@ -210,29 +204,24 @@
         // --- ASSIGN PROGRAMS ---
         let currentAssignCandidateId = null;
         window.openAssign = (candId) => {
-            const candidate = state.candidates.find(c => c.id === candId); if (!candidate) return; 
-            currentAssignCandidateId = candId;
-            document.getElementById('assignTitle').innerText = `മത്സരങ്ങൾ ചേർക്കുക`; 
-            document.getElementById('assignSubtitle').innerText = `${candidate.name} • ${candidate.cat}`;
-            
-            const eligibleProgs = state.programs.filter(p => p.cat === candidate.cat || p.cat === 'General'); 
-            const assigned = candidate.assignedPrograms || [];
+            const candidate = state.candidates.find(c => c.id === candId); if (!candidate) return; currentAssignCandidateId = candId;
+            document.getElementById('assignTitle').innerText = `മത്സരങ്ങൾ ചേർക്കുക`; document.getElementById('assignSubtitle').innerText = `${candidate.name} • ${candidate.cat}`;
+            const eligibleProgs = state.programs.filter(p => p.cat === candidate.cat || p.cat === 'General'); const assigned = candidate.assignedPrograms || [];
 
             let html = '';
-            if(eligibleProgs.length === 0) html = '<p class="text-slate-500 text-sm">ഈ വിഭാഗത്തിൽ മത്സരങ്ങൾ ചേർത്തിട്ടില്ല.</p>';
+            if(eligibleProgs.length === 0) html = '<p class="text-red-300 text-sm">ഈ വിഭാഗത്തിൽ മത്സരങ്ങൾ ചേർത്തിട്ടില്ല.</p>';
             
             eligibleProgs.forEach(p => {
                 const isChecked = assigned.includes(p.id) ? 'checked' : '';
-                html += `<label class="flex items-center justify-between p-3 bg-slate-900 border border-slate-700 rounded-lg cursor-pointer hover:bg-slate-800 transition">
+                html += `<label class="flex items-center justify-between p-3 bg-red-950 border border-red-900 rounded-lg cursor-pointer hover:bg-red-900 transition">
                     <div>
                         <span class="text-white text-sm font-semibold block">${p.name}</span>
-                        <span class="text-[10px] text-slate-400 uppercase">${p.cat} • ${p.type}</span>
+                        <span class="text-[10px] text-amber-200 uppercase">${p.cat} • ${p.type}</span>
                     </div>
-                    <input type="checkbox" value="${p.id}" class="prog-checkbox w-5 h-5 accent-indigo-500 rounded" ${isChecked}>
+                    <input type="checkbox" value="${p.id}" class="prog-checkbox w-5 h-5 accent-amber-500 rounded" ${isChecked}>
                 </label>`;
             });
-            document.getElementById('assignCheckboxes').innerHTML = html; 
-            document.getElementById('assignModal').style.display = 'flex';
+            document.getElementById('assignCheckboxes').innerHTML = html; document.getElementById('assignModal').style.display = 'flex';
         };
 
         window.closeAssign = () => { document.getElementById('assignModal').style.display = 'none'; currentAssignCandidateId = null; };
@@ -243,37 +232,28 @@
             const selectedProgs = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
 
             const btn = document.getElementById('saveAssignBtn'); btn.innerText = 'Saving...'; btn.disabled = true;
-            try { 
-                await updateDoc(doc(db, 'candidates', currentAssignCandidateId), { assignedPrograms: selectedProgs }); 
-                window.showAlert("സേവ് ചെയ്തു!"); closeAssign(); 
-            } catch (e) { window.showAlert("പരാജയപ്പെട്ടു.", "error"); } 
+            try { await updateDoc(doc(db, 'candidates', currentAssignCandidateId), { assignedPrograms: selectedProgs }); window.showAlert("സേവ് ചെയ്തു!"); closeAssign(); } 
+            catch (e) { window.showAlert("Error: " + e.message, "error"); } 
             finally { btn.innerText = 'സേവ് ചെയ്യുക'; btn.disabled = false; }
         };
 
         window.openEnrolled = (progId) => {
             const prog = state.programs.find(p => p.id === progId); if(!prog) return;
-            document.getElementById('enrolledTitle').innerText = prog.name;
-            document.getElementById('enrolledSubtitle').innerText = `രജിസ്റ്റർ ചെയ്ത കുട്ടികൾ`;
-            
+            document.getElementById('enrolledTitle').innerText = prog.name; document.getElementById('enrolledSubtitle').innerText = `രജിസ്റ്റർ ചെയ്ത കുട്ടികൾ`;
             let enrolled = state.candidates.filter(c => c.assignedPrograms && c.assignedPrograms.includes(progId));
-            
             let html = '';
-            if(enrolled.length === 0) { html = `<p class="text-center text-slate-500 text-sm py-4">ആരും രജിസ്റ്റർ ചെയ്തിട്ടില്ല.</p>`; } 
+            if(enrolled.length === 0) { html = `<p class="text-center text-red-300 text-sm py-4">ആരും രജിസ്റ്റർ ചെയ്തിട്ടില്ല.</p>`; } 
             else { 
                 enrolled.forEach(c => { 
-                    html += `<div class="bg-slate-900 border border-slate-700 p-3 rounded-lg flex justify-between items-center">
-                        <div>
-                            <p class="text-white font-bold text-sm">${c.name} <span class="text-xs text-slate-500 font-normal">(${c.regNo})</span></p>
-                        </div>
-                        <span class="text-[10px] text-slate-400 font-bold uppercase">${c.cat}</span>
+                    html += `<div class="bg-red-950 border border-red-900 p-3 rounded-lg flex justify-between items-center">
+                        <div><p class="text-white font-bold text-sm">${c.name} <span class="text-xs text-red-300 font-normal">(${c.regNo})</span></p></div>
+                        <span class="text-[10px] text-amber-400 font-bold uppercase">${c.cat}</span>
                     </div>`; 
                 }); 
             }
-            document.getElementById('enrolledList').innerHTML = html; 
-            document.getElementById('enrolledModal').style.display = 'flex';
+            document.getElementById('enrolledList').innerHTML = html; document.getElementById('enrolledModal').style.display = 'flex';
         };
         window.closeEnrolled = () => { document.getElementById('enrolledModal').style.display = 'none'; };
-
 
         // --- RENDER UI ---
         function render() {
@@ -282,13 +262,13 @@
             if (!state.isAuthenticated) {
                 app.innerHTML = `
                 <div class="flex-1 flex flex-col items-center justify-center p-4 min-h-screen">
-                    <div class="glass-card max-w-sm w-full rounded-3xl p-8 shadow-2xl text-center">
-                        <div class="w-16 h-16 bg-indigo-600 rounded-2xl mx-auto flex items-center justify-center shadow-lg shadow-indigo-900/50 mb-4"><span class="text-3xl">🔐</span></div>
+                    <div class="glass-card max-w-sm w-full rounded-[2rem] p-8 shadow-2xl text-center">
+                        <div class="flex items-center justify-center drop-shadow-lg mb-6"><img src="1000741398.jpg" class="fest-logo-img-large" alt="Ladal Madeena"></div>
                         <h2 class="text-2xl font-bold text-white mb-1">Admin Login</h2>
-                        <p class="text-slate-400 text-xs mb-6">Enter password to manage the fest</p>
+                        <p class="text-red-300 text-xs mb-6">Enter password to manage the fest</p>
                         <form onsubmit="handleLogin(event)" class="space-y-4">
-                            <input type="password" id="loginPass" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white outline-none focus:border-indigo-500 text-center tracking-widest" placeholder="Password">
-                            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl transition shadow-lg">ലോഗിൻ</button>
+                            <input type="password" id="loginPass" required class="w-full bg-black/80 border border-red-900 rounded-xl px-4 py-3 text-white outline-none focus:border-amber-500 text-center tracking-widest" placeholder="Password">
+                            <button type="submit" class="w-full bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-amber-900/40">ലോഗിൻ</button>
                         </form>
                     </div>
                 </div>`;
@@ -296,7 +276,7 @@
             }
 
             let navHtml = `
-            <nav class="flex overflow-x-auto border-b border-slate-800 bg-slate-900/80 backdrop-blur-md px-2 sm:px-4 scrollbar-hide sticky top-[60px] sm:top-[68px] z-40 shadow-md">
+            <nav class="flex overflow-x-auto border-b border-red-900 bg-red-950/80 backdrop-blur-md px-2 sm:px-4 scrollbar-hide sticky top-[60px] sm:top-[68px] z-40 shadow-md">
                 <button onclick="switchTab('dashboard')" class="px-5 py-4 font-bold text-[13px] sm:text-sm whitespace-nowrap transition-colors ${state.tab==='dashboard'?'tab-active':'tab-inactive'}">ഡാഷ്‌ബോർഡ്</button>
                 <button onclick="switchTab('candidates')" class="px-5 py-4 font-bold text-[13px] sm:text-sm whitespace-nowrap transition-colors ${state.tab==='candidates'?'tab-active':'tab-inactive'}">കുട്ടികൾ (Candidates)</button>
                 <button onclick="switchTab('programs')" class="px-5 py-4 font-bold text-[13px] sm:text-sm whitespace-nowrap transition-colors ${state.tab==='programs'?'tab-active':'tab-inactive'}">മത്സരങ്ങൾ (Programs)</button>
@@ -307,23 +287,23 @@
             if (state.tab === 'dashboard') {
                 mainContent = `
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 mt-4">
-                        <div class="glass-card p-5 rounded-2xl border-t border-indigo-500/30 flex flex-col justify-center text-center">
-                            <span class="text-3xl mb-2 text-indigo-400">👤</span>
+                        <div class="glass-card p-5 rounded-2xl border-t border-yellow-500/30 flex flex-col justify-center text-center">
+                            <span class="text-3xl mb-2 text-yellow-400">👤</span>
                             <div class="text-3xl font-black num-font text-white">${state.candidates.length}</div>
-                            <div class="text-xs text-slate-400 font-bold uppercase mt-1">Total Candidates</div>
+                            <div class="text-xs text-red-300 font-bold uppercase mt-1">Total Candidates</div>
                         </div>
-                        <div class="glass-card p-5 rounded-2xl border-t border-pink-500/30 flex flex-col justify-center text-center">
-                            <span class="text-3xl mb-2 text-pink-400">📋</span>
+                        <div class="glass-card p-5 rounded-2xl border-t border-amber-500/30 flex flex-col justify-center text-center">
+                            <span class="text-3xl mb-2 text-amber-400">📋</span>
                             <div class="text-3xl font-black num-font text-white">${state.programs.length}</div>
-                            <div class="text-xs text-slate-400 font-bold uppercase mt-1">Total Programs</div>
+                            <div class="text-xs text-red-300 font-bold uppercase mt-1">Total Programs</div>
                         </div>
-                        <div class="col-span-2 glass-card p-5 rounded-2xl border-t border-slate-700/50">
+                        <div class="col-span-2 glass-card p-5 rounded-2xl border-t border-red-900/50">
                             <h3 class="font-bold text-white mb-3">Category Breakdown</h3>
                             <div class="grid grid-cols-2 gap-2">
                                 ${CATEGORIES.map(cat => `
-                                    <div class="bg-slate-900/50 rounded-lg p-2 border border-slate-800 flex justify-between items-center">
-                                        <span class="text-xs text-slate-300 font-bold">${cat}</span>
-                                        <span class="bg-slate-950 text-indigo-400 font-black num-font px-2 py-1 rounded text-sm">${state.candidates.filter(c=>c.cat===cat).length}</span>
+                                    <div class="bg-red-950/50 rounded-lg p-2 border border-red-900 flex justify-between items-center">
+                                        <span class="text-xs text-red-200 font-bold">${cat}</span>
+                                        <span class="bg-black text-amber-400 font-black num-font px-2 py-1 rounded text-sm">${state.candidates.filter(c=>c.cat===cat).length}</span>
                                     </div>
                                 `).join('')}
                             </div>
@@ -335,44 +315,40 @@
             if (state.tab === 'candidates') {
                 mainContent = `
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mt-4">
-                        <div class="lg:col-span-1 glass-card p-5 rounded-2xl h-fit border-t border-slate-700/50">
+                        <div class="lg:col-span-1 glass-card p-5 rounded-2xl h-fit border-t border-red-900/50">
                             <h3 class="font-bold text-white text-base mb-4">കുട്ടിയെ ചേർക്കുക</h3>
                             <form onsubmit="addCandidate(event)" class="space-y-4">
+                                <div><input type="text" id="cName" required placeholder="കുട്ടിയുടെ പേര്" class="w-full bg-black/80 border border-red-900 rounded-lg px-4 py-3 text-white outline-none focus:border-amber-500 text-sm"></div>
                                 <div>
-                                    <input type="text" id="cName" required placeholder="കുട്ടിയുടെ പേര്" class="w-full bg-slate-950/80 border border-slate-700 rounded-lg px-4 py-3 text-white outline-none focus:border-indigo-500 text-sm">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">വിഭാഗം (Category)</label>
-                                    <select id="cCat" class="w-full bg-slate-950/80 border border-slate-700 rounded-lg px-4 py-3 text-white outline-none focus:border-indigo-500 text-sm">
+                                    <label class="block text-[10px] font-bold text-red-300 uppercase tracking-wider mb-1">വിഭാഗം (Category)</label>
+                                    <select id="cCat" class="w-full bg-black/80 border border-red-900 rounded-lg px-4 py-3 text-white outline-none focus:border-amber-500 text-sm">
                                         ${CATEGORIES.map(c => `<option value="${c}">${c}</option>`).join('')}
                                     </select>
                                 </div>
-                                <button type="submit" id="addCandBtn" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl transition shadow-lg mt-2 text-sm">സേവ് ചെയ്യുക</button>
+                                <button type="submit" id="addCandBtn" class="w-full bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-white font-bold py-3 rounded-xl transition shadow-lg mt-2 text-sm">സേവ് ചെയ്യുക</button>
                             </form>
                         </div>
-                        <div class="lg:col-span-2 glass-card p-4 sm:p-6 rounded-2xl flex flex-col h-[650px] border-t border-slate-700/50">
+                        <div class="lg:col-span-2 glass-card p-4 sm:p-6 rounded-2xl flex flex-col h-[650px] border-t border-red-900/50">
                             <h3 class="font-bold text-white text-base mb-4">രജിസ്റ്റർ ചെയ്തവർ</h3>
-                            <div class="overflow-x-auto overflow-y-auto flex-1 custom-scrollbar border border-slate-800 rounded-xl bg-slate-950/30">
+                            <div class="overflow-x-auto overflow-y-auto flex-1 custom-scrollbar border border-red-900 rounded-xl bg-black/30">
                                 <table class="w-full text-left text-xs sm:text-sm whitespace-nowrap">
-                                    <thead class="bg-slate-900 text-slate-400 text-[10px] sm:text-xs uppercase sticky top-0 z-10 shadow border-b border-slate-700">
+                                    <thead class="bg-red-950 text-red-300 text-[10px] sm:text-xs uppercase sticky top-0 z-10 shadow border-b border-red-900">
                                         <tr><th class="p-3">പേര്</th><th class="p-3">വിഭാഗം</th><th class="p-3">Events</th><th class="p-3">Action</th></tr>
                                     </thead>
-                                    <tbody class="divide-y divide-slate-800/50">
-                                        ${state.candidates.length === 0 ? `<tr><td colspan="4" class="text-center p-8 text-slate-500">ആരെയും ചേർത്തിട്ടില്ല.</td></tr>` : ''}
+                                    <tbody class="divide-y divide-red-900/50">
+                                        ${state.candidates.length === 0 ? `<tr><td colspan="4" class="text-center p-8 text-red-300">ആരെയും ചേർത്തിട്ടില്ല.</td></tr>` : ''}
                                         ${[...state.candidates].sort((a,b)=>a.timestamp-b.timestamp).map(c => {
                                             const eventCount = c.assignedPrograms ? c.assignedPrograms.length : 0;
                                             return `
-                                            <tr class="hover:bg-slate-800/40 transition">
-                                                <td class="p-3"><div class="font-bold text-white">${c.name}</div><div class="text-[10px] font-mono text-indigo-400">${c.regNo}</div></td>
-                                                <td class="p-3 text-slate-300 font-medium">${c.cat}</td>
+                                            <tr class="hover:bg-red-900/40 transition">
+                                                <td class="p-3"><div class="font-bold text-white">${c.name}</div><div class="text-[10px] font-mono text-amber-400">${c.regNo}</div></td>
+                                                <td class="p-3 text-red-100 font-medium">${c.cat}</td>
                                                 <td class="p-3">
-                                                    <button onclick="openAssign('${c.id}')" class="bg-indigo-950 text-indigo-300 hover:bg-indigo-600 hover:text-white border border-indigo-500/50 px-3 py-1.5 rounded-lg text-xs font-bold transition">
+                                                    <button onclick="openAssign('${c.id}')" class="bg-yellow-600/20 text-yellow-300 hover:bg-yellow-600 hover:text-white border border-yellow-500/50 px-3 py-1.5 rounded-lg text-xs font-bold transition">
                                                         ${eventCount > 0 ? `${eventCount} Events` : '+ Add'}
                                                     </button>
                                                 </td>
-                                                <td class="p-3">
-                                                    <button onclick="deleteCandidate('${c.id}')" class="text-red-400 hover:bg-red-600 hover:text-white border border-red-500/30 px-2 py-1 rounded text-xs transition">Del</button>
-                                                </td>
+                                                <td class="p-3"><button onclick="deleteCandidate('${c.id}')" class="text-red-400 hover:bg-red-600 hover:text-white border border-red-500/30 px-2 py-1 rounded text-xs transition">Del</button></td>
                                             </tr>`
                                         }).join('')}
                                     </tbody>
@@ -386,26 +362,26 @@
                 const programCats = [...CATEGORIES, 'General'];
                 
                 let addForm = `
-                    <div class="glass-card p-5 rounded-2xl mb-6 border-t border-pink-500/30 mt-4">
-                        <h3 class="font-bold text-pink-400 mb-4 text-sm sm:text-base">പുതിയ മത്സരം ചേർക്കുക (Add Program)</h3>
+                    <div class="glass-card p-5 rounded-2xl mb-6 border-t border-amber-500/30 mt-4">
+                        <h3 class="font-bold text-amber-400 mb-4 text-sm sm:text-base">പുതിയ മത്സരം ചേർക്കുക (Add Program)</h3>
                         <form onsubmit="addNewProgram(event)" class="flex flex-col md:flex-row flex-wrap gap-4 items-end">
                             <div class="w-full md:flex-1 min-w-[200px]">
-                                <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">മത്സരത്തിന്റെ പേര്</label>
-                                <input type="text" id="pName" required class="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2.5 text-white outline-none focus:border-pink-500 text-sm">
+                                <label class="block text-[10px] font-bold text-red-300 mb-1 uppercase">മത്സരത്തിന്റെ പേര്</label>
+                                <input type="text" id="pName" required class="w-full bg-black/80 border border-red-900 rounded-lg px-4 py-2.5 text-white outline-none focus:border-amber-500 text-sm">
                             </div>
                             <div class="w-full md:w-auto">
-                                <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">വിഭാഗം</label>
-                                <select id="pCat" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2.5 text-white outline-none text-sm">
+                                <label class="block text-[10px] font-bold text-red-300 mb-1 uppercase">വിഭാഗം</label>
+                                <select id="pCat" class="w-full bg-black/80 border border-red-900 rounded-lg px-4 py-2.5 text-white outline-none text-sm">
                                     ${programCats.map(c => `<option value="${c}">${c}</option>`).join('')}
                                 </select>
                             </div>
                             <div class="w-full md:w-auto">
-                                <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">തരം</label>
-                                <select id="pType" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2.5 text-white outline-none text-sm">
+                                <label class="block text-[10px] font-bold text-red-300 mb-1 uppercase">തരം</label>
+                                <select id="pType" class="w-full bg-black/80 border border-red-900 rounded-lg px-4 py-2.5 text-white outline-none text-sm">
                                     <option value="Stage">Stage</option><option value="Non-Stage">Non-Stage</option>
                                 </select>
                             </div>
-                            <button type="submit" id="addProgBtn" class="w-full md:w-auto bg-pink-600 hover:bg-pink-500 text-white font-bold px-5 py-2.5 rounded-lg transition shadow-lg text-sm">+ ചേർക്കുക</button>
+                            <button type="submit" id="addProgBtn" class="w-full md:w-auto bg-amber-600 hover:bg-amber-500 text-white font-bold px-5 py-2.5 rounded-lg transition shadow-lg text-sm">+ ചേർക്കുക</button>
                         </form>
                     </div>`;
 
@@ -413,24 +389,24 @@
                 
                 programCats.forEach(cat => {
                     const catProgs = state.programs.filter(p => p.cat === cat);
-                    if(catProgs.length === 0) return; // Skip empty categories
+                    if(catProgs.length === 0) return; 
                     
-                    mainContent += `<div class="glass-card p-4 sm:p-5 rounded-2xl h-fit border-t border-slate-700/50">
-                        <h3 class="font-bold text-base mb-3 text-white border-b border-slate-700 pb-2">${cat}</h3>
+                    mainContent += `<div class="glass-card p-4 sm:p-5 rounded-2xl h-fit border-t border-red-900/50">
+                        <h3 class="font-bold text-base mb-3 text-white border-b border-red-900 pb-2">${cat}</h3>
                         <ul class="space-y-2">`;
                     
                     catProgs.forEach(p => {
                         const enrolledCount = state.candidates.filter(c => c.assignedPrograms && c.assignedPrograms.includes(p.id)).length;
                         mainContent += `
-                            <li class="bg-slate-900/80 p-3 rounded-xl border border-slate-700/50 flex justify-between items-center group">
+                            <li class="bg-red-950/80 p-3 rounded-xl border border-red-900/50 flex justify-between items-center group">
                                 <div class="w-full">
                                     <div class="flex justify-between">
                                         <span class="block text-white font-bold text-sm">${p.name}</span>
                                         <button onclick="deleteProgram('${p.id}')" class="text-xs text-slate-600 hover:text-red-500 transition">✕</button>
                                     </div>
                                     <div class="flex justify-between items-center mt-2">
-                                        <span class="text-[9px] ${p.type==='Stage'?'text-pink-400':'text-indigo-400'} bg-slate-950 px-2 py-0.5 rounded border border-slate-800">${p.type}</span>
-                                        <button onclick="openEnrolled('${p.id}')" class="text-[10px] text-indigo-300 bg-indigo-950 hover:bg-indigo-600 hover:text-white px-2 py-1 rounded font-bold border border-indigo-900/50 transition">👤 ${enrolledCount}</button>
+                                        <span class="text-[9px] ${p.type==='Stage'?'text-amber-400':'text-yellow-200'} bg-black px-2 py-0.5 rounded border border-red-900">${p.type}</span>
+                                        <button onclick="openEnrolled('${p.id}')" class="text-[10px] text-yellow-300 bg-yellow-950 hover:bg-yellow-600 hover:text-white px-2 py-1 rounded font-bold border border-yellow-900/50 transition">👤 ${enrolledCount}</button>
                                     </div>
                                 </div>
                             </li>`;
@@ -441,12 +417,15 @@
             }
 
             app.innerHTML = `
-                <header class="bg-slate-950/90 backdrop-blur-xl border-b border-slate-800 p-3 sm:p-4 px-4 sm:px-6 flex justify-between items-center sticky top-0 z-50">
-                    <div>
-                        <h1 class="text-white text-lg sm:text-xl font-bold tracking-tight">Admin Portal</h1>
-                        <p class="text-[10px] text-indigo-400 font-semibold uppercase tracking-widest">Fest Management System</p>
+                <header class="bg-black/90 backdrop-blur-xl border-b border-red-900 p-3 sm:p-4 px-4 sm:px-6 flex justify-between items-center sticky top-0 z-50">
+                    <div class="flex items-center gap-2 sm:gap-3">
+                        <div class="flex items-center drop-shadow-md"><img src="1000741398.jpg" class="fest-logo-img" alt="Ladal Madeena"></div>
+                        <div>
+                            <h1 class="text-white text-[15px] sm:text-xl tracking-tight leading-none mb-0.5 sm:mb-1 font-sans font-bold">Admin Portal</h1>
+                            <p class="text-[8px] sm:text-[10px] text-red-300 font-semibold uppercase tracking-widest">Fest Management</p>
+                        </div>
                     </div>
-                    <button onclick="handleLogout()" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-slate-300 rounded-lg text-xs font-bold border border-slate-700 shadow-sm transition">Logout</button>
+                    <button onclick="handleLogout()" class="px-3 py-1.5 bg-red-950 hover:bg-red-900 text-red-200 rounded-lg text-xs font-bold border border-red-800 shadow-sm transition">Logout</button>
                 </header>
                 ${navHtml}
                 <main class="flex-1 p-3 sm:p-6 max-w-7xl w-full mx-auto pb-10">
@@ -457,4 +436,5 @@
     </script>
 </body>
 </html>
+
 
