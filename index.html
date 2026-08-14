@@ -6,6 +6,7 @@
     <title>ലദൽ മദീന - Admin Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@400;600;700;800&family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
     <style>
         body { font-family: 'Anek Malayalam', sans-serif; background-color: #450a0a; color: #f8fafc; overflow-x: hidden; }
@@ -20,6 +21,9 @@
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .fest-logo-img { height: 35px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.5)); display: inline-block; border-radius: 5px; }
         .fest-logo-img-large { height: 60px; object-fit: contain; filter: drop-shadow(0 0 15px rgba(251, 191, 36, 0.6)); display: inline-block; border-radius: 8px;}
+        select { appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fbbf24' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 1rem center; background-size: 1em; padding-right: 2.5rem !important; }
+        select option { background-color: #1a0202; color: #f8fafc; }
+        select optgroup { background-color: #450a0a; color: #fbbf24; font-style: normal; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -65,7 +69,6 @@
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, onSnapshot, addDoc, deleteDoc, doc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Your specific Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyCo3S007XNUl1bAfgAlMR1vJyDQBNFf6MI",
             authDomain: "kottam-eee89.firebaseapp.com",
@@ -89,25 +92,29 @@
             tab: 'dashboard', candidates: [], programs: [], results: []
         };
 
+        window.fireConfetti = () => {
+            var duration = 3 * 1000; var end = Date.now() + duration;
+            (function frame() {
+                confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#fbbf24', '#dc2626', '#f59e0b', '#fcd34d'] });
+                confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#fbbf24', '#dc2626', '#f59e0b', '#fcd34d'] });
+                if (Date.now() < end) { requestAnimationFrame(frame); }
+            }());
+        };
+
         window.showAlert = (msg, type = 'success') => {
             const toast = document.getElementById('toast'); 
             document.getElementById('toastMsg').innerText = msg;
             document.getElementById('toastIcon').innerText = type === 'error' ? '⚠️' : '✨';
             toast.className = `fixed top-5 right-5 z-[100] transform transition-transform duration-300 px-6 py-3 rounded-xl shadow-2xl font-semibold flex items-center space-x-3 text-sm translate-y-0 ${type === 'error' ? 'bg-red-950/90 border border-red-500/50 text-red-200' : 'bg-yellow-900/90 border border-yellow-500/50 text-yellow-200'}`;
-            setTimeout(() => { toast.classList.add('translate-y-[-200%]'); toast.classList.remove('translate-y-0'); }, 6000); 
+            setTimeout(() => { toast.classList.add('translate-y-[-200%]'); toast.classList.remove('translate-y-0'); }, 5000); 
         };
 
         const initDB = async () => {
             try { 
                 await signInAnonymously(auth); 
-            } 
-            catch (e) { 
+            } catch (e) { 
                 console.error("Firebase Login Failed:", e);
-                if(e.code === 'auth/configuration-not-found' || e.code === 'auth/admin-restricted-operation') {
-                    window.showAlert("Error: Please enable 'Anonymous' Sign-in in Firebase Authentication Console.", "error"); 
-                } else {
-                    window.showAlert("DB Auth Error: " + e.message, "error"); 
-                }
+                window.showAlert("DB Auth Error: Please enable 'Anonymous' Sign-in in Firebase.", "error"); 
             }
         };
 
@@ -117,8 +124,6 @@
                     if (snap.exists()) { state.programs = snap.data().programs || []; } 
                     else { setDoc(doc(db, 'settings', 'config'), { programs: [] }).catch(e=>{}); }
                     if(state.isAuthenticated) render();
-                }, (error) => {
-                    window.showAlert("Firestore Rules Error: Please create Firestore Database in test mode.", "error");
                 });
 
                 onSnapshot(collection(db, 'candidates'), (snap) => {
@@ -255,7 +260,64 @@
         };
         window.closeEnrolled = () => { document.getElementById('enrolledModal').style.display = 'none'; };
 
+        // --- RESULTS MANAGEMENT ---
+        window.populateResultDropdowns = () => {
+            const progId = document.getElementById('rProg').value;
+            const prog = state.programs.find(p => p.id === progId);
+            const container = document.getElementById('rSelectors');
+            if (!prog) { container.innerHTML = ''; return; }
+
+            const eligibleCands = state.candidates.filter(c => prog.cat === 'General' ? true : c.cat === prog.cat);
+            const assignedCands = eligibleCands.filter(c => c.assignedPrograms && c.assignedPrograms.includes(progId));
+            
+            let optionsHtml = '<option value="" disabled>-- തിരഞ്ഞെടുക്കുക --</option>';
+            if(assignedCands.length > 0) {
+                optionsHtml += '<optgroup label="ഈ മത്സരത്തിലുള്ളവർ">';
+                assignedCands.forEach(c => optionsHtml += `<option value="${c.id}">${c.regNo} - ${c.name}</option>`);
+                optionsHtml += '</optgroup>';
+            }
+
+            container.innerHTML = `
+                <div class="space-y-4 p-4 bg-black/50 rounded-xl border border-red-900 mt-4">
+                    <div><label class="block text-xs font-bold text-yellow-500 mb-1">ഒന്നാം സ്ഥാനം (10 Pts) - <span class="text-red-300 font-normal">ഒന്നിലധികം പേരുണ്ടെങ്കിൽ Ctrl അമർത്തി സെലക്ട് ചെയ്യാം</span></label><select id="rFirst" multiple size="4" class="w-full bg-red-950 border border-red-900 rounded-lg px-3 py-2 text-white outline-none focus:border-yellow-500 custom-scrollbar">${optionsHtml}</select></div>
+                    <div><label class="block text-xs font-bold text-slate-300 mb-1">രണ്ടാം സ്ഥാനം (5 Pts)</label><select id="rSecond" multiple size="4" class="w-full bg-red-950 border border-red-900 rounded-lg px-3 py-2 text-white outline-none focus:border-slate-400 custom-scrollbar">${optionsHtml}</select></div>
+                    <div><label class="block text-xs font-bold text-amber-600 mb-1">മൂന്നാം സ്ഥാനം (3 Pts)</label><select id="rThird" multiple size="4" class="w-full bg-red-950 border border-red-900 rounded-lg px-3 py-2 text-white outline-none focus:border-amber-600 custom-scrollbar">${optionsHtml}</select></div>
+                </div>
+                <button type="submit" id="publishBtn" class="w-full mt-4 bg-yellow-600 hover:bg-yellow-500 text-black font-bold py-3 rounded-xl transition shadow-lg">റിസൾട്ട് പബ്ലിഷ് ചെയ്യുക</button>
+            `;
+        };
+
+        window.publishResult = async (e) => {
+            e.preventDefault();
+            const progId = document.getElementById('rProg').value;
+            const getSelected = (id) => Array.from(document.getElementById(id).selectedOptions).map(o => o.value).filter(v => v !== "");
+            
+            const first = getSelected('rFirst'); const second = getSelected('rSecond'); const third = getSelected('rThird');
+            if (first.length === 0) return window.showAlert("ഒന്നാം സ്ഥാനം നിർബന്ധമാണ്!", "error");
+            
+            const btn = document.getElementById('publishBtn'); btn.innerText = "Publishing..."; btn.disabled = true;
+            try { 
+                await setDoc(doc(db, 'results', progId), { progId, first, second, third, timestamp: Date.now() }); 
+                window.showAlert("റിസൾട്ട് പ്രസിദ്ധീകരിച്ചു!"); 
+                document.getElementById('rProg').value = ""; document.getElementById('rSelectors').innerHTML = ""; 
+                window.fireConfetti();
+            } 
+            catch(err) { window.showAlert("പരാജയപ്പെട്ടു: " + err.message, "error"); }
+            finally { btn.innerText = "റിസൾട്ട് പബ്ലിഷ് ചെയ്യുക"; btn.disabled = false; }
+        };
+
+        window.deleteResult = async (progId) => {
+            if(confirm("ഈ റിസൾട്ട് ഡിലീറ്റ് ചെയ്യണോ? പോയിന്റുകൾ മാറും.")) {
+                try { await deleteDoc(doc(db, 'results', progId)); window.showAlert("റിസൾട്ട് ഡിലീറ്റ് ചെയ്തു."); } 
+                catch(e) { window.showAlert("പരാജയപ്പെട്ടു.", "error"); }
+            }
+        };
+
         // --- RENDER UI ---
+        const getCandNamesString = (ids) => { const arr = Array.isArray(ids) ? ids : (ids ? [ids] : []); if(arr.length === 0) return '-'; return arr.map(id => state.candidates.find(c => c.id === id)?.name || '-').join(', '); };
+        const getNamesBadgeHtml = (ids, borderClass, textClass, icon) => { const arr = Array.isArray(ids) ? ids : (ids ? [ids] : []); if (arr.length === 0) return ''; return arr.map(id => { const c = state.candidates.find(x => x.id === id); return `<div class="flex justify-between items-center bg-red-950 p-2.5 rounded-lg border ${borderClass} mb-1.5"><div class="flex items-center gap-2"><span class="text-xl">${icon}</span> <p class="${textClass} font-bold text-sm truncate">${c?.name || '-'}</p></div> <span class="text-[10px] font-bold text-red-200 bg-black px-2 py-1 rounded border border-red-900 flex-shrink-0">${c?.regNo || '-'}</span></div>`; }).join(''); };
+
+
         function render() {
             const app = document.getElementById('app'); 
 
@@ -278,8 +340,9 @@
             let navHtml = `
             <nav class="flex overflow-x-auto border-b border-red-900 bg-red-950/80 backdrop-blur-md px-2 sm:px-4 scrollbar-hide sticky top-[60px] sm:top-[68px] z-40 shadow-md">
                 <button onclick="switchTab('dashboard')" class="px-5 py-4 font-bold text-[13px] sm:text-sm whitespace-nowrap transition-colors ${state.tab==='dashboard'?'tab-active':'tab-inactive'}">ഡാഷ്‌ബോർഡ്</button>
-                <button onclick="switchTab('candidates')" class="px-5 py-4 font-bold text-[13px] sm:text-sm whitespace-nowrap transition-colors ${state.tab==='candidates'?'tab-active':'tab-inactive'}">കുട്ടികൾ (Candidates)</button>
-                <button onclick="switchTab('programs')" class="px-5 py-4 font-bold text-[13px] sm:text-sm whitespace-nowrap transition-colors ${state.tab==='programs'?'tab-active':'tab-inactive'}">മത്സരങ്ങൾ (Programs)</button>
+                <button onclick="switchTab('candidates')" class="px-5 py-4 font-bold text-[13px] sm:text-sm whitespace-nowrap transition-colors ${state.tab==='candidates'?'tab-active':'tab-inactive'}">കുട്ടികൾ</button>
+                <button onclick="switchTab('programs')" class="px-5 py-4 font-bold text-[13px] sm:text-sm whitespace-nowrap transition-colors ${state.tab==='programs'?'tab-active':'tab-inactive'}">മത്സരങ്ങൾ</button>
+                <button onclick="switchTab('results')" class="px-5 py-4 font-bold text-[13px] sm:text-sm whitespace-nowrap transition-colors ${state.tab==='results'?'tab-active':'tab-inactive'}">റിസൾട്ടുകൾ</button>
             </nav>`;
             
             let mainContent = '';
@@ -296,6 +359,11 @@
                             <span class="text-3xl mb-2 text-amber-400">📋</span>
                             <div class="text-3xl font-black num-font text-white">${state.programs.length}</div>
                             <div class="text-xs text-red-300 font-bold uppercase mt-1">Total Programs</div>
+                        </div>
+                        <div class="glass-card p-5 rounded-2xl border-t border-emerald-500/30 flex flex-col justify-center text-center">
+                            <span class="text-3xl mb-2 text-emerald-400">🏆</span>
+                            <div class="text-3xl font-black num-font text-white">${state.results.length}</div>
+                            <div class="text-xs text-red-300 font-bold uppercase mt-1">Published Results</div>
                         </div>
                         <div class="col-span-2 glass-card p-5 rounded-2xl border-t border-red-900/50">
                             <h3 class="font-bold text-white mb-3">Category Breakdown</h3>
@@ -414,6 +482,53 @@
                     mainContent += `</ul></div>`;
                 });
                 mainContent += `</div>`;
+            }
+
+            if (state.tab === 'results') {
+                const sortedResults = [...state.results].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                
+                mainContent = `
+                    <div class="flex flex-col lg:flex-row gap-4 sm:gap-6 mt-4">
+                        <div class="w-full lg:w-5/12 flex flex-col gap-4 sm:gap-6">
+                            <div class="glass-card p-4 sm:p-6 rounded-2xl border border-yellow-500/30">
+                                <h3 class="font-bold text-yellow-400 mb-3 sm:mb-4 text-base sm:text-lg flex items-center gap-2"><span class="text-xl sm:text-2xl">🏆</span> റിസൾട്ട് നൽകുക</h3>
+                                <form onsubmit="publishResult(event)">
+                                    <select id="rProg" onchange="populateResultDropdowns()" class="w-full bg-black/80 border border-red-900 rounded-lg px-3 py-2 sm:px-4 sm:py-3 text-white outline-none focus:border-yellow-500 font-semibold mb-3 sm:mb-4 shadow-inner text-sm">
+                                        <option value="">-- മത്സരം തിരഞ്ഞെടുക്കുക --</option>
+                                        ${state.programs.map(p => `<option value="${p.id}">${p.name} (${p.cat})</option>`).join('')}
+                                    </select>
+                                    <div id="rSelectors"></div>
+                                </form>
+                            </div>
+                        </div>
+                        
+                        <div class="w-full lg:w-7/12 glass-card p-3 sm:p-6 rounded-2xl flex flex-col h-[500px] sm:h-[700px] border-t border-red-900/50">
+                            <div class="flex justify-between items-center border-b border-red-900 pb-3 sm:pb-4 mb-3 sm:mb-4 px-2 sm:px-0">
+                                <h3 class="font-bold text-white text-base sm:text-xl">റിസൾട്ടുകൾ</h3>
+                                <span class="bg-red-950 text-red-300 text-[10px] sm:text-xs px-2 sm:px-3 py-1 rounded-full font-bold border border-red-900 shadow-inner">${sortedResults.length} Published</span>
+                            </div>
+                            <div class="space-y-3 sm:space-y-4 overflow-y-auto flex-1 pr-1 sm:pr-2 custom-scrollbar">
+                                ${sortedResults.length === 0 ? `<div class="text-center p-6 sm:p-10 text-red-300 text-sm">ആദ്യ റിസൾട്ടിനായി കാത്തിരിക്കുന്നു...</div>` : ''}
+                                ${sortedResults.map((res, index) => {
+                                    const prog = state.programs.find(p => p.id === res.progId); 
+                                    const isNew = index === 0; 
+                                    const cardClass = isNew ? "bg-red-950 border-yellow-500/50 shadow-[0_0_20px_rgba(234,179,8,0.1)]" : "bg-black/80 border-red-900";
+                                    return `<div class="border p-3 sm:p-5 rounded-2xl relative overflow-hidden transition-all ${cardClass}">
+                                        ${isNew ? '<div class="absolute top-0 right-0 bg-yellow-500 text-black text-[8px] sm:text-[9px] font-black uppercase px-2 sm:px-3 py-1 rounded-bl-lg tracking-widest animate-pulse shadow-md">Newest</div>' : ''}
+                                        <button onclick="deleteResult('${res.progId}')" class="absolute top-2 right-2 sm:top-3 sm:right-4 ${isNew?'mt-5 sm:mt-4':''} text-red-400 hover:text-white bg-red-950/50 hover:bg-red-600 border border-red-500/30 px-2 py-1 rounded text-[9px] sm:text-[10px] font-bold transition z-10">Delete</button>
+                                        <h4 class="font-bold text-white text-[14px] sm:text-lg mb-3 sm:mb-4 pr-10">
+                                            ${prog?.name || '-'} <span class="text-[8px] sm:text-[10px] text-red-300 bg-red-900 px-1.5 py-0.5 rounded ml-2">${prog?.cat || ''}</span>
+                                        </h4>
+                                        <div class="space-y-1.5">
+                                            ${getNamesBadgeHtml(res.first, 'border-yellow-500/30 bg-yellow-950/20', 'text-yellow-400', '🥇')}
+                                            ${getNamesBadgeHtml(res.second, 'border-slate-600', 'text-slate-300', '🥈')}
+                                            ${getNamesBadgeHtml(res.third, 'border-amber-900/40', 'text-amber-600', '🥉')}
+                                        </div>
+                                    </div>`;
+                                }).join('')}
+                            </div>
+                        </div>
+                    </div>`;
             }
 
             app.innerHTML = `
