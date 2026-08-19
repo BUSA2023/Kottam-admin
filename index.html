@@ -170,6 +170,7 @@
             { no: "157", name: "Speech Mlm", cat: "Sub Junior", type: "Stage", cands: ["127", "323", "142", "329"] },
             { no: "158", name: "Story Telling", cat: "Sub Junior", type: "Stage", cands: ["341", "134", "347", "139"] },
             { no: "159", name: "Handwriting Malayalam", cat: "Sub Junior", type: "Non-Stage", cands: ["337", "135", "341", "143", "346", "145"] },
+            { no: "160", name: "Memory Test", cat: "Sub Junior", type: "Non-Stage", cands: ["133", "341", "135", "345", "142", "346"] },
             { no: "161", name: "Pencil Drawing", cat: "Sub Junior", type: "Non-Stage", cands: ["132", "345", "135", "334"] }
         ];
 
@@ -183,6 +184,10 @@
             { no: "257", name: "Islamic Group Song", cat: "Junior", type: "Stage", cands: ["158", "160", "161", "350", "357", "361", "168", "169", "212", "351", "360", "364", "170", "171", "172", "362", "370", "372"] },
             { no: "259", name: "Conversation Mlm", cat: "Junior", type: "Stage", cands: ["357", "359", "156", "163", "369", "373", "171", "172"] },
             { no: "260", name: "Bank", cat: "Junior", type: "Stage", cands: ["163", "353", "170", "370"] },
+            { no: "262", name: "Handwriting Arabic", cat: "Junior", type: "Non-Stage", cands: ["357", "164", "367", "168", "371", "170"] },
+            { no: "263", name: "Handwriting Arabic Mlm", cat: "Junior", type: "Non-Stage", cands: ["150", "362", "169", "367", "174", "371"] },
+            { no: "264", name: "Drawing - Water Colour", cat: "Junior", type: "Non-Stage", cands: ["351", "155", "367", "174"] },
+            { no: "265", name: "Kurunnukal Test", cat: "Junior", type: "Non-Stage", cands: ["362", "150", "368", "152", "170", "212"] },
             { no: "266", name: "Memory Test", cat: "Junior", type: "Non-Stage", cands: ["361", "166", "362", "171", "371", "173"] }
         ];
 
@@ -196,7 +201,32 @@
             { no: "357", name: "Speech Urdu", cat: "Senior", type: "Stage", cands: ["377", "191"] },
             { no: "358", name: "Mappilappatt", cat: "Senior", type: "Stage", cands: ["182", "394", "396"] },
             { no: "359", name: "Song Urdu", cat: "Senior", type: "Stage", cands: ["376", "180", "380", "196"] },
+            { no: "360", name: "Mash Up", cat: "Senior", type: "Stage", cands: ["177", "180", "183", "394", "395", "396", "187", "189", "192", "383", "389", "391", "393"] },
+            { no: "361", name: "Arabic Calligraphy", cat: "Senior", type: "Non-Stage", cands: ["376", "188", "398"] },
+            { no: "363", name: "Story Writing Mlm", cat: "Senior", type: "Non-Stage", cands: ["378", "190", "398", "196"] },
+            { no: "364", name: "Poem Writing Mlm", cat: "Senior", type: "Non-Stage", cands: ["378", "190", "392", "196"] },
             { no: "365", name: "Quiz", cat: "Senior", type: "Stage", cands: ["194", "385", "195", "393"] }
+        ];
+
+        const SUPERSENIOR_PROGRAMS = [
+            { no: "451", name: "Qirath", cat: "Super Senior", type: "Stage", cands: ["404", "203", "410", "204"] },
+            { no: "452", name: "Hifz", cat: "Super Senior", type: "Stage", cands: ["203", "404", "204", "410"] },
+            { no: "453", name: "Speech Arb", cat: "Super Senior", type: "Stage", cands: ["405", "211", "416"] },
+            { no: "454", name: "Speech Mlm", cat: "Super Senior", type: "Stage", cands: ["404", "205", "416"] },
+            { no: "455", name: "Islamic Song Arb", cat: "Super Senior", type: "Stage", cands: ["197", "414", "210", "416"] },
+            { no: "456", name: "Speech & Song", cat: "Super Senior", type: "Stage", cands: ["404", "200", "416", "211"] },
+            { no: "457", name: "Mappilappatt", cat: "Super Senior", type: "Stage", cands: ["203", "410", "204", "413"] },
+            { no: "458", name: "Mash Up", cat: "Super Senior", type: "Stage", cands: ["410", "412", "413", "197", "200", "204", "399", "402", "403", "203", "211", "213"] },
+            { no: "460", name: "Story Writing Mlm", cat: "Super Senior", type: "Non-Stage", cands: ["412", "199", "413", "203", "208"] },
+            { no: "461", name: "Poem Writing Mlm", cat: "Super Senior", type: "Non-Stage", cands: ["209", "401", "211", "416"] },
+            { no: "462", name: "Essay Mlm", cat: "Super Senior", type: "Non-Stage", cands: ["412", "201", "416", "211"] },
+            { no: "463", name: "Padappayatt Arabic", cat: "Super Senior", type: "Non-Stage", cands: ["206", "416"] }
+        ];
+
+        const GENERAL_PROGRAMS = [
+            { no: "551", name: "Burdha", cat: "General", type: "Stage", cands: ["416", "410", "384", "413", "394", "211", "204", "203", "200", "213"] },
+            { no: "552", name: "Moulid Recitation", cat: "General", type: "Stage", cands: ["197", "182", "194", "174", "195", "416", "410", "413", "404", "385"] },
+            { no: "553", name: "Arabic Group Song", cat: "General", type: "Stage", cands: ["416", "410", "413", "396", "397", "204", "200", "211", "203", "197"] }
         ];
 
         const KHAIBAR_BOYS_DATA = [
@@ -276,6 +306,7 @@
             { regNo: "174", name: "Muhammed Rabeeh Pattasseri", classDiv: "6B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
             { regNo: "175", name: "Muhammed Javad Urpayi", classDiv: "6B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
             { regNo: "176", name: "Rabeeh Valiya Peediyekkal", classDiv: "6B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "212", name: "Shahroz", classDiv: "6B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
             { regNo: "177", name: "Muhammed Razal Melottil", classDiv: "7B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
             { regNo: "178", name: "Muhammed Shadil Thayyil", classDiv: "7B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
             { regNo: "179", name: "Aseen Therambil", classDiv: "7B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
@@ -311,7 +342,6 @@
             { regNo: "209", name: "Muhammed Shifnan Kodiyadan", classDiv: "+1", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
             { regNo: "210", name: "Majid Pattasseri", classDiv: "+1", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
             { regNo: "211", name: "Ajhad", classDiv: "+2", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
-            { regNo: "212", name: "Shahroz", classDiv: "6B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
             { regNo: "213", name: "Muhammed Shafin Pottanikkal", classDiv: "10", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" }
         ];
 
@@ -868,6 +898,7 @@
                     const newIdsMap = {}; 
                     let progsAdded = 0;
 
+                    // 1. Create or Find Programs
                     programListConfig.forEach(kp => {
                         let existing = updatedProgs.find(p => p.progNo === kp.no);
                         if(!existing) {
@@ -882,6 +913,7 @@
 
                     await updateDoc(doc(db, 'settings', 'config'), { programs: updatedProgs });
 
+                    // 2. Batch Update Candidates with their new assignments
                     let assignCount = 0;
                     let batches = [];
                     let currentBatch = writeBatch(db);
@@ -1470,6 +1502,12 @@
                                 </button>
                                 <button onclick='syncProgramList(${JSON.stringify(SENIOR_PROGRAMS)}, "Senior")' class="bg-violet-600/90 hover:bg-violet-500 text-white text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-lg transition shadow border border-violet-500 flex items-center gap-1">
                                     ⚡ Sync Senior
+                                </button>
+                                <button onclick='syncProgramList(${JSON.stringify(SUPERSENIOR_PROGRAMS)}, "Super Senior")' class="bg-fuchsia-600/90 hover:bg-fuchsia-500 text-white text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-lg transition shadow border border-fuchsia-500 flex items-center gap-1">
+                                    ⚡ Sync Super Senior
+                                </button>
+                                <button onclick='syncProgramList(${JSON.stringify(GENERAL_PROGRAMS)}, "General")' class="bg-teal-600/90 hover:bg-teal-500 text-white text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-lg transition shadow border border-teal-500 flex items-center gap-1">
+                                    ⚡ Sync General
                                 </button>
                             </div>
                         </div>
