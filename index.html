@@ -33,19 +33,19 @@
 
     <!-- Confirm Modal -->
     <div id="confirmModal" style="display: none;" class="fixed inset-0 bg-black/90 z-[400] items-center justify-center p-4 backdrop-blur-sm">
-        <div class="glass-card p-6 rounded-2xl max-w-sm w-full shadow-2xl text-center">
+        <div class="glass-card p-6 rounded-2xl max-w-sm w-full shadow-2xl text-center border border-amber-500/30">
             <h3 class="text-lg font-bold text-white mb-2" id="confirmTitle">Confirm</h3>
             <p class="text-sm text-purple-200 mb-6" id="confirmMsg">Are you sure?</p>
             <div class="flex gap-3 justify-center">
                 <button id="confirmCancelBtn" class="px-5 py-2 bg-purple-950 hover:bg-purple-900 text-white rounded-lg text-sm font-semibold transition border border-purple-700">റദ്ദാക്കുക (No)</button>
-                <button id="confirmOkBtn" class="px-5 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-sm font-semibold transition shadow-lg">തുടരുക (Yes)</button>
+                <button id="confirmOkBtn" class="px-5 py-2 bg-amber-600 hover:bg-amber-500 text-black rounded-lg text-sm font-bold transition shadow-lg">തുടരുക (Yes)</button>
             </div>
         </div>
     </div>
 
     <!-- Edit Candidate Modal -->
     <div id="editCandModal" style="display: none;" class="fixed inset-0 bg-black/90 z-[300] items-center justify-center p-4 backdrop-blur-sm">
-        <div class="glass-card p-6 rounded-2xl max-w-md w-full shadow-2xl">
+        <div class="glass-card p-6 rounded-2xl max-w-md w-full shadow-2xl border border-amber-500/30">
             <h3 class="text-lg font-bold text-amber-400 mb-4 border-b border-purple-800 pb-2">Edit Candidate</h3>
             <form id="editCandForm" onsubmit="saveEditCand(event)" class="space-y-3">
                 <input type="hidden" id="editCandId">
@@ -65,7 +65,7 @@
                 </div>
                 <div class="flex gap-3 justify-end pt-4">
                     <button type="button" onclick="document.getElementById('editCandModal').style.display='none'" class="px-4 py-2 bg-purple-950 text-white rounded-lg text-sm border border-purple-700">Cancel</button>
-                    <button type="submit" id="saveEditCandBtn" class="px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-bold shadow-lg">Update</button>
+                    <button type="submit" id="saveEditCandBtn" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-sm font-bold shadow-lg">Update</button>
                 </div>
             </form>
         </div>
@@ -73,7 +73,7 @@
 
     <!-- Edit Program Modal -->
     <div id="editProgModal" style="display: none;" class="fixed inset-0 bg-black/90 z-[300] items-center justify-center p-4 backdrop-blur-sm">
-        <div class="glass-card p-6 rounded-2xl max-w-md w-full shadow-2xl">
+        <div class="glass-card p-6 rounded-2xl max-w-md w-full shadow-2xl border border-amber-500/30">
             <h3 class="text-lg font-bold text-amber-400 mb-4 border-b border-purple-800 pb-2">Edit Program</h3>
             <form id="editProgForm" onsubmit="saveEditProg(event)" class="space-y-3">
                 <input type="hidden" id="editProgId">
@@ -89,7 +89,7 @@
                 </div>
                 <div class="flex gap-3 justify-end pt-4">
                     <button type="button" onclick="document.getElementById('editProgModal').style.display='none'" class="px-4 py-2 bg-purple-950 text-white rounded-lg text-sm border border-purple-700">Cancel</button>
-                    <button type="submit" id="saveEditProgBtn" class="px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-bold shadow-lg">Update</button>
+                    <button type="submit" id="saveEditProgBtn" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-sm font-bold shadow-lg">Update</button>
                 </div>
             </form>
         </div>
@@ -97,7 +97,7 @@
 
     <!-- Assign Modal -->
     <div id="assignModal" style="display: none;" class="fixed inset-0 bg-black/90 z-[200] items-center justify-center p-4 backdrop-blur-sm">
-        <div class="glass-card p-6 rounded-2xl max-w-md w-full shadow-2xl flex flex-col max-h-[85vh]">
+        <div class="glass-card p-6 rounded-2xl max-w-md w-full shadow-2xl flex flex-col max-h-[85vh] border border-amber-500/30">
             <h3 class="text-lg font-bold text-white mb-1" id="assignTitle">മത്സരങ്ങൾ ചേർക്കുക</h3>
             <p class="text-xs text-amber-400 mb-4 font-bold tracking-widest uppercase" id="assignSubtitle"></p>
             <div class="bg-purple-950/60 border border-purple-800 rounded-xl p-4 flex-1 overflow-y-auto mb-4 custom-scrollbar">
@@ -105,17 +105,17 @@
             </div>
             <div class="flex gap-3 justify-end pt-2">
                 <button onclick="closeAssign()" class="px-4 py-2 bg-purple-950 hover:bg-purple-900 text-white rounded-lg text-sm font-semibold transition border border-purple-700">റദ്ദാക്കുക</button>
-                <button id="saveAssignBtn" onclick="saveAssign()" class="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-sm font-semibold transition shadow-lg">സേവ് ചെയ്യുക</button>
+                <button id="saveAssignBtn" onclick="saveAssign()" class="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-black rounded-lg text-sm font-bold transition shadow-lg">സേവ് ചെയ്യുക</button>
             </div>
         </div>
     </div>
 
     <!-- Enrolled Modal -->
     <div id="enrolledModal" style="display: none;" class="fixed inset-0 bg-black/90 z-[200] items-center justify-center p-4 backdrop-blur-sm">
-        <div class="glass-card p-6 rounded-2xl max-w-md w-full shadow-2xl flex flex-col max-h-[85vh]">
+        <div class="glass-card p-6 rounded-2xl max-w-md w-full shadow-2xl flex flex-col max-h-[85vh] border border-amber-500/30">
             <div class="flex justify-between items-center mb-1">
-                <h3 class="text-lg font-bold text-white" id="enrolledTitle">രജിസ്റ്റർ ചെയ്തവർ</h3>
-                <button onclick="closeEnrolled()" class="text-purple-300 hover:text-white bg-purple-950 hover:bg-purple-900 rounded-full w-8 h-8 flex items-center justify-center transition">✕</button>
+                <h3 class="text-lg font-bold text-white pr-4" id="enrolledTitle">രജിസ്റ്റർ ചെയ്തവർ</h3>
+                <button onclick="closeEnrolled()" class="text-purple-300 hover:text-white bg-purple-950 hover:bg-purple-900 rounded-full w-8 h-8 flex items-center justify-center transition flex-shrink-0">✕</button>
             </div>
             <p class="text-xs text-amber-300 mb-4 font-bold tracking-widest uppercase" id="enrolledSubtitle"></p>
             <div class="bg-purple-950/60 border border-purple-800 rounded-xl p-4 flex-1 overflow-y-auto custom-scrollbar">
@@ -130,7 +130,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, addDoc, deleteDoc, doc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, addDoc, deleteDoc, doc, setDoc, updateDoc, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCo3S007XNUl1bAfgAlMR1vJyDQBNFf6MI",
@@ -152,7 +152,6 @@
         
         const ADMIN_PASSWORD = "admin";
 
-        // Programs definitions with Pre-Mapped Chest Numbers
         const KIDDIES_PROGRAMS = [
             { no: "51", name: "Fathiha Recitation", cat: "Kiddies", type: "Stage", cands: ["313", "111", "316", "117", "317", "118"] },
             { no: "52", name: "Story Telling", cat: "Kiddies", type: "Stage", cands: ["315", "105", "316", "112", "319", "118"] },
@@ -200,7 +199,6 @@
             { no: "365", name: "Quiz", cat: "Senior", type: "Stage", cands: ["194", "385", "195", "393"] }
         ];
 
-        // Khaibar Warriors - Boys (113)
         const KHAIBAR_BOYS_DATA = [
             { regNo: "101", name: "Shahzad Valiya Kandathil", classDiv: "1B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "BOYS" },
             { regNo: "102", name: "Muhammad Shameem Kodivalappil", classDiv: "1B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "BOYS" },
@@ -317,7 +315,6 @@
             { regNo: "213", name: "Muhammed Shafin Pottanikkal", classDiv: "10", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" }
         ];
 
-        // Khaibar Warriors - Girls (136)
         const KHAIBAR_GIRLS_DATA = [
             { regNo: "501", name: "Fathima Shifa Kolathu Mattil", classDiv: "1B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
             { regNo: "502", name: "Rayah Lamees Valiya Peediyeckal", classDiv: "1B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
@@ -457,7 +454,6 @@
             { regNo: "636", name: "Shahzadi palakkatt", classDiv: "+2", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" }
         ];
 
-        // Khandaq Fighters - Boys (116)
         const KHANDAQ_BOYS_DATA = [
             { regNo: "301", name: "Muhammad Adhnan Vadikkadavath", classDiv: "1A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
             { regNo: "302", name: "Muhammed Aamir Zayan Mullakkoya Makkanath", classDiv: "1A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
@@ -577,7 +573,6 @@
             { regNo: "416", name: "Basith", classDiv: "+2", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" }
         ];
 
-        // Khandaq Fighters - Girls (140)
         const KHANDAQ_GIRLS_DATA = [
             { regNo: "701", name: "Ayisha Izza Pattasseri", classDiv: "1A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
             { regNo: "702", name: "Insha Fathima Valiya Kandathil", classDiv: "1A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
@@ -813,32 +808,29 @@
         window.handleLogout = () => { state.isAuthenticated = false; sessionStorage.removeItem('admin_auth'); render(); };
         window.switchTab = (tab) => { state.tab = tab; render(); };
 
-        // --- BULK IMPORT LISTS ---
         window.importList = async (listType) => {
             let dataToImport = [];
             let label = "";
 
-            if(listType === 'KW_BOYS') {
-                dataToImport = KHAIBAR_BOYS_DATA; label = "Khaibar Warriors (Boys - 113)";
-            } else if(listType === 'KW_GIRLS') {
-                dataToImport = KHAIBAR_GIRLS_DATA; label = "Khaibar Warriors (Girls - 136)";
-            } else if(listType === 'KF_BOYS') {
-                dataToImport = KHANDAQ_BOYS_DATA; label = "Khandaq Fighters (Boys - 116)";
-            } else if(listType === 'KF_GIRLS') {
-                dataToImport = KHANDAQ_GIRLS_DATA; label = "Khandaq Fighters (Girls - 140)";
-            } else {
-                dataToImport = [...KHAIBAR_BOYS_DATA, ...KHAIBAR_GIRLS_DATA, ...KHANDAQ_BOYS_DATA, ...KHANDAQ_GIRLS_DATA];
-                label = "All Teams Data (505 Candidates)";
-            }
+            if(listType === 'KW_BOYS') { dataToImport = KHAIBAR_BOYS_DATA; label = "Khaibar Warriors (Boys - 113)"; } 
+            else if(listType === 'KW_GIRLS') { dataToImport = KHAIBAR_GIRLS_DATA; label = "Khaibar Warriors (Girls - 136)"; } 
+            else if(listType === 'KF_BOYS') { dataToImport = KHANDAQ_BOYS_DATA; label = "Khandaq Fighters (Boys - 116)"; } 
+            else if(listType === 'KF_GIRLS') { dataToImport = KHANDAQ_GIRLS_DATA; label = "Khandaq Fighters (Girls - 140)"; } 
+            else { dataToImport = [...KHAIBAR_BOYS_DATA, ...KHAIBAR_GIRLS_DATA, ...KHANDAQ_BOYS_DATA, ...KHANDAQ_GIRLS_DATA]; label = "All Teams Data (505 Candidates)"; }
 
             window.showConfirm("Sync Data", `${label} ഡാറ്റാബേസിലേക്ക് സിങ്ക് ചെയ്യണോ?`, async () => {
                 try {
                     let count = 0;
                     const existingChestNos = new Set(state.candidates.map(c => String(c.regNo)));
                     
+                    let batches = [];
+                    let currentBatch = writeBatch(db);
+                    let opCount = 0;
+
                     for (const item of dataToImport) {
                         if (!existingChestNos.has(String(item.regNo))) {
-                            await addDoc(collection(db, 'candidates'), {
+                            const docRef = doc(collection(db, 'candidates'));
+                            currentBatch.set(docRef, {
                                 name: item.name,
                                 regNo: String(item.regNo),
                                 classDiv: item.classDiv,
@@ -849,8 +841,19 @@
                                 timestamp: Date.now() + count
                             });
                             count++;
+                            opCount++;
+                            
+                            if (opCount === 490) {
+                                batches.push(currentBatch);
+                                currentBatch = writeBatch(db);
+                                opCount = 0;
+                            }
                         }
                     }
+                    
+                    if (opCount > 0) batches.push(currentBatch);
+                    for(let b of batches) await b.commit();
+                    
                     window.showAlert(`${count} പുതിയ കുട്ടികളെ വിജയികരമായി ചേർത്തു!`);
                 } catch (err) {
                     window.showAlert("Error: " + err.message, "error");
@@ -880,6 +883,10 @@
                     await updateDoc(doc(db, 'settings', 'config'), { programs: updatedProgs });
 
                     let assignCount = 0;
+                    let batches = [];
+                    let currentBatch = writeBatch(db);
+                    let opCount = 0;
+
                     for (const kp of programListConfig) {
                         const progId = newIdsMap[kp.no];
                         if(!progId) continue;
@@ -890,12 +897,22 @@
                                 let assigned = cand.assignedPrograms || [];
                                 if(!assigned.includes(progId)) {
                                     assigned.push(progId);
-                                    await updateDoc(doc(db, 'candidates', cand.id), { assignedPrograms: assigned });
+                                    currentBatch.update(doc(db, 'candidates', cand.id), { assignedPrograms: assigned });
                                     assignCount++;
+                                    opCount++;
+                                    
+                                    if(opCount === 490) {
+                                        batches.push(currentBatch);
+                                        currentBatch = writeBatch(db);
+                                        opCount = 0;
+                                    }
                                 }
                             }
                         }
                     }
+                    if(opCount > 0) batches.push(currentBatch);
+                    for(let b of batches) await b.commit();
+                    
                     window.showAlert(`Success! Added ${progsAdded} programs and assigned ${assignCount} candidates.`);
                 } catch(e) {
                     window.showAlert("Error: " + e.message, "error");
@@ -903,7 +920,6 @@
             });
         };
 
-        // --- PROGRAM MANAGEMENT ---
         window.addNewProgram = async (e) => {
             e.preventDefault(); 
             const progNo = document.getElementById('pNo').value;
@@ -948,7 +964,6 @@
             finally { btn.innerText = 'Update'; btn.disabled = false; }
         };
 
-        // --- CANDIDATE MANAGEMENT ---
         window.addCandidate = async (e) => {
             e.preventDefault(); 
             const name = document.getElementById('cName').value; 
@@ -1017,7 +1032,6 @@
             finally { btn.innerText = 'Update'; btn.disabled = false; }
         };
 
-        // --- ASSIGN PROGRAMS ---
         let currentAssignCandidateId = null;
         window.openAssign = (candId) => {
             const candidate = state.candidates.find(c => c.id === candId); if (!candidate) return; currentAssignCandidateId = candId;
@@ -1076,7 +1090,6 @@
         };
         window.closeEnrolled = () => { document.getElementById('enrolledModal').style.display = 'none'; };
 
-        // --- RESULTS MANAGEMENT ---
         window.populateResultDropdowns = () => {
             const progId = document.getElementById('rProg').value;
             const prog = state.programs.find(p => p.id === progId);
@@ -1132,7 +1145,6 @@
             });
         };
 
-        // --- HELPER RENDERERS ---
         const getNamesBadgeHtml = (ids, borderClass, textClass, icon) => { 
             const arr = Array.isArray(ids) ? ids : (ids ? [ids] : []); 
             if (arr.length === 0) return ''; 
@@ -1353,7 +1365,7 @@
                                 <button onclick="importList('ALL')" class="w-full bg-amber-500/20 hover:bg-amber-500 hover:text-black text-amber-300 border border-amber-500/50 font-bold py-2 rounded-xl transition text-xs flex items-center justify-center gap-1">
                                     ⚡ Sync All Pre-Loaded Data (505)
                                 </button>
-                                <div class="grid grid-cols-2 gap-1.5">
+                                <div class="grid grid-cols-2 gap-1.5 mt-2">
                                     <button onclick="importList('KW_BOYS')" class="w-full bg-purple-900/80 hover:bg-purple-800 text-amber-300 border border-purple-700 font-bold py-1.5 rounded-lg transition text-[10px]">
                                         KW Boys (113)
                                     </button>
@@ -1447,16 +1459,16 @@
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
                             <h3 class="font-bold text-amber-400 text-sm sm:text-base">പുതിയ മത്സരം ചേർക്കുക (Add Program)</h3>
                             <div class="flex flex-wrap gap-2">
-                                <button onclick="syncProgramList(KIDDIES_PROGRAMS, 'Kiddies')" class="bg-emerald-600/90 hover:bg-emerald-500 text-white text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-lg transition shadow border border-emerald-500 flex items-center gap-1">
+                                <button onclick='syncProgramList(${JSON.stringify(KIDDIES_PROGRAMS)}, "Kiddies")' class="bg-emerald-600/90 hover:bg-emerald-500 text-white text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-lg transition shadow border border-emerald-500 flex items-center gap-1">
                                     ⚡ Sync Kiddies
                                 </button>
-                                <button onclick="syncProgramList(SUBJUNIOR_PROGRAMS, 'Sub Junior')" class="bg-blue-600/90 hover:bg-blue-500 text-white text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-lg transition shadow border border-blue-500 flex items-center gap-1">
+                                <button onclick='syncProgramList(${JSON.stringify(SUBJUNIOR_PROGRAMS)}, "Sub Junior")' class="bg-blue-600/90 hover:bg-blue-500 text-white text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-lg transition shadow border border-blue-500 flex items-center gap-1">
                                     ⚡ Sync Sub Junior
                                 </button>
-                                <button onclick="syncProgramList(JUNIOR_PROGRAMS, 'Junior')" class="bg-pink-600/90 hover:bg-pink-500 text-white text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-lg transition shadow border border-pink-500 flex items-center gap-1">
+                                <button onclick='syncProgramList(${JSON.stringify(JUNIOR_PROGRAMS)}, "Junior")' class="bg-pink-600/90 hover:bg-pink-500 text-white text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-lg transition shadow border border-pink-500 flex items-center gap-1">
                                     ⚡ Sync Junior
                                 </button>
-                                <button onclick="syncProgramList(SENIOR_PROGRAMS, 'Senior')" class="bg-violet-600/90 hover:bg-violet-500 text-white text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-lg transition shadow border border-violet-500 flex items-center gap-1">
+                                <button onclick='syncProgramList(${JSON.stringify(SENIOR_PROGRAMS)}, "Senior")' class="bg-violet-600/90 hover:bg-violet-500 text-white text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-lg transition shadow border border-violet-500 flex items-center gap-1">
                                     ⚡ Sync Senior
                                 </button>
                             </div>
