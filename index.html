@@ -30,6 +30,7 @@
         <span id="toastIcon"></span><span id="toastMsg"></span>
     </div>
 
+    <!-- Modals -->
     <div id="editCandModal" style="display: none;" class="fixed inset-0 bg-black/90 z-[300] items-center justify-center p-4 backdrop-blur-sm">
         <div class="glass-card p-6 rounded-2xl max-w-md w-full shadow-2xl border border-amber-500/30">
             <h3 class="text-lg font-bold text-amber-400 mb-4 border-b border-purple-800 pb-2">Edit Candidate</h3>
@@ -81,7 +82,7 @@
     </div>
 
     <div id="assignModal" style="display: none;" class="fixed inset-0 bg-black/90 z-[200] items-center justify-center p-4 backdrop-blur-sm">
-        <div class="glass-card p-6 rounded-2xl max-w-md w-full shadow-2xl flex flex-col max-h-[85vh] border border-amber-500/30">
+        <div class="glass-card p-6 rounded-2xl max-w-md w-full shadow-2xl flex flex-col max-h-[85vh]">
             <h3 class="text-lg font-bold text-white mb-1" id="assignTitle">മത്സരങ്ങൾ ചേർക്കുക</h3>
             <p class="text-xs text-amber-400 mb-4 font-bold tracking-widest uppercase" id="assignSubtitle"></p>
             <div class="bg-purple-950/60 border border-purple-800 rounded-xl p-4 flex-1 overflow-y-auto mb-4 custom-scrollbar">
@@ -89,16 +90,16 @@
             </div>
             <div class="flex gap-3 justify-end pt-2">
                 <button onclick="closeAssign()" class="px-4 py-2 bg-purple-950 hover:bg-purple-900 text-white rounded-lg text-sm font-semibold transition border border-purple-700">റദ്ദാക്കുക</button>
-                <button id="saveAssignBtn" onclick="saveAssign()" class="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-black rounded-lg text-sm font-bold transition shadow-lg">സേവ് ചെയ്യുക</button>
+                <button id="saveAssignBtn" onclick="saveAssign()" class="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-sm font-semibold transition shadow-lg">സേവ് ചെയ്യുക</button>
             </div>
         </div>
     </div>
 
     <div id="enrolledModal" style="display: none;" class="fixed inset-0 bg-black/90 z-[200] items-center justify-center p-4 backdrop-blur-sm">
-        <div class="glass-card p-6 rounded-2xl max-w-md w-full shadow-2xl flex flex-col max-h-[85vh] border border-amber-500/30">
+        <div class="glass-card p-6 rounded-2xl max-w-md w-full shadow-2xl flex flex-col max-h-[85vh]">
             <div class="flex justify-between items-center mb-1">
-                <h3 class="text-lg font-bold text-white pr-4" id="enrolledTitle">രജിസ്റ്റർ ചെയ്തവർ</h3>
-                <button onclick="closeEnrolled()" class="text-purple-300 hover:text-white bg-purple-950 hover:bg-purple-900 rounded-full w-8 h-8 flex items-center justify-center transition flex-shrink-0">✕</button>
+                <h3 class="text-lg font-bold text-white" id="enrolledTitle">രജിസ്റ്റർ ചെയ്തവർ</h3>
+                <button onclick="closeEnrolled()" class="text-purple-300 hover:text-white bg-purple-950 hover:bg-purple-900 rounded-full w-8 h-8 flex items-center justify-center transition">✕</button>
             </div>
             <p class="text-xs text-amber-300 mb-4 font-bold tracking-widest uppercase" id="enrolledSubtitle"></p>
             <div class="bg-purple-950/60 border border-purple-800 rounded-xl p-4 flex-1 overflow-y-auto custom-scrollbar">
@@ -110,6 +111,7 @@
     <!-- Main App Container -->
     <div id="app" class="min-h-screen flex flex-col"></div>
 
+    <!-- Firebase Imports and Config -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -132,6 +134,7 @@
         const DIVISIONS = ['BOYS', 'GIRLS'];
         const CATEGORIES = ['Kiddies', 'Sub Junior', 'Junior', 'Senior', 'Super Senior'];
         const CAT_PREFIX = { 'Kiddies': 'K', 'Sub Junior': 'SJ', 'Junior': 'J', 'Senior': 'S', 'Super Senior': 'SS' };
+        
         const ADMIN_PASSWORD = "admin";
 
         const KIDDIES_PROGRAMS = [
@@ -148,7 +151,7 @@
         ];
 
         const SUBJUNIOR_PROGRAMS = [
-            { no: "101", name: "Qirath (Girls)", cat: "Sub Junior", type: "Stage", cands: ["721", "533", "738", "535"] },
+            { no: "101", name: "Qira'th (Girls)", cat: "Sub Junior", type: "Stage", cands: ["721", "533", "738", "535"] },
             { no: "102", name: "Hifz (Girls)", cat: "Sub Junior", type: "Stage", cands: ["523", "719", "533", "721"] },
             { no: "103", name: "Song Malayalam (Girls)", cat: "Sub Junior", type: "Stage", cands: ["719", "527", "730", "536", "745", "537", "746", "539"] },
             { no: "104", name: "Song Arabic (Girls)", cat: "Sub Junior", type: "Stage", cands: ["522", "737", "538", "738"] },
@@ -904,8 +907,8 @@
             if(listType === 'KW_BOYS') { dataToImport = KHAIBAR_BOYS_DATA; label = "Khaibar Warriors (Boys - 113)"; } 
             else if(listType === 'KW_GIRLS') { dataToImport = KHAIBAR_GIRLS_DATA; label = "Khaibar Warriors (Girls - 136)"; } 
             else if(listType === 'KF_BOYS') { dataToImport = KHANDAQ_BOYS_DATA; label = "Khandaq Fighters (Boys - 116)"; } 
-            else if(listType === 'KF_GIRLS') { dataToImport = KHANDAQ_GIRLS_DATA; label = "Khandaq Fighters (Girls - 141)"; } 
-            else { dataToImport = [...KHAIBAR_BOYS_DATA, ...KHAIBAR_GIRLS_DATA, ...KHANDAQ_BOYS_DATA, ...KHANDAQ_GIRLS_DATA]; label = "All Teams Data (506 Candidates)"; }
+            else if(listType === 'KF_GIRLS') { dataToImport = KHANDAQ_GIRLS_DATA; label = "Khandaq Fighters (Girls - 140)"; } 
+            else { dataToImport = [...KHAIBAR_BOYS_DATA, ...KHAIBAR_GIRLS_DATA, ...KHANDAQ_BOYS_DATA, ...KHANDAQ_GIRLS_DATA]; label = "All Teams Data (505 Candidates)"; }
 
             if (!confirm(`${label} ഡാറ്റാബേസിലേക്ക് സിങ്ക് ചെയ്യണോ?`)) return;
 
@@ -934,14 +937,22 @@
             } catch (err) { window.showAlert("Error: " + err.message, "error"); }
         };
 
-        window.syncProgramList = async (programListConfig, title) => {
-            if (!confirm(`Sync ${title} programs and automatically assign candidates?`)) return;
+        window.syncCategory = async (catName) => {
+            let list = [];
+            if (catName === 'Kiddies') list = KIDDIES_PROGRAMS;
+            if (catName === 'Sub Junior') list = SUBJUNIOR_PROGRAMS;
+            if (catName === 'Junior') list = JUNIOR_PROGRAMS;
+            if (catName === 'Senior') list = SENIOR_PROGRAMS;
+            if (catName === 'Super Senior') list = SUPERSENIOR_PROGRAMS;
+            if (catName === 'General') list = GENERAL_PROGRAMS;
+
+            if (!confirm(`Sync ${catName} programs and automatically assign candidates?`)) return;
             try {
                 let updatedProgs = [...state.programs];
                 const newIdsMap = {}; 
                 let progsAdded = 0;
 
-                programListConfig.forEach(kp => {
+                list.forEach(kp => {
                     let existing = updatedProgs.find(p => p.progNo === kp.no);
                     if(!existing) {
                         const newId = 'p' + Date.now() + Math.floor(Math.random()*1000) + kp.no;
@@ -954,7 +965,7 @@
 
                 let assignCount = 0; let batches = []; let currentBatch = writeBatch(db); let opCount = 0;
 
-                for (const kp of programListConfig) {
+                for (const kp of list) {
                     const progId = newIdsMap[kp.no];
                     if(!progId) continue;
                     
@@ -1140,6 +1151,12 @@
         };
         window.closeEnrolled = () => { document.getElementById('enrolledModal').style.display = 'none'; };
 
+        window.isGroupProgram = (name) => {
+            if (!name) return false;
+            const n = name.toLowerCase();
+            return n.includes('group') || n.includes('burda') || n.includes('burdha') || n.includes('qawwali') || n.includes('mala') || n.includes('mash up') || n.includes('moulid') || n.includes('padappayatt');
+        };
+
         window.populateResultDropdowns = () => {
             const progId = document.getElementById('rProg').value;
             const prog = state.programs.find(p => p.id === progId);
@@ -1159,11 +1176,16 @@
             eligibleCands.filter(c => !assignedCands.includes(c)).forEach(c => optionsHtml += `<option value="${c.id}">#${c.regNo} - ${c.name} (${c.team||''} ${c.gender||''})</option>`);
             optionsHtml += '</optgroup>';
 
+            const isGrp = window.isGroupProgram(prog.name);
+            const p1 = isGrp ? 10 : 5;
+            const p2 = isGrp ? 5 : 3;
+            const p3 = isGrp ? 3 : 1;
+
             container.innerHTML = `
                 <div class="space-y-4 p-4 bg-black/50 rounded-xl border border-purple-800 mt-4">
-                    <div><label class="block text-xs font-bold text-yellow-400 mb-1">ഒന്നാം സ്ഥാനം (10 Pts) - <span class="text-purple-300 font-normal">Ctrl/Cmd അമർത്തി മൾട്ടി-സെലക്ട് ചെയ്യാം</span></label><select id="rFirst" multiple size="4" class="w-full bg-purple-950 border border-purple-800 rounded-lg px-3 py-2 text-white outline-none focus:border-yellow-400 custom-scrollbar">${optionsHtml}</select></div>
-                    <div><label class="block text-xs font-bold text-slate-300 mb-1">രണ്ടാം സ്ഥാനം (5 Pts)</label><select id="rSecond" multiple size="4" class="w-full bg-purple-950 border border-purple-800 rounded-lg px-3 py-2 text-white outline-none focus:border-slate-400 custom-scrollbar">${optionsHtml}</select></div>
-                    <div><label class="block text-xs font-bold text-amber-500 mb-1">മൂന്നാം സ്ഥാനം (3 Pts)</label><select id="rThird" multiple size="4" class="w-full bg-purple-950 border border-purple-800 rounded-lg px-3 py-2 text-white outline-none focus:border-amber-500 custom-scrollbar">${optionsHtml}</select></div>
+                    <div><label class="block text-xs font-bold text-yellow-400 mb-1">ഒന്നാം സ്ഥാനം (${p1} Pts) - <span class="text-purple-300 font-normal">Ctrl/Cmd അമർത്തി മൾട്ടി-സെലക്ട് ചെയ്യാം</span></label><select id="rFirst" multiple size="4" class="w-full bg-purple-950 border border-purple-800 rounded-lg px-3 py-2 text-white outline-none focus:border-yellow-400 custom-scrollbar">${optionsHtml}</select></div>
+                    <div><label class="block text-xs font-bold text-slate-300 mb-1">രണ്ടാം സ്ഥാനം (${p2} Pts)</label><select id="rSecond" multiple size="4" class="w-full bg-purple-950 border border-purple-800 rounded-lg px-3 py-2 text-white outline-none focus:border-slate-400 custom-scrollbar">${optionsHtml}</select></div>
+                    <div><label class="block text-xs font-bold text-amber-500 mb-1">മൂന്നാം സ്ഥാനം (${p3} Pts)</label><select id="rThird" multiple size="4" class="w-full bg-purple-950 border border-purple-800 rounded-lg px-3 py-2 text-white outline-none focus:border-amber-500 custom-scrollbar">${optionsHtml}</select></div>
                 </div>
                 <button type="submit" id="publishBtn" class="w-full mt-4 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-black font-bold py-3 rounded-xl transition shadow-lg">റിസൾട്ട് പബ്ലിഷ് ചെയ്യുക</button>
             `;
@@ -1172,14 +1194,25 @@
         window.publishResult = async (e) => {
             e.preventDefault();
             const progId = document.getElementById('rProg').value;
-            const getSelected = (id) => Array.from(document.getElementById(id).selectedOptions).map(o => o.value).filter(v => v !== "");
+            const prog = state.programs.find(p => p.id === progId);
             
+            const getSelected = (id) => Array.from(document.getElementById(id).selectedOptions).map(o => o.value).filter(v => v !== "");
             const first = getSelected('rFirst'); const second = getSelected('rSecond'); const third = getSelected('rThird');
+            
             if (first.length === 0) return window.showAlert("ഒന്നാം സ്ഥാനം നിർബന്ധമാണ്!", "error");
             
+            const isGrp = window.isGroupProgram(prog.name);
+            const pts1 = isGrp ? 10 : 5;
+            const pts2 = isGrp ? 5 : 3;
+            const pts3 = isGrp ? 3 : 1;
+
             const btn = document.getElementById('publishBtn'); btn.innerText = "Publishing..."; btn.disabled = true;
             try { 
-                await setDoc(doc(db, 'results', progId), { progId, first, second, third, timestamp: Date.now() }); 
+                await setDoc(doc(db, 'results', progId), { 
+                    progId, first, second, third,
+                    pts1, pts2, pts3, isGroup: isGrp, 
+                    timestamp: Date.now() 
+                }); 
                 window.showAlert("റിസൾട്ട് പ്രസിദ്ധീകരിച്ചു!"); 
                 document.getElementById('rProg').value = ""; document.getElementById('rSelectors').innerHTML = ""; 
                 window.fireConfetti();
@@ -1195,10 +1228,10 @@
             }
         };
 
-        const getNamesBadgeHtml = (ids, borderClass, textClass, icon) => { 
+        const getNamesBadgeHtml = (ids, borderClass, textClass, icon, pts) => { 
             const arr = Array.isArray(ids) ? ids : (ids ? [ids] : []); 
             if (arr.length === 0) return ''; 
-            return arr.map(id => { 
+            return arr.map((id, index) => { 
                 const c = state.candidates.find(x => x.id === id); 
                 return `<div class="flex justify-between items-center bg-purple-950/80 p-2.5 rounded-lg border ${borderClass} mb-1.5">
                     <div class="flex items-center gap-2">
@@ -1208,7 +1241,10 @@
                             <span class="text-[10px] text-purple-300 font-semibold">${c?.team || ''} (${c?.gender || ''}) • Class: ${c?.classDiv || '-'}</span>
                         </div>
                     </div> 
-                    <span class="text-[11px] font-bold text-amber-300 bg-black/80 px-2.5 py-1 rounded-md border border-purple-800 flex-shrink-0 num-font">#${c?.regNo || '-'}</span>
+                    <div class="flex items-center gap-2">
+                        ${index === 0 && pts ? `<span class="text-[10px] font-bold bg-white/10 text-white px-2 py-0.5 rounded shadow-sm">+${pts} Pts</span>` : ''}
+                        <span class="text-[11px] font-bold text-amber-300 bg-black/80 px-2.5 py-1 rounded-md border border-purple-800 flex-shrink-0 num-font">#${c?.regNo || '-'}</span>
+                    </div>
                 </div>`; 
             }).join(''); 
         };
@@ -1284,15 +1320,7 @@
                             <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
                                 <div>
                                     <h3 class="font-bold text-amber-400 text-lg">⚔️ KHAIBAR WARRIORS</h3>
-                                    <p class="text-[11px] text-purple-300 font-semibold">Total: ${kwBoys + kwGirls} / 249 Candidates</p>
-                                </div>
-                                <div class="flex gap-1.5 flex-wrap">
-                                    <button onclick="importList('KW_BOYS')" class="bg-amber-500/20 hover:bg-amber-500 hover:text-black text-amber-300 border border-amber-500/50 text-[11px] font-bold px-2.5 py-1 rounded-lg transition">
-                                        Boys (${kwBoys}/113)
-                                    </button>
-                                    <button onclick="importList('KW_GIRLS')" class="bg-pink-500/20 hover:bg-pink-500 hover:text-black text-pink-300 border border-pink-500/50 text-[11px] font-bold px-2.5 py-1 rounded-lg transition">
-                                        Girls (${kwGirls}/136)
-                                    </button>
+                                    <p class="text-[11px] text-purple-300 font-semibold">Total: ${kwBoys + kwGirls} Candidates</p>
                                 </div>
                             </div>
                             <div class="grid grid-cols-2 gap-3">
@@ -1311,15 +1339,7 @@
                             <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
                                 <div>
                                     <h3 class="font-bold text-purple-300 text-lg">🛡️ KHANDAQ FIGHTERS</h3>
-                                    <p class="text-[11px] text-purple-300 font-semibold">Total: ${kfBoys + kfGirls} / 257 Candidates</p>
-                                </div>
-                                <div class="flex gap-1.5 flex-wrap">
-                                    <button onclick="importList('KF_BOYS')" class="bg-amber-500/20 hover:bg-amber-500 hover:text-black text-amber-300 border border-amber-500/50 text-[11px] font-bold px-2.5 py-1 rounded-lg transition">
-                                        Boys (${kfBoys}/116)
-                                    </button>
-                                    <button onclick="importList('KF_GIRLS')" class="bg-pink-500/20 hover:bg-pink-500 hover:text-black text-pink-300 border border-pink-500/50 text-[11px] font-bold px-2.5 py-1 rounded-lg transition">
-                                        Girls (${kfGirls}/141)
-                                    </button>
+                                    <p class="text-[11px] text-purple-300 font-semibold">Total: ${kfBoys + kfGirls} Candidates</p>
                                 </div>
                             </div>
                             <div class="grid grid-cols-2 gap-3">
@@ -1413,7 +1433,7 @@
                             <div class="space-y-2">
                                 <p class="text-xs text-purple-300 font-semibold text-center mb-1">Quick Sync Pre-Loaded Data:</p>
                                 <button onclick="importList('ALL')" class="w-full bg-amber-500/20 hover:bg-amber-500 hover:text-black text-amber-300 border border-amber-500/50 font-bold py-2 rounded-xl transition text-xs flex items-center justify-center gap-1">
-                                    ⚡ Sync All Pre-Loaded Data (506)
+                                    ⚡ Sync All Pre-Loaded Data (505)
                                 </button>
                                 <div class="grid grid-cols-2 gap-1.5 mt-2">
                                     <button onclick="importList('KW_BOYS')" class="w-full bg-purple-900/80 hover:bg-purple-800 text-amber-300 border border-purple-700 font-bold py-1.5 rounded-lg transition text-[10px]">
@@ -1426,7 +1446,7 @@
                                         KF Boys (116)
                                     </button>
                                     <button onclick="importList('KF_GIRLS')" class="w-full bg-purple-900/80 hover:bg-purple-800 text-pink-300 border border-purple-700 font-bold py-1.5 rounded-lg transition text-[10px]">
-                                        KF Girls (141)
+                                        KF Girls (140)
                                     </button>
                                 </div>
                             </div>
@@ -1509,22 +1529,22 @@
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
                             <h3 class="font-bold text-amber-400 text-sm sm:text-base">പുതിയ മത്സരം ചേർക്കുക (Add Program)</h3>
                             <div class="flex flex-wrap gap-2">
-                                <button onclick='syncProgramList(${JSON.stringify(KIDDIES_PROGRAMS)}, "Kiddies")' class="bg-emerald-600/90 hover:bg-emerald-500 text-white text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-lg transition shadow border border-emerald-500 flex items-center gap-1">
+                                <button onclick="window.syncCategory('Kiddies')" class="bg-emerald-600/90 hover:bg-emerald-500 text-white text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-lg transition shadow border border-emerald-500 flex items-center gap-1">
                                     ⚡ Sync Kiddies
                                 </button>
-                                <button onclick='syncProgramList(${JSON.stringify(SUBJUNIOR_PROGRAMS)}, "Sub Junior")' class="bg-blue-600/90 hover:bg-blue-500 text-white text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-lg transition shadow border border-blue-500 flex items-center gap-1">
+                                <button onclick="window.syncCategory('Sub Junior')" class="bg-blue-600/90 hover:bg-blue-500 text-white text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-lg transition shadow border border-blue-500 flex items-center gap-1">
                                     ⚡ Sync Sub Junior
                                 </button>
-                                <button onclick='syncProgramList(${JSON.stringify(JUNIOR_PROGRAMS)}, "Junior")' class="bg-pink-600/90 hover:bg-pink-500 text-white text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-lg transition shadow border border-pink-500 flex items-center gap-1">
+                                <button onclick="window.syncCategory('Junior')" class="bg-pink-600/90 hover:bg-pink-500 text-white text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-lg transition shadow border border-pink-500 flex items-center gap-1">
                                     ⚡ Sync Junior
                                 </button>
-                                <button onclick='syncProgramList(${JSON.stringify(SENIOR_PROGRAMS)}, "Senior")' class="bg-violet-600/90 hover:bg-violet-500 text-white text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-lg transition shadow border border-violet-500 flex items-center gap-1">
+                                <button onclick="window.syncCategory('Senior')" class="bg-violet-600/90 hover:bg-violet-500 text-white text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-lg transition shadow border border-violet-500 flex items-center gap-1">
                                     ⚡ Sync Senior
                                 </button>
-                                <button onclick='syncProgramList(${JSON.stringify(SUPERSENIOR_PROGRAMS)}, "Super Senior")' class="bg-fuchsia-600/90 hover:bg-fuchsia-500 text-white text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-lg transition shadow border border-fuchsia-500 flex items-center gap-1">
+                                <button onclick="window.syncCategory('Super Senior')" class="bg-fuchsia-600/90 hover:bg-fuchsia-500 text-white text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-lg transition shadow border border-fuchsia-500 flex items-center gap-1">
                                     ⚡ Sync Super Senior
                                 </button>
-                                <button onclick='syncProgramList(${JSON.stringify(GENERAL_PROGRAMS)}, "General")' class="bg-teal-600/90 hover:bg-teal-500 text-white text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-lg transition shadow border border-teal-500 flex items-center gap-1">
+                                <button onclick="window.syncCategory('General')" class="bg-teal-600/90 hover:bg-teal-500 text-white text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-lg transition shadow border border-teal-500 flex items-center gap-1">
                                     ⚡ Sync General
                                 </button>
                             </div>
@@ -1622,9 +1642,9 @@
                                             ${prog?.progNo ? `<span class="text-amber-500">#${prog.progNo}</span> ` : ''}${prog?.name || '-'} <span class="text-[8px] sm:text-[10px] text-amber-300 bg-purple-900 px-2 py-0.5 rounded ml-2 font-bold uppercase">${prog?.cat || ''}</span>
                                         </h4>
                                         <div class="space-y-1.5">
-                                            ${getNamesBadgeHtml(res.first, 'border-yellow-500/50 bg-yellow-950/30', 'text-yellow-400', '🥇')}
-                                            ${getNamesBadgeHtml(res.second, 'border-slate-500/50 bg-slate-900/30', 'text-slate-200', '🥈')}
-                                            ${getNamesBadgeHtml(res.third, 'border-amber-700/50 bg-amber-950/30', 'text-amber-500', '🥉')}
+                                            ${getNamesBadgeHtml(res.first, 'border-yellow-500/50 bg-yellow-950/30', 'text-yellow-400', '🥇', res.pts1)}
+                                            ${getNamesBadgeHtml(res.second, 'border-slate-500/50 bg-slate-900/30', 'text-slate-200', '🥈', res.pts2)}
+                                            ${getNamesBadgeHtml(res.third, 'border-amber-700/50 bg-amber-950/30', 'text-amber-500', '🥉', res.pts3)}
                                         </div>
                                     </div>`;
                                 }).join('')}
