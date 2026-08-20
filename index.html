@@ -26,24 +26,10 @@
 </head>
 <body class="bg-gradient-to-br from-purple-950 via-slate-950 to-indigo-950 min-h-screen">
 
-    <!-- Toast Notification -->
     <div id="toast" class="fixed top-5 right-5 z-[100] transform translate-y-[-200%] transition-transform duration-300 px-6 py-3 rounded-xl shadow-2xl font-semibold flex items-center space-x-3 text-sm">
         <span id="toastIcon"></span><span id="toastMsg"></span>
     </div>
 
-    <!-- Confirm Modal -->
-    <div id="confirmModal" style="display: none;" class="fixed inset-0 bg-black/90 z-[400] items-center justify-center p-4 backdrop-blur-sm">
-        <div class="glass-card p-6 rounded-2xl max-w-sm w-full shadow-2xl text-center border border-amber-500/30">
-            <h3 class="text-lg font-bold text-white mb-2" id="confirmTitle">Confirm</h3>
-            <p class="text-sm text-purple-200 mb-6" id="confirmMsg">Are you sure?</p>
-            <div class="flex gap-3 justify-center">
-                <button id="confirmCancelBtn" class="px-5 py-2 bg-purple-950 hover:bg-purple-900 text-white rounded-lg text-sm font-semibold transition border border-purple-700">റദ്ദാക്കുക (No)</button>
-                <button id="confirmOkBtn" class="px-5 py-2 bg-amber-600 hover:bg-amber-500 text-black rounded-lg text-sm font-bold transition shadow-lg">തുടരുക (Yes)</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Edit Candidate Modal -->
     <div id="editCandModal" style="display: none;" class="fixed inset-0 bg-black/90 z-[300] items-center justify-center p-4 backdrop-blur-sm">
         <div class="glass-card p-6 rounded-2xl max-w-md w-full shadow-2xl border border-amber-500/30">
             <h3 class="text-lg font-bold text-amber-400 mb-4 border-b border-purple-800 pb-2">Edit Candidate</h3>
@@ -71,7 +57,6 @@
         </div>
     </div>
 
-    <!-- Edit Program Modal -->
     <div id="editProgModal" style="display: none;" class="fixed inset-0 bg-black/90 z-[300] items-center justify-center p-4 backdrop-blur-sm">
         <div class="glass-card p-6 rounded-2xl max-w-md w-full shadow-2xl border border-amber-500/30">
             <h3 class="text-lg font-bold text-amber-400 mb-4 border-b border-purple-800 pb-2">Edit Program</h3>
@@ -95,7 +80,6 @@
         </div>
     </div>
 
-    <!-- Assign Modal -->
     <div id="assignModal" style="display: none;" class="fixed inset-0 bg-black/90 z-[200] items-center justify-center p-4 backdrop-blur-sm">
         <div class="glass-card p-6 rounded-2xl max-w-md w-full shadow-2xl flex flex-col max-h-[85vh] border border-amber-500/30">
             <h3 class="text-lg font-bold text-white mb-1" id="assignTitle">മത്സരങ്ങൾ ചേർക്കുക</h3>
@@ -110,7 +94,6 @@
         </div>
     </div>
 
-    <!-- Enrolled Modal -->
     <div id="enrolledModal" style="display: none;" class="fixed inset-0 bg-black/90 z-[200] items-center justify-center p-4 backdrop-blur-sm">
         <div class="glass-card p-6 rounded-2xl max-w-md w-full shadow-2xl flex flex-col max-h-[85vh] border border-amber-500/30">
             <div class="flex justify-between items-center mb-1">
@@ -149,87 +132,142 @@
         const DIVISIONS = ['BOYS', 'GIRLS'];
         const CATEGORIES = ['Kiddies', 'Sub Junior', 'Junior', 'Senior', 'Super Senior'];
         const CAT_PREFIX = { 'Kiddies': 'K', 'Sub Junior': 'SJ', 'Junior': 'J', 'Senior': 'S', 'Super Senior': 'SS' };
-        
         const ADMIN_PASSWORD = "admin";
 
         const KIDDIES_PROGRAMS = [
-            { no: "51", name: "Fathiha Recitation", cat: "Kiddies", type: "Stage", cands: ["313", "111", "316", "117", "317", "118"] },
-            { no: "52", name: "Story Telling", cat: "Kiddies", type: "Stage", cands: ["315", "105", "316", "112", "319", "118"] },
-            { no: "53", name: "Madh Song", cat: "Kiddies", type: "Stage", cands: ["103", "314", "108", "318", "116", "319"] },
-            { no: "54", name: "Group Song", cat: "Kiddies", type: "Stage", cands: ["303", "309", "311", "101", "102", "104", "304", "305", "306", "105", "108", "109", "301", "307", "310", "312", "113", "114", "121", "313", "314", "319", "112", "118", "119", "320", "321", "322", "115", "117"] },
-            { no: "55", name: "Colouring", cat: "Kiddies", type: "Non-Stage", cands: ["112", "303", "117", "309", "118", "315", "119", "316", "121", "319"] }
+            { no: "01", name: "Fathiha Recitation (Girls)", cat: "Kiddies", type: "Stage", cands: ["514", "711", "515", "712"] },
+            { no: "02", name: "Story Telling (Girls)", cat: "Kiddies", type: "Stage", cands: ["703", "504", "711", "503"] },
+            { no: "03", name: "Song (Girls)", cat: "Kiddies", type: "Stage", cands: ["706", "503", "711", "515", "712", "516", "714", "517", "716"] },
+            { no: "04", name: "Group Song (Girls)", cat: "Kiddies", type: "Stage", cands: ["701", "707", "706", "709", "710", "512", "515", "516", "517", "505", "702", "704", "703", "705", "708", "513", "514", "518", "519", "711", "713", "714", "715", "712", "502", "507", "509", "506", "501", "716", "718", "503", "504", "508", "510", "511"] },
+            { no: "05", name: "Colouring (Girls)", cat: "Kiddies", type: "Non-Stage", cands: ["704", "505", "705", "507", "708", "510", "712", "513", "713", "519", "509", "515", "516", "517"] },
+            { no: "51", name: "Fathiha Recitation (Boys)", cat: "Kiddies", type: "Stage", cands: ["313", "111", "316", "117", "317", "118"] },
+            { no: "52", name: "Story Telling (Boys)", cat: "Kiddies", type: "Stage", cands: ["315", "105", "316", "112", "319", "118"] },
+            { no: "53", name: "Madh Song (Boys)", cat: "Kiddies", type: "Stage", cands: ["103", "314", "108", "318", "116", "319"] },
+            { no: "54", name: "Group Song (Boys)", cat: "Kiddies", type: "Stage", cands: ["303", "309", "311", "101", "102", "104", "304", "305", "306", "105", "108", "109", "301", "307", "310", "312", "113", "114", "121", "313", "314", "319", "112", "118", "119", "320", "321", "322", "115", "117"] },
+            { no: "55", name: "Colouring (Boys)", cat: "Kiddies", type: "Non-Stage", cands: ["112", "303", "117", "309", "118", "315", "119", "316", "121", "319"] }
         ];
 
         const SUBJUNIOR_PROGRAMS = [
-            { no: "151", name: "Qirath", cat: "Sub Junior", type: "Stage", cands: ["332", "132", "344", "143", "346", "145"] },
-            { no: "152", name: "Hifz", cat: "Sub Junior", type: "Stage", cands: ["340", "135", "344", "142", "346", "147"] },
-            { no: "153", name: "Madh Song", cat: "Sub Junior", type: "Stage", cands: ["137", "328", "138", "338", "139", "344", "140", "345", "143", "346"] },
-            { no: "154", name: "Conversation Mlm", cat: "Sub Junior", type: "Stage", cands: ["328", "348", "137", "146", "341", "346", "127", "135", "326", "331"] },
-            { no: "155", name: "Group Song", cat: "Sub Junior", type: "Stage", cands: ["124", "128", "129", "324", "327", "331", "130", "131", "133", "329", "332", "333", "136", "138", "147", "334", "337", "339", "139", "141", "142", "338", "340", "345"] },
-            { no: "156", name: "Song Arb", cat: "Sub Junior", type: "Stage", cands: ["325", "136", "335", "147", "338", "148"] },
-            { no: "157", name: "Speech Mlm", cat: "Sub Junior", type: "Stage", cands: ["127", "323", "142", "329"] },
-            { no: "158", name: "Story Telling", cat: "Sub Junior", type: "Stage", cands: ["341", "134", "347", "139"] },
-            { no: "159", name: "Handwriting Malayalam", cat: "Sub Junior", type: "Non-Stage", cands: ["337", "135", "341", "143", "346", "145"] },
-            { no: "160", name: "Memory Test", cat: "Sub Junior", type: "Non-Stage", cands: ["133", "341", "135", "345", "142", "346"] },
-            { no: "161", name: "Pencil Drawing", cat: "Sub Junior", type: "Non-Stage", cands: ["132", "345", "135", "334"] }
+            { no: "101", name: "Qirath (Girls)", cat: "Sub Junior", type: "Stage", cands: ["721", "533", "738", "535"] },
+            { no: "102", name: "Hifz (Girls)", cat: "Sub Junior", type: "Stage", cands: ["523", "719", "533", "721"] },
+            { no: "103", name: "Song Malayalam (Girls)", cat: "Sub Junior", type: "Stage", cands: ["719", "527", "730", "536", "745", "537", "746", "539"] },
+            { no: "104", name: "Song Arabic (Girls)", cat: "Sub Junior", type: "Stage", cands: ["522", "737", "538", "738"] },
+            { no: "105", name: "Group Song Malayalam (Girls)", cat: "Sub Junior", type: "Stage", cands: ["534", "535", "544", "731", "733", "734", "735", "520", "523", "524", "540", "732", "742", "744", "532", "533", "538", "543", "730", "741", "743", "747", "521", "522", "527", "528", "719", "721", "722", "726", "729", "526", "529", "530", "542", "720", "724", "723", "727"] },
+            { no: "106", name: "Story Telling (Girls)", cat: "Sub Junior", type: "Stage", cands: ["727", "521", "537"] },
+            { no: "107", name: "Conversation Malayalam (Girls)", cat: "Sub Junior", type: "Stage", cands: ["721", "725", "526", "528", "732", "742", "529", "539"] },
+            { no: "109", name: "Hand writing Arabic Mlm (Girls)", cat: "Sub Junior", type: "Non-Stage", cands: ["533", "723", "540", "734", "543", "735"] },
+            { no: "110", name: "Pencil drawing (Girls)", cat: "Sub Junior", type: "Non-Stage", cands: ["735", "529", "739", "535", "742", "543"] },
+            { no: "111", name: "Memory Test (Girls)", cat: "Sub Junior", type: "Non-Stage", cands: ["523", "721", "529", "738", "533", "744"] },
+            { no: "112", name: "Colouring (Girls)", cat: "Sub Junior", type: "Non-Stage", cands: ["723", "525", "726", "530", "739", "531", "743", "535", "746", "543", "522", "526"] },
+            { no: "151", name: "Qirath (Boys)", cat: "Sub Junior", type: "Stage", cands: ["332", "132", "344", "143", "346", "145"] },
+            { no: "152", name: "Hifz (Boys)", cat: "Sub Junior", type: "Stage", cands: ["340", "135", "344", "142", "346", "147"] },
+            { no: "153", name: "Madh Song (Boys)", cat: "Sub Junior", type: "Stage", cands: ["137", "328", "138", "338", "139", "344", "140", "345", "143", "346"] },
+            { no: "154", name: "Conversation Mlm (Boys)", cat: "Sub Junior", type: "Stage", cands: ["328", "348", "137", "146", "341", "346", "127", "135", "326", "331"] },
+            { no: "155", name: "Group Song (Boys)", cat: "Sub Junior", type: "Stage", cands: ["124", "128", "129", "324", "327", "331", "130", "131", "133", "329", "332", "333", "136", "138", "147", "334", "337", "339", "139", "141", "142", "338", "340", "345"] },
+            { no: "156", name: "Song Arb (Boys)", cat: "Sub Junior", type: "Stage", cands: ["325", "136", "335", "147", "338", "148"] },
+            { no: "157", name: "Speech Mlm (Boys)", cat: "Sub Junior", type: "Stage", cands: ["127", "323", "142", "329"] },
+            { no: "158", name: "Story Telling (Boys)", cat: "Sub Junior", type: "Stage", cands: ["341", "134", "347", "139"] },
+            { no: "159", name: "Handwriting Malayalam (Boys)", cat: "Sub Junior", type: "Non-Stage", cands: ["337", "135", "341", "143", "346", "145"] },
+            { no: "160", name: "Memory Test (Boys)", cat: "Sub Junior", type: "Non-Stage", cands: ["133", "341", "135", "345", "142", "346"] },
+            { no: "161", name: "Pencil Drawing (Boys)", cat: "Sub Junior", type: "Non-Stage", cands: ["132", "345", "135", "334"] }
         ];
 
         const JUNIOR_PROGRAMS = [
-            { no: "251", name: "Qirath", cat: "Junior", type: "Stage", cands: ["163", "362", "170", "368", "171", "373"] },
-            { no: "252", name: "Hifz", cat: "Junior", type: "Stage", cands: ["156", "359", "157", "362", "368"] },
-            { no: "253", name: "Speech Malayalam", cat: "Junior", type: "Stage", cands: ["156", "353", "165", "354", "174", "371"] },
-            { no: "254", name: "Song Urdu", cat: "Junior", type: "Stage", cands: ["350", "162", "363", "165"] },
-            { no: "255", name: "Song Arb", cat: "Junior", type: "Stage", cands: ["164", "358", "171", "362", "175", "369"] },
-            { no: "256", name: "Islamic Song", cat: "Junior", type: "Stage", cands: ["355", "173", "366", "175", "367"] },
-            { no: "257", name: "Islamic Group Song", cat: "Junior", type: "Stage", cands: ["158", "160", "161", "350", "357", "361", "168", "169", "212", "351", "360", "364", "170", "171", "172", "362", "370", "372"] },
-            { no: "259", name: "Conversation Mlm", cat: "Junior", type: "Stage", cands: ["357", "359", "156", "163", "369", "373", "171", "172"] },
-            { no: "260", name: "Bank", cat: "Junior", type: "Stage", cands: ["163", "353", "170", "370"] },
-            { no: "262", name: "Handwriting Arabic", cat: "Junior", type: "Non-Stage", cands: ["357", "164", "367", "168", "371", "170"] },
-            { no: "263", name: "Handwriting Arabic Mlm", cat: "Junior", type: "Non-Stage", cands: ["150", "362", "169", "367", "174", "371"] },
-            { no: "264", name: "Drawing - Water Colour", cat: "Junior", type: "Non-Stage", cands: ["351", "155", "367", "174"] },
-            { no: "265", name: "Kurunnukal Test", cat: "Junior", type: "Non-Stage", cands: ["362", "150", "368", "152", "170", "212"] },
-            { no: "266", name: "Memory Test", cat: "Junior", type: "Non-Stage", cands: ["361", "166", "362", "171", "371", "173"] }
+            { no: "201", name: "Qira'th (Girls)", cat: "Junior", type: "Stage", cands: ["553", "755", "555", "757", "556", "769", "569", "773"] },
+            { no: "202", name: "Hifz (Girls)", cat: "Junior", type: "Stage", cands: ["755", "568", "767", "573"] },
+            { no: "203", name: "Song Malayalam (Girls)", cat: "Junior", type: "Stage", cands: ["557", "748", "565", "759", "571", "767", "572", "772"] },
+            { no: "204", name: "Song Arabic (Girls)", cat: "Junior", type: "Stage", cands: ["767", "557", "768", "570"] },
+            { no: "205", name: "Group Song Malayalam (Girls)", cat: "Junior", type: "Stage", cands: ["569", "560", "566", "573", "764", "766", "767", "768", "773", "564", "565", "568", "567", "754", "757", "758", "761", "545", "546", "547", "550", "554", "749", "750", "751", "760", "561", "562", "563", "558", "559", "752", "753", "755", "756"] },
+            { no: "206", name: "Group Song Arabic (Girls)", cat: "Junior", type: "Stage", cands: ["548", "549", "555", "556", "557", "762", "765", "769", "770", "771"] },
+            { no: "207", name: "Story Telling (Girls)", cat: "Junior", type: "Stage", cands: ["752", "572", "772", "569"] },
+            { no: "208", name: "Conversation Malayalam (Girls)", cat: "Junior", type: "Stage", cands: ["549", "553", "755", "760", "566", "573", "770", "772", "556", "557"] },
+            { no: "209", name: "Speech Malayalam (Girls)", cat: "Junior", type: "Stage", cands: ["755", "569"] },
+            { no: "210", name: "Handwriting Arabic (Girls)", cat: "Junior", type: "Non-Stage", cands: ["769", "548", "771", "555", "773", "556", "552"] },
+            { no: "211", name: "Handwriting Arabic Mlm (Girls)", cat: "Junior", type: "Non-Stage", cands: ["551", "752", "558", "756", "566", "771"] },
+            { no: "212", name: "Memory Test (Girls)", cat: "Junior", type: "Non-Stage", cands: ["757", "573", "771", "556", "773", "569"] },
+            { no: "213", name: "Pencil Drawing (Girls)", cat: "Junior", type: "Non-Stage", cands: ["548", "751", "561", "764", "569", "766", "552", "559", "560"] },
+            { no: "214", name: "Kurunnukal Test (Girls)", cat: "Junior", type: "Non-Stage", cands: ["769", "561", "773", "562"] },
+            { no: "215", name: "Speech English (Girls)", cat: "Junior", type: "Stage", cands: ["573", "757"] },
+            { no: "251", name: "Qirath (Boys)", cat: "Junior", type: "Stage", cands: ["163", "362", "170", "368", "171", "373"] },
+            { no: "252", name: "Hifz (Boys)", cat: "Junior", type: "Stage", cands: ["156", "359", "157", "362", "368"] },
+            { no: "253", name: "Speech Malayalam (Boys)", cat: "Junior", type: "Stage", cands: ["156", "353", "165", "354", "174", "371"] },
+            { no: "254", name: "Song Urdu (Boys)", cat: "Junior", type: "Stage", cands: ["350", "162", "363", "165"] },
+            { no: "255", name: "Song Arb (Boys)", cat: "Junior", type: "Stage", cands: ["164", "358", "171", "362", "175", "369"] },
+            { no: "256", name: "Islamic Song (Boys)", cat: "Junior", type: "Stage", cands: ["355", "173", "366", "175", "367"] },
+            { no: "257", name: "Islamic Group Song (Boys)", cat: "Junior", type: "Stage", cands: ["158", "160", "161", "350", "357", "361", "168", "169", "212", "351", "360", "364", "170", "171", "172", "362", "370", "372"] },
+            { no: "259", name: "Conversation Mlm (Boys)", cat: "Junior", type: "Stage", cands: ["357", "359", "156", "163", "369", "373", "171", "172"] },
+            { no: "260", name: "Bank (Boys)", cat: "Junior", type: "Stage", cands: ["163", "353", "170", "370"] },
+            { no: "262", name: "Handwriting Arabic (Boys)", cat: "Junior", type: "Non-Stage", cands: ["357", "164", "367", "168", "371", "170"] },
+            { no: "263", name: "Handwriting Arabic Mlm (Boys)", cat: "Junior", type: "Non-Stage", cands: ["150", "362", "169", "367", "174", "371"] },
+            { no: "264", name: "Drawing - Water Colour (Boys)", cat: "Junior", type: "Non-Stage", cands: ["351", "155", "367", "174"] },
+            { no: "265", name: "Kurunnukal Test (Boys)", cat: "Junior", type: "Non-Stage", cands: ["362", "150", "368", "152", "170", "212"] },
+            { no: "266", name: "Memory Test (Boys)", cat: "Junior", type: "Non-Stage", cands: ["361", "166", "362", "171", "371", "173"] }
         ];
 
         const SENIOR_PROGRAMS = [
-            { no: "351", name: "Qirath", cat: "Senior", type: "Stage", cands: ["381", "178", "394", "196"] },
-            { no: "352", name: "Hifz", cat: "Senior", type: "Stage", cands: ["179", "378", "396"] },
-            { no: "353", name: "Bank", cat: "Senior", type: "Stage", cands: ["377", "184", "396", "185"] },
-            { no: "354", name: "Islamic Song Arb", cat: "Senior", type: "Stage", cands: ["181", "382", "394"] },
-            { no: "355", name: "Speech Malayalam", cat: "Senior", type: "Stage", cands: ["398", "185"] },
-            { no: "356", name: "Speech Eng", cat: "Senior", type: "Stage", cands: ["184", "392"] },
-            { no: "357", name: "Speech Urdu", cat: "Senior", type: "Stage", cands: ["377", "191"] },
-            { no: "358", name: "Mappilappatt", cat: "Senior", type: "Stage", cands: ["182", "394", "396"] },
-            { no: "359", name: "Song Urdu", cat: "Senior", type: "Stage", cands: ["376", "180", "380", "196"] },
-            { no: "360", name: "Mash Up", cat: "Senior", type: "Stage", cands: ["177", "180", "183", "394", "395", "396", "187", "189", "192", "383", "389", "391", "393"] },
-            { no: "361", name: "Arabic Calligraphy", cat: "Senior", type: "Non-Stage", cands: ["376", "188", "398"] },
-            { no: "363", name: "Story Writing Mlm", cat: "Senior", type: "Non-Stage", cands: ["378", "190", "398", "196"] },
-            { no: "364", name: "Poem Writing Mlm", cat: "Senior", type: "Non-Stage", cands: ["378", "190", "392", "196"] },
-            { no: "365", name: "Quiz", cat: "Senior", type: "Stage", cands: ["194", "385", "195", "393"] }
+            { no: "301", name: "Song Malayalam (Girls)", cat: "Senior", type: "Stage", cands: ["776", "575", "782", "577", "789", "579", "801", "587"] },
+            { no: "302", name: "Song Arabic (Girls)", cat: "Senior", type: "Stage", cands: ["578", "787", "590", "789"] },
+            { no: "303", name: "Group Song Malayalam (Girls)", cat: "Senior", type: "Stage", cands: ["777", "780", "782", "788", "580", "581", "582", "583", "584", "790", "793", "794", "795", "575", "576", "577", "578", "579", "779", "781", "783", "786", "789", "586", "587", "593", "596", "598"] },
+            { no: "304", name: "Group Song Arabic (Girls)", cat: "Senior", type: "Stage", cands: ["588", "594", "595", "597", "600", "777", "778", "780", "782", "788", "585", "591", "599", "601", "775", "787", "799", "800"] },
+            { no: "309", name: "Arabic Calligraphy (Girls)", cat: "Senior", type: "Non-Stage", cands: ["784", "590", "801", "597"] },
+            { no: "310", name: "Nano Literature (Girls)", cat: "Senior", type: "Non-Stage", cands: ["600", "791", "592", "798"] },
+            { no: "311", name: "Kudumbam Test (Girls)", cat: "Senior", type: "Non-Stage", cands: ["797", "583", "785", "585", "796", "590"] },
+            { no: "312", name: "General Quiz (Girls)", cat: "Senior", type: "Stage", cands: ["589", "777", "591", "787", "592", "788", "593", "789", "597", "798", "600", "801"] },
+            { no: "313", name: "Essay Writing Malayalam (Girls)", cat: "Senior", type: "Non-Stage", cands: ["781", "587", "800", "591"] },
+            { no: "314", name: "Poem Writing Malayalam (Girls)", cat: "Senior", type: "Non-Stage", cands: ["574", "791", "585", "798"] },
+            { no: "315", name: "Story Writing Malayalam (Girls)", cat: "Senior", type: "Non-Stage", cands: ["775", "589", "785", "592"] },
+            { no: "316", name: "Essay Writing English (Girls)", cat: "Senior", type: "Non-Stage", cands: ["589", "789", "592", "801"] },
+            { no: "351", name: "Qirath (Boys)", cat: "Senior", type: "Stage", cands: ["381", "178", "394", "196"] },
+            { no: "352", name: "Hifz (Boys)", cat: "Senior", type: "Stage", cands: ["179", "378", "396"] },
+            { no: "353", name: "Bank (Boys)", cat: "Senior", type: "Stage", cands: ["377", "184", "396", "185"] },
+            { no: "354", name: "Islamic Song Arb (Boys)", cat: "Senior", type: "Stage", cands: ["181", "382", "394"] },
+            { no: "355", name: "Speech Malayalam (Boys)", cat: "Senior", type: "Stage", cands: ["398", "185"] },
+            { no: "356", name: "Speech Eng (Boys)", cat: "Senior", type: "Stage", cands: ["184", "392"] },
+            { no: "357", name: "Speech Urdu (Boys)", cat: "Senior", type: "Stage", cands: ["377", "191"] },
+            { no: "358", name: "Mappilappatt (Boys)", cat: "Senior", type: "Stage", cands: ["182", "394", "396"] },
+            { no: "359", name: "Song Urdu (Boys)", cat: "Senior", type: "Stage", cands: ["376", "180", "380", "196"] },
+            { no: "360", name: "Mash Up (Boys)", cat: "Senior", type: "Stage", cands: ["177", "180", "183", "394", "395", "396", "187", "189", "192", "383", "389", "391", "393"] },
+            { no: "361", name: "Arabic Calligraphy (Boys)", cat: "Senior", type: "Non-Stage", cands: ["376", "188", "398"] },
+            { no: "363", name: "Story Writing Mlm (Boys)", cat: "Senior", type: "Non-Stage", cands: ["378", "190", "398", "196"] },
+            { no: "364", name: "Poem Writing Mlm (Boys)", cat: "Senior", type: "Non-Stage", cands: ["378", "190", "392", "196"] },
+            { no: "365", name: "Quiz (Boys)", cat: "Senior", type: "Stage", cands: ["194", "385", "195", "393"] }
         ];
 
         const SUPERSENIOR_PROGRAMS = [
-            { no: "451", name: "Qirath", cat: "Super Senior", type: "Stage", cands: ["404", "203", "410", "204"] },
-            { no: "452", name: "Hifz", cat: "Super Senior", type: "Stage", cands: ["203", "404", "204", "410"] },
-            { no: "453", name: "Speech Arb", cat: "Super Senior", type: "Stage", cands: ["405", "211", "416"] },
-            { no: "454", name: "Speech Mlm", cat: "Super Senior", type: "Stage", cands: ["404", "205", "416"] },
-            { no: "455", name: "Islamic Song Arb", cat: "Super Senior", type: "Stage", cands: ["197", "414", "210", "416"] },
-            { no: "456", name: "Speech & Song", cat: "Super Senior", type: "Stage", cands: ["404", "200", "416", "211"] },
-            { no: "457", name: "Mappilappatt", cat: "Super Senior", type: "Stage", cands: ["203", "410", "204", "413"] },
-            { no: "458", name: "Mash Up", cat: "Super Senior", type: "Stage", cands: ["410", "412", "413", "197", "200", "204", "399", "402", "403", "203", "211", "213"] },
-            { no: "460", name: "Story Writing Mlm", cat: "Super Senior", type: "Non-Stage", cands: ["412", "199", "413", "203", "208"] },
-            { no: "461", name: "Poem Writing Mlm", cat: "Super Senior", type: "Non-Stage", cands: ["209", "401", "211", "416"] },
-            { no: "462", name: "Essay Mlm", cat: "Super Senior", type: "Non-Stage", cands: ["412", "201", "416", "211"] },
-            { no: "463", name: "Padappayatt Arabic", cat: "Super Senior", type: "Non-Stage", cands: ["206", "416"] }
+            { no: "401", name: "Song Malayalam (Girls)", cat: "Super Senior", type: "Stage", cands: ["604", "818", "612", "831", "618"] },
+            { no: "402", name: "Song Arabic (Girls)", cat: "Super Senior", type: "Stage", cands: ["609", "824", "627"] },
+            { no: "403", name: "Group Song (Girls)", cat: "Super Senior", type: "Stage", cands: ["618", "617", "619", "620", "621", "827", "828", "824", "821", "605", "606", "609", "610", "611", "803", "804", "807", "810", "812", "602", "603", "604", "608", "613", "813", "814", "815", "817", "818", "614", "615", "616", "623", "625", "808", "809", "811", "805", "626", "627", "628", "629", "830", "831", "832", "841"] },
+            { no: "408", name: "Arabic Calligraphy (Girls)", cat: "Super Senior", type: "Non-Stage", cands: ["802", "635", "806"] },
+            { no: "409", name: "Nano Literature (Girls)", cat: "Super Senior", type: "Non-Stage", cands: ["626", "817", "630", "818"] },
+            { no: "410", name: "Kudumbam Test (Girls)", cat: "Super Senior", type: "Non-Stage", cands: ["813", "604", "814", "607"] },
+            { no: "411", name: "General Quiz (Girls)", cat: "Super Senior", type: "Stage", cands: ["626", "630", "634", "635", "636", "813", "814", "815", "817", "818"] },
+            { no: "412", name: "Essay Writing Malayalam (Girls)", cat: "Super Senior", type: "Non-Stage", cands: ["818", "624", "834", "612"] },
+            { no: "413", name: "Poem Writing English (Girls)", cat: "Super Senior", type: "Non-Stage", cands: ["606", "831", "616", "837"] },
+            { no: "414", name: "Story Writing English (Girls)", cat: "Super Senior", type: "Non-Stage", cands: ["626", "831", "606", "837"] },
+            { no: "451", name: "Qirath (Boys)", cat: "Super Senior", type: "Stage", cands: ["404", "203", "410", "204"] },
+            { no: "452", name: "Hifz (Boys)", cat: "Super Senior", type: "Stage", cands: ["203", "404", "204", "410"] },
+            { no: "453", name: "Speech Arb (Boys)", cat: "Super Senior", type: "Stage", cands: ["405", "211", "416"] },
+            { no: "454", name: "Speech Mlm (Boys)", cat: "Super Senior", type: "Stage", cands: ["404", "205", "416"] },
+            { no: "455", name: "Islamic Song Arb (Boys)", cat: "Super Senior", type: "Stage", cands: ["197", "414", "210", "416"] },
+            { no: "456", name: "Speech & Song (Boys)", cat: "Super Senior", type: "Stage", cands: ["404", "200", "416", "211"] },
+            { no: "457", name: "Mappilappatt (Boys)", cat: "Super Senior", type: "Stage", cands: ["203", "410", "204", "413"] },
+            { no: "458", name: "Mash Up (Boys)", cat: "Super Senior", type: "Stage", cands: ["410", "412", "413", "197", "200", "204", "399", "402", "403", "203", "211", "213"] },
+            { no: "460", name: "Story Writing Mlm (Boys)", cat: "Super Senior", type: "Non-Stage", cands: ["412", "199", "413", "203", "208"] },
+            { no: "461", name: "Poem Writing Mlm (Boys)", cat: "Super Senior", type: "Non-Stage", cands: ["209", "401", "211", "416"] },
+            { no: "462", name: "Essay Mlm (Boys)", cat: "Super Senior", type: "Non-Stage", cands: ["412", "201", "416", "211"] },
+            { no: "463", name: "Padappayatt Arabic (Boys)", cat: "Super Senior", type: "Non-Stage", cands: ["206", "416"] }
         ];
 
         const GENERAL_PROGRAMS = [
-            { no: "551", name: "Burdha", cat: "General", type: "Stage", cands: ["416", "410", "384", "413", "394", "211", "204", "203", "200", "213"] },
-            { no: "552", name: "Moulid Recitation", cat: "General", type: "Stage", cands: ["197", "182", "194", "174", "195", "416", "410", "413", "404", "385"] },
-            { no: "553", name: "Arabic Group Song", cat: "General", type: "Stage", cands: ["416", "410", "413", "396", "397", "204", "200", "211", "203", "197"] }
+            { no: "501", name: "Burda & Qawwali (Girls)", cat: "General", type: "Stage", cands: ["837", "834", "838", "835", "831", "818", "841", "618", "609", "630", "633", "629", "632", "631"] },
+            { no: "502", name: "Muhyudheen Mala (Girls)", cat: "General", type: "Stage", cands: ["627", "635", "628", "636", "621", "804", "810", "815", "803", "598", "591", "586", "590", "600", "787", "782", "776", "779", "780"] },
+            { no: "551", name: "Burdha (Boys)", cat: "General", type: "Stage", cands: ["416", "410", "384", "413", "394", "211", "204", "203", "200", "213"] },
+            { no: "552", name: "Moulid Recitation (Boys)", cat: "General", type: "Stage", cands: ["197", "182", "194", "174", "195", "416", "410", "413", "404", "385"] },
+            { no: "553", name: "Arabic Group Song (Boys)", cat: "General", type: "Stage", cands: ["416", "410", "413", "396", "397", "204", "200", "211", "203", "197"] }
         ];
 
         const KHAIBAR_BOYS_DATA = [
+            // KIDDEES
             { regNo: "101", name: "Shahzad Valiya Kandathil", classDiv: "1B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "BOYS" },
             { regNo: "102", name: "Muhammad Shameem Kodivalappil", classDiv: "1B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "BOYS" },
             { regNo: "103", name: "Irfad Ali Pattasseri", classDiv: "1B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "BOYS" },
@@ -251,6 +289,8 @@
             { regNo: "119", name: "Muhammed Danish Vadakkan Thirikkod", classDiv: "2B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "BOYS" },
             { regNo: "120", name: "Muhammed Adil Kondanath", classDiv: "2B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "BOYS" },
             { regNo: "121", name: "Muhammed Faseeh Urpayi", classDiv: "2B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+
+            // SUB JUNIOR
             { regNo: "122", name: "Hussain Layan Manakkadavath", classDiv: "3B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
             { regNo: "123", name: "Muhammed Shahid Urpayi", classDiv: "3B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
             { regNo: "124", name: "Muhammad Dhanish Valiya Kandathil", classDiv: "3B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
@@ -279,6 +319,8 @@
             { regNo: "147", name: "Muhammed Hamiz Karuthedath", classDiv: "4B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
             { regNo: "148", name: "Sayyid Muhaammed Nabhan Valiyakkathodi", classDiv: "4B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
             { regNo: "149", name: "Muhammed Ridwan Malayamballi", classDiv: "4B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+
+            // JUNIOR
             { regNo: "150", name: "Muhammed Shabeeh Pathinaram Kandathil", classDiv: "5B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
             { regNo: "151", name: "Muhammed Shaheel Nottanveettil", classDiv: "5B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
             { regNo: "152", name: "Muhammed Anfal Thekkuncheri", classDiv: "5B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
@@ -307,6 +349,8 @@
             { regNo: "175", name: "Muhammed Javad Urpayi", classDiv: "6B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
             { regNo: "176", name: "Rabeeh Valiya Peediyekkal", classDiv: "6B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
             { regNo: "212", name: "Shahroz", classDiv: "6B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+
+            // SENIOR
             { regNo: "177", name: "Muhammed Razal Melottil", classDiv: "7B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
             { regNo: "178", name: "Muhammed Shadil Thayyil", classDiv: "7B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
             { regNo: "179", name: "Aseen Therambil", classDiv: "7B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
@@ -327,6 +371,8 @@
             { regNo: "194", name: "Sayyid Hirash Kodinhi Pallikkal", classDiv: "8B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
             { regNo: "195", name: "Shahim Muhammed Ezhuvzn Thodi", classDiv: "8B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
             { regNo: "196", name: "Muhammed Nijad Alavi Pattasseri", classDiv: "8B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+
+            // SUPER SENIOR
             { regNo: "197", name: "Muhammed Ribin Pulikkalakath", classDiv: "9B", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
             { regNo: "198", name: "Muhammed Nihal Urpayi", classDiv: "9B", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
             { regNo: "199", name: "Muhammed Shabeen Pallikkal", classDiv: "9B", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
@@ -346,6 +392,7 @@
         ];
 
         const KHAIBAR_GIRLS_DATA = [
+            // KIDDEES
             { regNo: "501", name: "Fathima Shifa Kolathu Mattil", classDiv: "1B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
             { regNo: "502", name: "Rayah Lamees Valiya Peediyeckal", classDiv: "1B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
             { regNo: "503", name: "Fathima Miyaza Kodi Valappil", classDiv: "1B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
@@ -365,6 +412,8 @@
             { regNo: "517", name: "Aslaha Muthuvattupallikkal", classDiv: "2B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
             { regNo: "518", name: "Fathima Sana", classDiv: "2B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
             { regNo: "519", name: "Shaza Fathima", classDiv: "2B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+
+            // SUB JUNIOR
             { regNo: "520", name: "Fathima Afva Konnakkal", classDiv: "3B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
             { regNo: "521", name: "Nafeesa Farha Pattasseri", classDiv: "3B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
             { regNo: "522", name: "Ayisha Ridha Naduthodi", classDiv: "3B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
@@ -390,6 +439,8 @@
             { regNo: "542", name: "Ayisha Kodiyadan", classDiv: "4B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
             { regNo: "543", name: "Fathima Rimsha Pattasseri", classDiv: "4B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
             { regNo: "544", name: "Ayisha Shajwa Edeyodath Parambil", classDiv: "4B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+
+            // JUNIOR
             { regNo: "545", name: "Rida Fathima Pulikkalakath", classDiv: "5B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
             { regNo: "546", name: "Insha Fathima Elimbattil", classDiv: "5B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
             { regNo: "547", name: "Shaima Sherin Melottil", classDiv: "5B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
@@ -419,6 +470,8 @@
             { regNo: "571", name: "Fathima Nafla Uoorpayi", classDiv: "6B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
             { regNo: "572", name: "Fathima Mirsha Edayodath Parambil", classDiv: "6B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
             { regNo: "573", name: "Fathima Rushda Pattasseri", classDiv: "6B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+
+            // SENIOR
             { regNo: "574", name: "Ziya Sherin Puthan Peediyeckal", classDiv: "7B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
             { regNo: "575", name: "Shahana Vadakkan Tharikkod", classDiv: "7B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
             { regNo: "576", name: "Ayisha Rifa Pattasseri", classDiv: "7B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
@@ -447,6 +500,8 @@
             { regNo: "599", name: "Fathima Anshida Kodiyadan", classDiv: "8B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
             { regNo: "600", name: "Dilfa Panarthodika", classDiv: "8B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
             { regNo: "601", name: "Fathima Shasfa Kunnatheri", classDiv: "8B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+
+            // SUPER SENIOR
             { regNo: "602", name: "Rinsha Fathima Pathoor", classDiv: "9B", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
             { regNo: "603", name: "Fathima Rishva Panar Thodika", classDiv: "9B", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
             { regNo: "604", name: "Fathima Shifa Therambil", classDiv: "9B", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
@@ -485,6 +540,7 @@
         ];
 
         const KHANDAQ_BOYS_DATA = [
+            // KIDDEES
             { regNo: "301", name: "Muhammad Adhnan Vadikkadavath", classDiv: "1A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
             { regNo: "302", name: "Muhammed Aamir Zayan Mullakkoya Makkanath", classDiv: "1A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
             { regNo: "303", name: "Muhammed Ajlan Thekkumcheri", classDiv: "1A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
@@ -507,6 +563,8 @@
             { regNo: "320", name: "Emin Zohan Maliyatt", classDiv: "2A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
             { regNo: "321", name: "Subhan Raza", classDiv: "2A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
             { regNo: "322", name: "Muhammed Fezin Panakkal", classDiv: "2A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+
+            // SUB JUNIOR
             { regNo: "323", name: "Muhammad Midlaj Kodiyadan", classDiv: "3A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
             { regNo: "324", name: "Muhammed Shaheem Pattalathil", classDiv: "3A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
             { regNo: "325", name: "Muhammed Ajnas Muringathodi", classDiv: "3A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
@@ -534,6 +592,8 @@
             { regNo: "347", name: "Ishan Muhammed Mattath", classDiv: "4A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
             { regNo: "348", name: "Muhammad Shahzin Anayam Chirakkal", classDiv: "4A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
             { regNo: "349", name: "Muhammed Aban", classDiv: "4A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+
+            // JUNIOR
             { regNo: "350", name: "Ashmal Thekkuncheri", classDiv: "5A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
             { regNo: "351", name: "Muhammed Shiyaz Pattasseri", classDiv: "5A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
             { regNo: "352", name: "Muhammed Adhish Melottil", classDiv: "5A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
@@ -558,6 +618,8 @@
             { regNo: "371", name: "Rayyan Ibrahim Panarthodika", classDiv: "6A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
             { regNo: "372", name: "Adhil Pathoor", classDiv: "6A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
             { regNo: "373", name: "Muhammed Ayan Pattasseri", classDiv: "6A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+
+            // SENIOR
             { regNo: "374", name: "Muhammed Misbah Kulathoor", classDiv: "7A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
             { regNo: "375", name: "Muhammed Rayyan Veluthan Veettil", classDiv: "7A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
             { regNo: "376", name: "Muhammed Afreed Urpayi", classDiv: "7A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
@@ -583,6 +645,8 @@
             { regNo: "396", name: "Muhammed Risil Valiya Peediyekkal", classDiv: "8A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
             { regNo: "397", name: "Nihal Nalledath", classDiv: "8A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
             { regNo: "398", name: "Muhammed Shefin Panarthodika", classDiv: "8A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+
+            // SUPER SENIOR
             { regNo: "399", name: "Muhammed Sinan Muringa Thodi", classDiv: "9A", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
             { regNo: "400", name: "Muhammed Shibili Pallikkal", classDiv: "9A", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
             { regNo: "401", name: "Muhammed Hishan Thekkun Chery", classDiv: "9A", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
@@ -604,6 +668,7 @@
         ];
 
         const KHANDAQ_GIRLS_DATA = [
+            // KIDDEES
             { regNo: "701", name: "Ayisha Izza Pattasseri", classDiv: "1A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
             { regNo: "702", name: "Insha Fathima Valiya Kandathil", classDiv: "1A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
             { regNo: "703", name: "Fathima Yooha Panakkal", classDiv: "1A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
@@ -622,6 +687,8 @@
             { regNo: "716", name: "Eshaal Ramiz Alikkkadavath", classDiv: "2A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
             { regNo: "717", name: "Shaiqa Thekkum Cheri", classDiv: "2A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
             { regNo: "718", name: "Sheza Fathima", classDiv: "2A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+
+            // SUB JUNIOR
             { regNo: "719", name: "Sana Mehara Kuttikkattil", classDiv: "3A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
             { regNo: "720", name: "Fathima Rushda Mulla Madakkal", classDiv: "3A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
             { regNo: "721", name: "Ayisha Jaza Naduthodi", classDiv: "3A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
@@ -651,6 +718,8 @@
             { regNo: "745", name: "Fathima Layyina Pathoor", classDiv: "4A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
             { regNo: "746", name: "Nafla Nasrin Elimbattil", classDiv: "4A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
             { regNo: "747", name: "Hanan Zahra", classDiv: "4A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+
+            // JUNIOR
             { regNo: "748", name: "Jishana Nasrin Pulikkalakath", classDiv: "5A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
             { regNo: "749", name: "Sanha Fathima Nalledath", classDiv: "5A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
             { regNo: "750", name: "Salha Fathima Nalledath", classDiv: "5A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
@@ -678,6 +747,8 @@
             { regNo: "772", name: "Fathima Diya Pattasseri", classDiv: "6A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
             { regNo: "773", name: "Ayisha Izza Palakkatt", classDiv: "6A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
             { regNo: "774", name: "Fathima Minha Pattalathil", classDiv: "6A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+
+            // SENIOR
             { regNo: "775", name: "Fathima Shifna Neelengal", classDiv: "7A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
             { regNo: "776", name: "Fathima Nashva Panakkal", classDiv: "7A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
             { regNo: "777", name: "Nashva Fathima Thekkun Chery", classDiv: "7A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
@@ -705,6 +776,8 @@
             { regNo: "799", name: "Fathima Simin Palappura", classDiv: "8A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
             { regNo: "800", name: "Misna Kunnatheri", classDiv: "8A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
             { regNo: "801", name: "Afla Mishan Urpai", classDiv: "8A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+
+            // SUPER SENIOR
             { regNo: "802", name: "Fathima Afra Konnakkal", classDiv: "9A", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
             { regNo: "803", name: "Fathima Rasha Mulla Madakkal", classDiv: "9A", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
             { regNo: "804", name: "Fathima Minha Pallikkal", classDiv: "9A", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
@@ -743,7 +816,8 @@
             { regNo: "837", name: "Nadha Farha Pattashery", classDiv: "+2", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
             { regNo: "838", name: "Fathima Rushda Kodiyadan", classDiv: "+2", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
             { regNo: "839", name: "Dhilna Panambilayi", classDiv: "+2", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
-            { regNo: "840", name: "Fathima Shahana Eleyen Cheri", classDiv: "+2", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" }
+            { regNo: "840", name: "Fathima Shahana Eleyen Cheri", classDiv: "+2", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "841", name: "Anfidha", classDiv: "+1", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" }
         ];
 
         let state = {
@@ -773,21 +847,6 @@
             document.getElementById('toastIcon').innerText = type === 'error' ? '⚠️' : '✨';
             toast.className = `fixed top-5 right-5 z-[100] transform transition-transform duration-300 px-6 py-3 rounded-xl shadow-2xl font-semibold flex items-center space-x-3 text-sm translate-y-0 ${type === 'error' ? 'bg-purple-950/90 border border-red-500/50 text-red-200' : 'bg-purple-950/90 border border-amber-500/50 text-amber-200'}`;
             setTimeout(() => { toast.classList.add('translate-y-[-200%]'); toast.classList.remove('translate-y-0'); }, 5000); 
-        };
-
-        window.showConfirm = (title, msg, onConfirm) => {
-            document.getElementById('confirmTitle').innerText = title;
-            document.getElementById('confirmMsg').innerText = msg;
-            const modal = document.getElementById('confirmModal');
-            modal.style.display = 'flex';
-            
-            document.getElementById('confirmOkBtn').onclick = () => {
-                modal.style.display = 'none';
-                onConfirm();
-            };
-            document.getElementById('confirmCancelBtn').onclick = () => {
-                modal.style.display = 'none';
-            };
         };
 
         const initDB = async () => {
@@ -845,111 +904,78 @@
             if(listType === 'KW_BOYS') { dataToImport = KHAIBAR_BOYS_DATA; label = "Khaibar Warriors (Boys - 113)"; } 
             else if(listType === 'KW_GIRLS') { dataToImport = KHAIBAR_GIRLS_DATA; label = "Khaibar Warriors (Girls - 136)"; } 
             else if(listType === 'KF_BOYS') { dataToImport = KHANDAQ_BOYS_DATA; label = "Khandaq Fighters (Boys - 116)"; } 
-            else if(listType === 'KF_GIRLS') { dataToImport = KHANDAQ_GIRLS_DATA; label = "Khandaq Fighters (Girls - 140)"; } 
-            else { dataToImport = [...KHAIBAR_BOYS_DATA, ...KHAIBAR_GIRLS_DATA, ...KHANDAQ_BOYS_DATA, ...KHANDAQ_GIRLS_DATA]; label = "All Teams Data (505 Candidates)"; }
+            else if(listType === 'KF_GIRLS') { dataToImport = KHANDAQ_GIRLS_DATA; label = "Khandaq Fighters (Girls - 141)"; } 
+            else { dataToImport = [...KHAIBAR_BOYS_DATA, ...KHAIBAR_GIRLS_DATA, ...KHANDAQ_BOYS_DATA, ...KHANDAQ_GIRLS_DATA]; label = "All Teams Data (506 Candidates)"; }
 
-            window.showConfirm("Sync Data", `${label} ഡാറ്റാബേസിലേക്ക് സിങ്ക് ചെയ്യണോ?`, async () => {
-                try {
-                    let count = 0;
-                    const existingChestNos = new Set(state.candidates.map(c => String(c.regNo)));
-                    
-                    let batches = [];
-                    let currentBatch = writeBatch(db);
-                    let opCount = 0;
+            if (!confirm(`${label} ഡാറ്റാബേസിലേക്ക് സിങ്ക് ചെയ്യണോ?`)) return;
 
-                    for (const item of dataToImport) {
-                        if (!existingChestNos.has(String(item.regNo))) {
-                            const docRef = doc(collection(db, 'candidates'));
-                            currentBatch.set(docRef, {
-                                name: item.name,
-                                regNo: String(item.regNo),
-                                classDiv: item.classDiv,
-                                cat: item.cat,
-                                team: item.team,
-                                gender: item.gender,
-                                assignedPrograms: [],
-                                timestamp: Date.now() + count
-                            });
-                            count++;
-                            opCount++;
-                            
-                            if (opCount === 490) {
-                                batches.push(currentBatch);
-                                currentBatch = writeBatch(db);
-                                opCount = 0;
-                            }
-                        }
+            try {
+                let count = 0;
+                const existingChestNos = new Set(state.candidates.map(c => String(c.regNo)));
+                let batches = []; let currentBatch = writeBatch(db); let opCount = 0;
+
+                for (const item of dataToImport) {
+                    if (!existingChestNos.has(String(item.regNo))) {
+                        const docRef = doc(collection(db, 'candidates'));
+                        currentBatch.set(docRef, {
+                            name: item.name, regNo: String(item.regNo), classDiv: item.classDiv,
+                            cat: item.cat, team: item.team, gender: item.gender,
+                            assignedPrograms: [], timestamp: Date.now() + count
+                        });
+                        count++; opCount++;
+                        if (opCount >= 400) { batches.push(currentBatch); currentBatch = writeBatch(db); opCount = 0; }
                     }
-                    
-                    if (opCount > 0) batches.push(currentBatch);
-                    for(let b of batches) await b.commit();
-                    
-                    window.showAlert(`${count} പുതിയ കുട്ടികളെ വിജയികരമായി ചേർത്തു!`);
-                } catch (err) {
-                    window.showAlert("Error: " + err.message, "error");
                 }
-            });
+                
+                if (opCount > 0) batches.push(currentBatch);
+                for(let b of batches) await b.commit();
+                
+                window.showAlert(`${count} പുതിയ കുട്ടികളെ വിജയികരമായി ചേർത്തു!`);
+            } catch (err) { window.showAlert("Error: " + err.message, "error"); }
         };
 
-        window.syncProgramList = (programListConfig, title) => {
-            window.showConfirm(`Sync ${title}`, `Add ${title} programs and automatically assign candidates?`, async () => {
-                try {
-                    let updatedProgs = [...state.programs];
-                    const newIdsMap = {}; 
-                    let progsAdded = 0;
+        window.syncProgramList = async (programListConfig, title) => {
+            if (!confirm(`Sync ${title} programs and automatically assign candidates?`)) return;
+            try {
+                let updatedProgs = [...state.programs];
+                const newIdsMap = {}; 
+                let progsAdded = 0;
 
-                    // 1. Create or Find Programs
-                    programListConfig.forEach(kp => {
-                        let existing = updatedProgs.find(p => p.progNo === kp.no);
-                        if(!existing) {
-                            const newId = 'p' + Date.now() + Math.floor(Math.random()*1000);
-                            updatedProgs.push({ id: newId, progNo: kp.no, name: kp.name, cat: kp.cat, type: kp.type, timestamp: Date.now() });
-                            newIdsMap[kp.no] = newId;
-                            progsAdded++;
-                        } else {
-                            newIdsMap[kp.no] = existing.id;
-                        }
-                    });
+                programListConfig.forEach(kp => {
+                    let existing = updatedProgs.find(p => p.progNo === kp.no);
+                    if(!existing) {
+                        const newId = 'p' + Date.now() + Math.floor(Math.random()*1000) + kp.no;
+                        updatedProgs.push({ id: newId, progNo: kp.no, name: kp.name, cat: kp.cat, type: kp.type, timestamp: Date.now() });
+                        newIdsMap[kp.no] = newId; progsAdded++;
+                    } else { newIdsMap[kp.no] = existing.id; }
+                });
 
-                    await updateDoc(doc(db, 'settings', 'config'), { programs: updatedProgs });
+                await updateDoc(doc(db, 'settings', 'config'), { programs: updatedProgs });
 
-                    // 2. Batch Update Candidates with their new assignments
-                    let assignCount = 0;
-                    let batches = [];
-                    let currentBatch = writeBatch(db);
-                    let opCount = 0;
+                let assignCount = 0; let batches = []; let currentBatch = writeBatch(db); let opCount = 0;
 
-                    for (const kp of programListConfig) {
-                        const progId = newIdsMap[kp.no];
-                        if(!progId) continue;
-                        
-                        for (const chestNo of kp.cands) {
-                            const cand = state.candidates.find(c => String(c.regNo) === String(chestNo));
-                            if(cand) {
-                                let assigned = cand.assignedPrograms || [];
-                                if(!assigned.includes(progId)) {
-                                    assigned.push(progId);
-                                    currentBatch.update(doc(db, 'candidates', cand.id), { assignedPrograms: assigned });
-                                    assignCount++;
-                                    opCount++;
-                                    
-                                    if(opCount === 490) {
-                                        batches.push(currentBatch);
-                                        currentBatch = writeBatch(db);
-                                        opCount = 0;
-                                    }
-                                }
+                for (const kp of programListConfig) {
+                    const progId = newIdsMap[kp.no];
+                    if(!progId) continue;
+                    
+                    for (const chestNo of kp.cands) {
+                        const cand = state.candidates.find(c => String(c.regNo) === String(chestNo));
+                        if(cand) {
+                            let assigned = cand.assignedPrograms || [];
+                            if(!assigned.includes(progId)) {
+                                assigned.push(progId);
+                                currentBatch.update(doc(db, 'candidates', cand.id), { assignedPrograms: assigned });
+                                assignCount++; opCount++;
+                                if(opCount >= 400) { batches.push(currentBatch); currentBatch = writeBatch(db); opCount = 0; }
                             }
                         }
                     }
-                    if(opCount > 0) batches.push(currentBatch);
-                    for(let b of batches) await b.commit();
-                    
-                    window.showAlert(`Success! Added ${progsAdded} programs and assigned ${assignCount} candidates.`);
-                } catch(e) {
-                    window.showAlert("Error: " + e.message, "error");
                 }
-            });
+                if(opCount > 0) batches.push(currentBatch);
+                for(let b of batches) await b.commit();
+                
+                window.showAlert(`Success! Added ${progsAdded} programs and assigned ${assignCount} entries.`);
+            } catch(e) { window.showAlert("Error: " + e.message, "error"); }
         };
 
         window.addNewProgram = async (e) => {
@@ -968,12 +994,12 @@
             finally { btn.disabled = false; btn.innerText = '+ ചേർക്കുക'; }
         };
 
-        window.deleteProgram = (id) => {
-            window.showConfirm("Delete Program", "ഈ മത്സരം പൂർണ്ണമായി ഡിലീറ്റ് ചെയ്യണോ?", async () => {
+        window.deleteProgram = async (id) => {
+            if(confirm("ഈ മത്സരം പൂർണ്ണമായി ഡിലീറ്റ് ചെയ്യണോ?")) {
                 const updatedProgs = state.programs.filter(p => p.id !== id); 
-                try { await updateDoc(doc(db, 'settings', 'config'), { programs: updatedProgs }); window.showAlert("മത്സരം ഡിലീറ്റ് ചെയ്തു!"); } 
+                try { await updateDoc(doc(db, 'settings', 'config'), { programs: updatedProgs }); window.showAlert("ഡിലീറ്റ് ചെയ്തു!"); } 
                 catch(e) { window.showAlert("പരാജയപ്പെട്ടു.", "error"); }
-            });
+            }
         };
 
         window.openEditProg = (id) => {
@@ -1015,29 +1041,21 @@
             
             try { 
                 await addDoc(collection(db, 'candidates'), { 
-                    name, 
-                    regNo: String(regNo), 
-                    classDiv, 
-                    cat, 
-                    team,
-                    gender,
-                    assignedPrograms: [], 
-                    timestamp: Date.now() 
+                    name, regNo: String(regNo), classDiv, cat, team, gender,
+                    assignedPrograms: [], timestamp: Date.now() 
                 }); 
                 window.showAlert(`കുട്ടിയെ ചേർത്തു! (Chest No: ${regNo})`); 
                 e.target.reset(); 
-                document.getElementById('cCat').value = cat;
-                document.getElementById('cTeam').value = team;
-                document.getElementById('cGender').value = gender;
+                document.getElementById('cCat').value = cat; document.getElementById('cTeam').value = team; document.getElementById('cGender').value = gender;
             } catch (err) { window.showAlert("Error: " + err.message, "error"); } 
             finally { btn.innerText = "സേവ് ചെയ്യുക"; btn.disabled = false; } 
         };
 
-        window.deleteCandidate = (id) => {
-            window.showConfirm("Delete Candidate", "ഈ കുട്ടിയെ ഡിലീറ്റ് ചെയ്യണോ?", async () => {
+        window.deleteCandidate = async (id) => {
+            if(confirm("ഈ കുട്ടിയെ ഡിലീറ്റ് ചെയ്യണോ?")) {
                 try { await deleteDoc(doc(db, 'candidates', id)); window.showAlert("ഡിലീറ്റ് ചെയ്തു."); } 
                 catch(e) { window.showAlert("പരാജയപ്പെട്ടു.", "error"); }
-            });
+            }
         };
 
         window.openEditCand = (id) => {
@@ -1059,7 +1077,7 @@
                     regNo: document.getElementById('editCandRegNo').value,
                     classDiv: document.getElementById('editCandClassDiv').value
                 });
-                window.showAlert("Candidate details updated!"); document.getElementById('editCandModal').style.display = 'none';
+                window.showAlert("Candidate updated!"); document.getElementById('editCandModal').style.display = 'none';
             } catch(err) { window.showAlert("Error: " + err.message, "error"); }
             finally { btn.innerText = 'Update'; btn.disabled = false; }
         };
@@ -1170,11 +1188,11 @@
             finally { btn.innerText = "റിസൾട്ട് പബ്ലിഷ് ചെയ്യുക"; btn.disabled = false; }
         };
 
-        window.deleteResult = (progId) => {
-            window.showConfirm("Delete Result", "ഈ റിസൾട്ട് ഡിലീറ്റ് ചെയ്യണോ?", async () => {
+        window.deleteResult = async (progId) => {
+            if(confirm("ഈ റിസൾട്ട് ഡിലീറ്റ് ചെയ്യണോ?")) {
                 try { await deleteDoc(doc(db, 'results', progId)); window.showAlert("റിസൾട്ട് ഡിലീറ്റ് ചെയ്തു."); } 
                 catch(e) { window.showAlert("പരാജയപ്പെട്ടു.", "error"); }
-            });
+            }
         };
 
         const getNamesBadgeHtml = (ids, borderClass, textClass, icon) => { 
@@ -1205,7 +1223,7 @@
                         <div class="flex flex-col items-center justify-center mb-6">
                             <span class="text-xs text-amber-400 font-extrabold tracking-widest uppercase mb-1">LADAL MADEENA 2K26</span>
                             <h2 class="text-2xl font-black text-purple-200 tracking-tight">ADMIN PORTAL</h2>
-                            <div class="flex gap-2 mt-2">
+                            <div class="flex gap-2 mt-2 justify-center">
                                 <span class="text-[10px] bg-purple-900/80 text-amber-300 px-2.5 py-0.5 rounded-full font-bold border border-purple-600">KHAIBAR WARRIORS</span>
                                 <span class="text-[10px] bg-purple-900/80 text-purple-300 px-2.5 py-0.5 rounded-full font-bold border border-purple-600">KHANDAQ FIGHTERS</span>
                             </div>
@@ -1293,14 +1311,14 @@
                             <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
                                 <div>
                                     <h3 class="font-bold text-purple-300 text-lg">🛡️ KHANDAQ FIGHTERS</h3>
-                                    <p class="text-[11px] text-purple-300 font-semibold">Total: ${kfBoys + kfGirls} / 256 Candidates</p>
+                                    <p class="text-[11px] text-purple-300 font-semibold">Total: ${kfBoys + kfGirls} / 257 Candidates</p>
                                 </div>
                                 <div class="flex gap-1.5 flex-wrap">
                                     <button onclick="importList('KF_BOYS')" class="bg-amber-500/20 hover:bg-amber-500 hover:text-black text-amber-300 border border-amber-500/50 text-[11px] font-bold px-2.5 py-1 rounded-lg transition">
                                         Boys (${kfBoys}/116)
                                     </button>
                                     <button onclick="importList('KF_GIRLS')" class="bg-pink-500/20 hover:bg-pink-500 hover:text-black text-pink-300 border border-pink-500/50 text-[11px] font-bold px-2.5 py-1 rounded-lg transition">
-                                        Girls (${kfGirls}/140)
+                                        Girls (${kfGirls}/141)
                                     </button>
                                 </div>
                             </div>
@@ -1395,7 +1413,7 @@
                             <div class="space-y-2">
                                 <p class="text-xs text-purple-300 font-semibold text-center mb-1">Quick Sync Pre-Loaded Data:</p>
                                 <button onclick="importList('ALL')" class="w-full bg-amber-500/20 hover:bg-amber-500 hover:text-black text-amber-300 border border-amber-500/50 font-bold py-2 rounded-xl transition text-xs flex items-center justify-center gap-1">
-                                    ⚡ Sync All Pre-Loaded Data (505)
+                                    ⚡ Sync All Pre-Loaded Data (506)
                                 </button>
                                 <div class="grid grid-cols-2 gap-1.5 mt-2">
                                     <button onclick="importList('KW_BOYS')" class="w-full bg-purple-900/80 hover:bg-purple-800 text-amber-300 border border-purple-700 font-bold py-1.5 rounded-lg transition text-[10px]">
@@ -1408,7 +1426,7 @@
                                         KF Boys (116)
                                     </button>
                                     <button onclick="importList('KF_GIRLS')" class="w-full bg-purple-900/80 hover:bg-purple-800 text-pink-300 border border-purple-700 font-bold py-1.5 rounded-lg transition text-[10px]">
-                                        KF Girls (140)
+                                        KF Girls (141)
                                     </button>
                                 </div>
                             </div>
