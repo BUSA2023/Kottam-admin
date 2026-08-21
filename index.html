@@ -834,7 +834,8 @@
             searchQuery: '',
             filterTeam: 'All',
             filterGender: 'All',
-            filterCat: 'All'
+            filterCat: 'All',
+            filterResultGender: 'All'
         };
 
         window.state = state;
@@ -1178,7 +1179,16 @@
             const container = document.getElementById('rSelectors');
             if (!prog) { container.innerHTML = ''; return; }
 
-            const eligibleCands = state.candidates.filter(c => prog.cat === 'General' ? true : c.cat === prog.cat);
+            let eligibleCands = state.candidates.filter(c => prog.cat === 'General' ? true : c.cat === prog.cat);
+            
+            // SMART FILTER: Auto-filter by Gender based on Program Name
+            const pNameLower = prog.name.toLowerCase();
+            if (pNameLower.includes('boys') || pNameLower.includes('(boys)')) {
+                eligibleCands = eligibleCands.filter(c => c.gender === 'BOYS');
+            } else if (pNameLower.includes('girls') || pNameLower.includes('(girls)')) {
+                eligibleCands = eligibleCands.filter(c => c.gender === 'GIRLS');
+            }
+
             const assignedCands = eligibleCands.filter(c => c.assignedPrograms && c.assignedPrograms.includes(progId));
             
             let optionsHtml = '<option value="" disabled>-- തിരഞ്ഞെടുക്കുക --</option>';
@@ -1622,7 +1632,17 @@
             }
 
             if (state.tab === 'results') {
-                const sortedResults = [...state.results].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                const sortedResults = [...state.results]
+                    .filter(res => {
+                        if(!state.filterResultGender || state.filterResultGender === 'All') return true;
+                        const prog = state.programs.find(p => p.id === res.progId);
+                        if(!prog) return true;
+                        const nLower = prog.name.toLowerCase();
+                        if (state.filterResultGender === 'BOYS') return nLower.includes('boys') || !nLower.includes('girls');
+                        if (state.filterResultGender === 'GIRLS') return nLower.includes('girls');
+                        return true;
+                    })
+                    .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
                 
                 mainContent = `
                     <div class="flex flex-col lg:flex-row gap-4 sm:gap-6 mt-4">
@@ -1642,7 +1662,14 @@
                         <div class="w-full lg:w-7/12 glass-card p-3 sm:p-6 rounded-2xl flex flex-col h-[500px] sm:h-[700px] border-t border-purple-800">
                             <div class="flex justify-between items-center border-b border-purple-800 pb-3 sm:pb-4 mb-3 sm:mb-4 px-2 sm:px-0">
                                 <h3 class="font-bold text-white text-base sm:text-xl">റിസൾട്ടുകൾ</h3>
-                                <span class="bg-purple-950 text-amber-300 text-[10px] sm:text-xs px-3 py-1 rounded-full font-bold border border-purple-800 shadow-inner">${sortedResults.length} Published</span>
+                                <div class="flex items-center gap-2">
+                                    <select onchange="window.state.filterResultGender = this.value; window.render();" class="bg-black/80 border border-purple-800 text-xs text-purple-200 rounded-lg px-2 py-1 outline-none">
+                                        <option value="All">Boys & Girls</option>
+                                        <option value="BOYS" ${state.filterResultGender === 'BOYS' ? 'selected' : ''}>Boys Only</option>
+                                        <option value="GIRLS" ${state.filterResultGender === 'GIRLS' ? 'selected' : ''}>Girls Only</option>
+                                    </select>
+                                    <span class="bg-purple-950 text-amber-300 text-[10px] sm:text-xs px-3 py-1 rounded-full font-bold border border-purple-800 shadow-inner">${sortedResults.length} Published</span>
+                                </div>
                             </div>
                             <div class="space-y-3 sm:space-y-4 overflow-y-auto flex-1 pr-1 sm:pr-2 custom-scrollbar">
                                 ${sortedResults.length === 0 ? `<div class="text-center p-6 sm:p-10 text-purple-300 text-sm">ആദ്യ റിസൾട്ടിനായി കാത്തിരിക്കുന്നു...</div>` : ''}
