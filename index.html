@@ -837,6 +837,19 @@
             filterCat: 'All'
         };
 
+        window.state = state;
+
+        window.updateSearch = (val) => {
+            state.searchQuery = val;
+            window.render();
+            // Restore focus and cursor position after re-render
+            const searchEl = document.getElementById('searchInput');
+            if (searchEl) {
+                searchEl.focus();
+                searchEl.setSelectionRange(searchEl.value.length, searchEl.value.length);
+            }
+        };
+
         window.fireConfetti = () => {
             var duration = 3 * 1000; var end = Date.now() + duration;
             (function frame() {
@@ -1458,18 +1471,18 @@
                             <div class="flex flex-col gap-3 mb-4">
                                 <div class="flex justify-between items-center">
                                     <h3 class="font-bold text-white text-base">രജിസ്റ്റർ ചെയ്തവർ (${filteredCands.length})</h3>
-                                    <input type="text" placeholder="Search name/chest/class..." value="${state.searchQuery}" oninput="state.searchQuery = this.value; render();" class="bg-black/80 border border-purple-800 text-xs text-white rounded-lg px-3 py-1.5 outline-none focus:border-amber-500 w-48">
+                                    <input type="text" id="searchInput" placeholder="Search name/chest/class..." value="${state.searchQuery}" oninput="window.updateSearch(this.value)" class="bg-black/80 border border-purple-800 text-xs text-white rounded-lg px-3 py-1.5 outline-none focus:border-amber-500 w-48">
                                 </div>
                                 <div class="grid grid-cols-3 gap-2">
-                                    <select onchange="state.filterTeam = this.value; render();" class="bg-black/80 border border-purple-800 text-xs text-amber-300 rounded-lg px-2 py-1.5 outline-none">
+                                    <select onchange="window.state.filterTeam = this.value; window.render();" class="bg-black/80 border border-purple-800 text-xs text-amber-300 rounded-lg px-2 py-1.5 outline-none">
                                         <option value="All">All Teams</option>
                                         ${TEAMS.map(t => `<option value="${t}" ${state.filterTeam===t?'selected':''}>${t}</option>`).join('')}
                                     </select>
-                                    <select onchange="state.filterGender = this.value; render();" class="bg-black/80 border border-purple-800 text-xs text-purple-200 rounded-lg px-2 py-1.5 outline-none">
+                                    <select onchange="window.state.filterGender = this.value; window.render();" class="bg-black/80 border border-purple-800 text-xs text-purple-200 rounded-lg px-2 py-1.5 outline-none">
                                         <option value="All">Boys & Girls</option>
                                         ${DIVISIONS.map(g => `<option value="${g}" ${state.filterGender===g?'selected':''}>${g}</option>`).join('')}
                                     </select>
-                                    <select onchange="state.filterCat = this.value; render();" class="bg-black/80 border border-purple-800 text-xs text-yellow-200 rounded-lg px-2 py-1.5 outline-none">
+                                    <select onchange="window.state.filterCat = this.value; window.render();" class="bg-black/80 border border-purple-800 text-xs text-yellow-200 rounded-lg px-2 py-1.5 outline-none">
                                         <option value="All">All Categories</option>
                                         ${CATEGORIES.map(c => `<option value="${c}" ${state.filterCat===c?'selected':''}>${c}</option>`).join('')}
                                     </select>
@@ -1672,6 +1685,8 @@
                 </main>
             `;
         }
+
+        window.render = render;
     </script>
 </body>
 </html>
