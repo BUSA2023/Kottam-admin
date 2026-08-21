@@ -264,6 +264,8 @@
         const GENERAL_PROGRAMS = [
             { no: "501", name: "Burda & Qawwali (Girls)", cat: "General", type: "Stage", cands: ["837", "834", "838", "835", "831", "818", "841", "618", "609", "630", "633", "629", "632", "631"] },
             { no: "502", name: "Muhyudheen Mala (Girls)", cat: "General", type: "Stage", cands: ["627", "635", "628", "636", "621", "804", "810", "815", "803", "598", "591", "586", "590", "600", "787", "782", "776", "779", "780"] },
+            { no: "504", name: "Newspaper Making (Girls)", cat: "General", type: "Non-Stage", cands: ["834", "835", "838", "839", "840", "841", "831", "635", "630", "626", "624", "628", "631", "629"] },
+            { no: "505", name: "Collage (Girls)", cat: "General", type: "Non-Stage", cands: ["630", "635", "626", "636", "632", "818", "817", "841", "831", "838"] },
             { no: "551", name: "Burdha (Boys)", cat: "General", type: "Stage", cands: ["416", "410", "384", "413", "394", "211", "204", "203", "200", "213"] },
             { no: "552", name: "Moulid Recitation (Boys)", cat: "General", type: "Stage", cands: ["197", "182", "194", "174", "195", "416", "410", "413", "404", "385"] },
             { no: "553", name: "Arabic Group Song (Boys)", cat: "General", type: "Stage", cands: ["416", "410", "413", "396", "397", "204", "200", "211", "203", "197"] }
@@ -1154,7 +1156,7 @@
         window.isGroupProgram = (name) => {
             if (!name) return false;
             const n = name.toLowerCase();
-            return n.includes('group') || n.includes('burda') || n.includes('burdha') || n.includes('qawwali') || n.includes('mala') || n.includes('mash up') || n.includes('moulid') || n.includes('padappayatt');
+            return n.includes('group') || n.includes('burda') || n.includes('burdha') || n.includes('qawwali') || n.includes('mala') || n.includes('mash up') || n.includes('moulid') || n.includes('padappayatt') || n.includes('newspaper') || n.includes('collage');
         };
 
         window.populateResultDropdowns = () => {
