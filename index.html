@@ -78,6 +78,43 @@
                         <input type="text" id="editProgName" required class="w-full bg-black/80 border border-purple-800 rounded-lg px-3 py-2 text-white outline-none focus:border-amber-500 text-sm">
                     </div>
                 </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-[10px] font-bold text-purple-300 uppercase mb-1">Category</label>
+                        <select id="editProgCat" class="w-full bg-black/80 border border-purple-800 rounded-lg px-2 py-2 text-white outline-none focus:border-amber-500 text-sm">
+                            <option value="Kiddies">Kiddies</option>
+                            <option value="Sub Junior">Sub Junior</option>
+                            <option value="Junior">Junior</option>
+                            <option value="Senior">Senior</option>
+                            <option value="Super Senior">Super Senior</option>
+                            <option value="General">General</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-purple-300 uppercase mb-1">Gender</label>
+                        <select id="editProgGender" class="w-full bg-black/80 border border-purple-800 rounded-lg px-2 py-2 text-white outline-none focus:border-amber-500 text-sm">
+                            <option value="ALL">Boys & Girls</option>
+                            <option value="BOYS">Boys</option>
+                            <option value="GIRLS">Girls</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-[10px] font-bold text-purple-300 uppercase mb-1">Type</label>
+                        <select id="editProgType" class="w-full bg-black/80 border border-purple-800 rounded-lg px-2 py-2 text-white outline-none focus:border-amber-500 text-sm">
+                            <option value="Stage">Stage</option>
+                            <option value="Non-Stage">Non-Stage</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-purple-300 uppercase mb-1">Format</label>
+                        <select id="editProgGroup" class="w-full bg-black/80 border border-purple-800 rounded-lg px-2 py-2 text-white outline-none focus:border-amber-500 text-sm">
+                            <option value="Individual">Individual</option>
+                            <option value="Group">Group</option>
+                        </select>
+                    </div>
+                </div>
                 <div class="flex gap-3 justify-end pt-4">
                     <button type="button" onclick="document.getElementById('editProgModal').style.display='none'" class="px-4 py-2 bg-purple-950 text-white rounded-lg text-sm border border-purple-700">Cancel</button>
                     <button type="submit" id="saveEditProgBtn" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-sm font-bold shadow-lg">Update</button>
@@ -407,6 +444,28 @@
             document.getElementById('editProgId').value = p.id;
             document.getElementById('editProgNo').value = p.progNo || '';
             document.getElementById('editProgName').value = p.name;
+            
+            document.getElementById('editProgCat').value = p.cat || 'General';
+            document.getElementById('editProgType').value = p.type || 'Stage';
+            
+            let inferredGender = 'ALL';
+            if (p.gender) {
+                inferredGender = p.gender;
+            } else {
+                const nLower = p.name.toLowerCase();
+                if (nLower.includes('boys') || nLower.includes('(boys)')) inferredGender = 'BOYS';
+                else if (nLower.includes('girls') || nLower.includes('(girls)')) inferredGender = 'GIRLS';
+            }
+            document.getElementById('editProgGender').value = inferredGender;
+            
+            let inferredGroup = 'Individual';
+            if (p.isGroup !== undefined) {
+                inferredGroup = p.isGroup ? 'Group' : 'Individual';
+            } else {
+                inferredGroup = window.isGroupProgram(p.name) ? 'Group' : 'Individual';
+            }
+            document.getElementById('editProgGroup').value = inferredGroup;
+
             document.getElementById('editProgModal').style.display = 'flex';
         };
 
@@ -415,7 +474,16 @@
             const id = document.getElementById('editProgId').value;
             const btn = document.getElementById('saveEditProgBtn'); btn.innerText = 'Saving...'; btn.disabled = true;
             try {
-                let updated = state.programs.map(p => p.id === id ? { ...p, progNo: document.getElementById('editProgNo').value, name: document.getElementById('editProgName').value } : p);
+                const isGrp = document.getElementById('editProgGroup').value === 'Group';
+                let updated = state.programs.map(p => p.id === id ? { 
+                    ...p, 
+                    progNo: document.getElementById('editProgNo').value, 
+                    name: document.getElementById('editProgName').value,
+                    cat: document.getElementById('editProgCat').value,
+                    type: document.getElementById('editProgType').value,
+                    gender: document.getElementById('editProgGender').value,
+                    isGroup: isGrp
+                } : p);
                 await updateDoc(doc(db, 'settings', 'config'), { programs: updated });
                 window.showAlert("Program updated!"); document.getElementById('editProgModal').style.display = 'none';
             } catch(err) { window.showAlert("Error: " + err.message, "error"); }
@@ -585,11 +653,17 @@
 
             let eligibleCands = state.candidates.filter(c => prog.cat === 'General' ? true : c.cat === prog.cat);
             
-            // SMART FILTER: Auto-filter by Gender based on Program Name
-            const pNameLower = prog.name.toLowerCase();
-            if (pNameLower.includes('boys') || pNameLower.includes('(boys)')) {
+            let progGender = prog.gender;
+            if (!progGender) {
+                const pNameLower = prog.name.toLowerCase();
+                if (pNameLower.includes('boys') || pNameLower.includes('(boys)')) progGender = 'BOYS';
+                else if (pNameLower.includes('girls') || pNameLower.includes('(girls)')) progGender = 'GIRLS';
+                else progGender = 'ALL';
+            }
+
+            if (progGender === 'BOYS') {
                 eligibleCands = eligibleCands.filter(c => c.gender === 'BOYS');
-            } else if (pNameLower.includes('girls') || pNameLower.includes('(girls)')) {
+            } else if (progGender === 'GIRLS') {
                 eligibleCands = eligibleCands.filter(c => c.gender === 'GIRLS');
             }
 
@@ -605,7 +679,7 @@
             eligibleCands.filter(c => !assignedCands.includes(c)).forEach(c => optionsHtml += `<option value="${c.id}">#${c.regNo} - ${c.name} (${c.team||''} ${c.gender||''})</option>`);
             optionsHtml += '</optgroup>';
 
-            const isGrp = window.isGroupProgram(prog.name);
+            const isGrp = prog.isGroup !== undefined ? prog.isGroup : window.isGroupProgram(prog.name);
             const p1 = isGrp ? 10 : 5;
             const p2 = isGrp ? 5 : 3;
             const p3 = isGrp ? 3 : 1;
@@ -632,7 +706,7 @@
                 return window.showAlert("കുറഞ്ഞത് ഒരു സ്ഥാനമെങ്കിലും നൽകണം! (At least one position required)", "error");
             }
             
-            const isGrp = window.isGroupProgram(prog.name);
+            const isGrp = prog.isGroup !== undefined ? prog.isGroup : window.isGroupProgram(prog.name);
             const pts1 = isGrp ? 10 : 5;
             const pts2 = isGrp ? 5 : 3;
             const pts3 = isGrp ? 3 : 1;
