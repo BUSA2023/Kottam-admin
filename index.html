@@ -22,6 +22,12 @@
         select { appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fbbf24' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 0.9em; padding-right: 2.2rem !important; }
         select option { background-color: #1e0048; color: #f8fafc; }
         select optgroup { background-color: #3b0764; color: #fbbf24; font-style: normal; font-weight: bold; }
+        
+        /* Highlight Selection CSS */
+        #rFirst option:checked { background-color: #ca8a04 !important; color: white !important; }
+        #rSecond option:checked { background-color: #475569 !important; color: white !important; }
+        #rThird option:checked { background-color: #9a3412 !important; color: white !important; }
+        .locked-cand { text-decoration: line-through; opacity: 0.4; cursor: not-allowed; }
     </style>
 </head>
 <body class="bg-gradient-to-br from-purple-950 via-slate-950 to-indigo-950 min-h-screen">
@@ -30,7 +36,7 @@
         <span id="toastIcon"></span><span id="toastMsg"></span>
     </div>
 
-    <!-- Modals -->
+    <!-- Edit Candidate Modal -->
     <div id="editCandModal" style="display: none;" class="fixed inset-0 bg-black/90 z-[300] items-center justify-center p-4 backdrop-blur-sm">
         <div class="glass-card p-6 rounded-2xl max-w-md w-full shadow-2xl border border-amber-500/30">
             <h3 class="text-lg font-bold text-amber-400 mb-4 border-b border-purple-800 pb-2">Edit Candidate</h3>
@@ -58,9 +64,10 @@
         </div>
     </div>
 
+    <!-- Edit Program Modal -->
     <div id="editProgModal" style="display: none;" class="fixed inset-0 bg-black/90 z-[300] items-center justify-center p-4 backdrop-blur-sm">
         <div class="glass-card p-6 rounded-2xl max-w-md w-full shadow-2xl border border-amber-500/30">
-            <h3 class="text-lg font-bold text-amber-400 mb-4 border-b border-purple-800 pb-2">Edit Program Settings</h3>
+            <h3 class="text-lg font-bold text-amber-400 mb-4 border-b border-purple-800 pb-2">Edit Program</h3>
             <form id="editProgForm" onsubmit="saveEditProg(event)" class="space-y-3">
                 <input type="hidden" id="editProgId">
                 <div class="grid grid-cols-3 gap-2">
@@ -73,10 +80,10 @@
                         <input type="text" id="editProgName" required class="w-full bg-black/80 border border-purple-800 rounded-lg px-3 py-2 text-white outline-none focus:border-amber-500 text-sm">
                     </div>
                 </div>
-                <div class="grid grid-cols-3 gap-2">
+                <div class="grid grid-cols-2 gap-2 mt-2">
                     <div>
                         <label class="block text-[10px] font-bold text-purple-300 uppercase mb-1">Category</label>
-                        <select id="editProgCat" class="w-full bg-black/80 border border-purple-800 rounded-lg px-2 py-2 text-white outline-none focus:border-amber-500 text-xs">
+                        <select id="editProgCat" class="w-full bg-black/80 border border-purple-800 rounded-lg px-3 py-2 text-white outline-none focus:border-amber-500 text-sm">
                             <option value="Kiddies">Kiddies</option>
                             <option value="Sub Junior">Sub Junior</option>
                             <option value="Junior">Junior</option>
@@ -87,35 +94,38 @@
                     </div>
                     <div>
                         <label class="block text-[10px] font-bold text-purple-300 uppercase mb-1">Gender</label>
-                        <select id="editProgGender" class="w-full bg-black/80 border border-purple-800 rounded-lg px-2 py-2 text-white outline-none focus:border-amber-500 text-xs">
+                        <select id="editProgGender" class="w-full bg-black/80 border border-purple-800 rounded-lg px-3 py-2 text-white outline-none focus:border-amber-500 text-sm">
                             <option value="ALL">Boys & Girls</option>
                             <option value="BOYS">Boys Only</option>
                             <option value="GIRLS">Girls Only</option>
                         </select>
                     </div>
+                </div>
+                <div class="grid grid-cols-2 gap-2 mt-2">
                     <div>
-                        <label class="block text-[10px] font-bold text-purple-300 uppercase mb-1">Type</label>
-                        <select id="editProgType" class="w-full bg-black/80 border border-purple-800 rounded-lg px-2 py-2 text-white outline-none focus:border-amber-500 text-xs">
+                        <label class="block text-[10px] font-bold text-purple-300 uppercase mb-1">Type (Stage/Non-Stage)</label>
+                        <select id="editProgType" class="w-full bg-black/80 border border-purple-800 rounded-lg px-3 py-2 text-white outline-none focus:border-amber-500 text-sm">
                             <option value="Stage">Stage</option>
                             <option value="Non-Stage">Non-Stage</option>
                         </select>
                     </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-purple-300 uppercase mb-1">Format (Points System)</label>
+                        <select id="editProgFormat" class="w-full bg-black/80 border border-purple-800 rounded-lg px-3 py-2 text-white outline-none focus:border-amber-500 text-sm">
+                            <option value="Individual">Individual (5-3-1)</option>
+                            <option value="Group">Group (10-5-3)</option>
+                        </select>
+                    </div>
                 </div>
-                <div>
-                    <label class="block text-[10px] font-bold text-purple-300 uppercase mb-1">Format (Points System)</label>
-                    <select id="editProgFormat" class="w-full bg-black/80 border border-purple-800 rounded-lg px-3 py-2 text-white outline-none focus:border-amber-500 text-sm">
-                        <option value="Individual">Individual (5, 3, 1 Pts)</option>
-                        <option value="Group">Group Event (10, 5, 3 Pts)</option>
-                    </select>
-                </div>
-                <div class="flex gap-3 justify-end pt-4 border-t border-purple-800 mt-2">
+                <div class="flex gap-3 justify-end pt-4">
                     <button type="button" onclick="document.getElementById('editProgModal').style.display='none'" class="px-4 py-2 bg-purple-950 text-white rounded-lg text-sm border border-purple-700">Cancel</button>
-                    <button type="submit" id="saveEditProgBtn" class="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-black rounded-lg text-sm font-bold shadow-lg">Update</button>
+                    <button type="submit" id="saveEditProgBtn" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-sm font-bold shadow-lg">Update</button>
                 </div>
             </form>
         </div>
     </div>
 
+    <!-- Assign Modal -->
     <div id="assignModal" style="display: none;" class="fixed inset-0 bg-black/90 z-[200] items-center justify-center p-4 backdrop-blur-sm">
         <div class="glass-card p-6 rounded-2xl max-w-md w-full shadow-2xl flex flex-col max-h-[85vh]">
             <h3 class="text-lg font-bold text-white mb-1" id="assignTitle">മത്സരങ്ങൾ ചേർക്കുക</h3>
@@ -130,6 +140,7 @@
         </div>
     </div>
 
+    <!-- Enrolled Modal -->
     <div id="enrolledModal" style="display: none;" class="fixed inset-0 bg-black/90 z-[200] items-center justify-center p-4 backdrop-blur-sm">
         <div class="glass-card p-6 rounded-2xl max-w-md w-full shadow-2xl flex flex-col max-h-[85vh]">
             <div class="flex justify-between items-center mb-1">
@@ -171,7 +182,6 @@
         
         const ADMIN_PASSWORD = "admin";
 
-        // Global state
         let state = {
             isAuthenticated: sessionStorage.getItem('admin_auth') === 'true',
             tab: 'dashboard', 
@@ -179,31 +189,32 @@
             programs: [], 
             results: [],
             searchQuery: '',
-            searchProg: '',
-            searchResult: '',
             filterTeam: 'All',
             filterGender: 'All',
             filterCat: 'All',
             filterResultGender: 'All'
         };
+
         window.state = state;
 
-        // Auto-detect group events
-        window.isGroupProgram = (name, forceIsGroup) => {
-            if (forceIsGroup !== undefined) return forceIsGroup;
-            if (!name) return false;
-            const n = name.toLowerCase();
-            return n.includes('group') || n.includes('burda') || n.includes('burdha') || n.includes('qawwali') || n.includes('mala') || n.includes('mash up') || n.includes('moulid') || n.includes('padappayatt') || n.includes('newspaper') || n.includes('collage');
+        window.getProgramPoints = (progNo) => {
+            const pNo = String(progNo).trim();
+            const pts15 = ['551', '552', '553', '501', '502'];
+            const pts10 = ['54', '154', '155', '257', '259', '458', '04', '4', '105', '107', '205', '206', '208', '303', '304', '403'];
+            
+            if (pts15.includes(pNo)) return { p1: 15, p2: 10, p3: 5 };
+            if (pts10.includes(pNo)) return { p1: 10, p2: 7, p3: 5 };
+            return { p1: 5, p2: 3, p3: 1 };
         };
 
         window.updateSearch = (val, type) => {
-            if(type === 'cand') state.searchQuery = val;
-            if(type === 'prog') state.searchProg = val;
-            if(type === 'res') state.searchResult = val;
+            state.searchQuery = val;
             window.render();
-            // Restore focus
-            const inputIds = {'cand':'searchInput', 'prog':'searchProgInput', 'res':'searchResInput'};
-            const searchEl = document.getElementById(inputIds[type]);
+            let searchId = 'searchInput';
+            if(type === 'prog') searchId = 'progSearchInput';
+            if(type === 'res') searchId = 'resSearchInput';
+
+            const searchEl = document.getElementById(searchId);
             if (searchEl) {
                 searchEl.focus();
                 searchEl.setSelectionRange(searchEl.value.length, searchEl.value.length);
@@ -227,10 +238,13 @@
             setTimeout(() => { toast.classList.add('translate-y-[-200%]'); toast.classList.remove('translate-y-0'); }, 5000); 
         };
 
-        // DB Init
         const initDB = async () => {
-            try { await signInAnonymously(auth); } 
-            catch (e) { console.error("Login Failed:", e); window.showAlert("DB Auth Error", "error"); }
+            try { 
+                await signInAnonymously(auth); 
+            } catch (e) { 
+                console.error("Firebase Login Failed:", e);
+                window.showAlert("DB Auth Error: Please check Firebase configuration.", "error"); 
+            }
         };
 
         onAuthStateChanged(auth, (user) => {
@@ -240,10 +254,12 @@
                     else { setDoc(doc(db, 'settings', 'config'), { programs: [] }).catch(e=>{}); }
                     if(state.isAuthenticated) render();
                 });
+
                 onSnapshot(collection(db, 'candidates'), (snap) => {
                     state.candidates = snap.docs.map(d => ({ id: d.id, assignedPrograms: [], ...d.data() }));
                     if(state.isAuthenticated) render();
                 });
+
                 onSnapshot(collection(db, 'results'), (snap) => {
                     state.results = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                     if(state.isAuthenticated) render();
@@ -252,18 +268,22 @@
         });
         
         initDB(); 
-        render();
 
         window.handleLogin = (e) => {
             e.preventDefault();
-            if (document.getElementById('loginPass').value === ADMIN_PASSWORD) {
-                state.isAuthenticated = true; sessionStorage.setItem('admin_auth', 'true');
-                window.showAlert("ലോഗിൻ വിജയകരം!"); render(); 
-            } else { window.showAlert("തെറ്റായ പാസ്സ്‌വേർഡ്!", "error"); }
+            const pass = document.getElementById('loginPass').value;
+            if (pass === ADMIN_PASSWORD) {
+                state.isAuthenticated = true;
+                sessionStorage.setItem('admin_auth', 'true');
+                window.showAlert("ലോഗിൻ വിജയകരം!");
+                render(); 
+            } else {
+                window.showAlert("തെറ്റായ പാസ്സ്‌വേർഡ്!", "error");
+            }
         };
 
         window.handleLogout = () => { state.isAuthenticated = false; sessionStorage.removeItem('admin_auth'); render(); };
-        window.switchTab = (tab) => { state.tab = tab; render(); };
+        window.switchTab = (tab) => { state.tab = tab; state.searchQuery = ''; render(); };
 
         window.addNewProgram = async (e) => {
             e.preventDefault(); 
@@ -271,8 +291,9 @@
             const name = document.getElementById('pName').value; 
             const cat = document.getElementById('pCat').value; 
             const type = document.getElementById('pType').value; 
+            const gender = document.getElementById('pGender').value; 
             
-            const newProg = { id: 'p' + Date.now(), progNo, name, cat, type, timestamp: Date.now() }; 
+            const newProg = { id: 'p' + Date.now(), progNo, name, cat, type, gender, timestamp: Date.now() }; 
             const updatedProgs = [...state.programs, newProg]; 
             
             const btn = document.getElementById('addProgBtn'); btn.disabled = true; btn.innerText = 'Saving...';
@@ -295,12 +316,9 @@
             document.getElementById('editProgNo').value = p.progNo || '';
             document.getElementById('editProgName').value = p.name;
             document.getElementById('editProgCat').value = p.cat;
-            document.getElementById('editProgType').value = p.type || 'Stage';
             document.getElementById('editProgGender').value = p.gender || 'ALL';
-            
-            const isGrp = window.isGroupProgram(p.name, p.isGroup);
-            document.getElementById('editProgFormat').value = isGrp ? 'Group' : 'Individual';
-            
+            document.getElementById('editProgType').value = p.type || 'Stage';
+            document.getElementById('editProgFormat').value = p.isGroup ? 'Group' : 'Individual';
             document.getElementById('editProgModal').style.display = 'flex';
         };
 
@@ -389,7 +407,15 @@
             const candidate = state.candidates.find(c => c.id === candId); if (!candidate) return; currentAssignCandidateId = candId;
             document.getElementById('assignTitle').innerText = `മത്സരങ്ങൾ ചേർക്കുക`; 
             document.getElementById('assignSubtitle').innerText = `${candidate.name} (#${candidate.regNo}) • ${candidate.team || ''} (${candidate.gender || ''})`;
-            const eligibleProgs = state.programs.filter(p => p.cat === candidate.cat || p.cat === 'General'); const assigned = candidate.assignedPrograms || [];
+            
+            // Filter programs based on candidate category and gender
+            const eligibleProgs = state.programs.filter(p => {
+                const catMatch = p.cat === candidate.cat || p.cat === 'General';
+                const pGender = p.gender || 'ALL';
+                const genderMatch = pGender === 'ALL' || pGender === candidate.gender;
+                return catMatch && genderMatch;
+            });
+            const assigned = candidate.assignedPrograms || [];
 
             let html = '';
             if(eligibleProgs.length === 0) html = '<p class="text-purple-300 text-sm">ഈ വിഭാഗത്തിൽ മത്സരങ്ങൾ ചേർത്തിട്ടില്ല.</p>';
@@ -399,7 +425,7 @@
                 html += `<label class="flex items-center justify-between p-3 bg-purple-900/50 border border-purple-700/60 rounded-lg cursor-pointer hover:bg-purple-800 transition">
                     <div>
                         <span class="text-white text-sm font-semibold block">${p.progNo ? `<span class="text-amber-500 mr-1">#${p.progNo}</span>` : ''}${p.name}</span>
-                        <span class="text-[10px] text-amber-300 uppercase">${p.cat} • ${p.type}</span>
+                        <span class="text-[10px] text-amber-300 uppercase">${p.cat} • ${p.type} • ${p.gender || 'ALL'}</span>
                     </div>
                     <input type="checkbox" value="${p.id}" class="prog-checkbox w-5 h-5 accent-amber-500 rounded" ${isChecked}>
                 </label>`;
@@ -429,7 +455,7 @@
             if(enrolled.length === 0) { html = `<p class="text-center text-purple-300 text-sm py-4">ആരും രജിസ്റ്റർ ചെയ്തിട്ടില്ല.</p>`; } 
             else { 
                 enrolled.forEach(c => { 
-                    html += `<div class="bg-purple-900/60 border border-purple-700/60 p-3 rounded-lg flex justify-between items-center">
+                    html += `<div class="bg-purple-900/60 border border-purple-700/60 p-3 rounded-lg flex justify-between items-center mb-2">
                         <div>
                             <p class="text-white font-bold text-sm">${c.name} <span class="text-xs text-purple-300 font-normal">(#${c.regNo} - Class: ${c.classDiv||'-'})</span></p>
                             <p class="text-[10px] text-amber-300 font-semibold">${c.team || ''} • ${c.gender || ''}</p>
@@ -442,34 +468,6 @@
         };
         window.closeEnrolled = () => { document.getElementById('enrolledModal').style.display = 'none'; };
 
-        window.handleSelectionChange = () => {
-            const fList = Array.from(document.getElementById('rFirst').selectedOptions).map(o=>o.value);
-            const sList = Array.from(document.getElementById('rSecond').selectedOptions).map(o=>o.value);
-            const tList = Array.from(document.getElementById('rThird').selectedOptions).map(o=>o.value);
-
-            // Disable options that are selected in other boxes
-            const allBoxes = ['rFirst', 'rSecond', 'rThird'];
-            const allSelected = [...fList, ...sList, ...tList];
-
-            allBoxes.forEach(boxId => {
-                const box = document.getElementById(boxId);
-                Array.from(box.options).forEach(opt => {
-                    if (opt.value === "") return;
-                    // If this option's value is selected in ANY box, and it's NOT selected in THIS box... disable it
-                    const isSelectedHere = Array.from(box.selectedOptions).map(o=>o.value).includes(opt.value);
-                    if (allSelected.includes(opt.value) && !isSelectedHere) {
-                        opt.disabled = true;
-                        opt.style.textDecoration = 'line-through';
-                        opt.style.color = '#475569';
-                    } else {
-                        opt.disabled = false;
-                        opt.style.textDecoration = 'none';
-                        opt.style.color = '';
-                    }
-                });
-            });
-        };
-
         window.populateResultDropdowns = () => {
             const progId = document.getElementById('rProg').value;
             const prog = state.programs.find(p => p.id === progId);
@@ -478,48 +476,69 @@
 
             let eligibleCands = state.candidates.filter(c => prog.cat === 'General' ? true : c.cat === prog.cat);
             
-            let pGender = prog.gender || 'ALL';
-            if (pGender === 'ALL') {
+            const pGender = prog.gender || 'ALL';
+            if (pGender !== 'ALL') {
+                eligibleCands = eligibleCands.filter(c => c.gender === pGender);
+            } else {
                 const pNameLower = prog.name.toLowerCase();
-                if (pNameLower.includes('boys') || pNameLower.includes('(boys)')) pGender = 'BOYS';
-                else if (pNameLower.includes('girls') || pNameLower.includes('(girls)')) pGender = 'GIRLS';
+                if (pNameLower.includes('boys') || pNameLower.includes('(boys)')) {
+                    eligibleCands = eligibleCands.filter(c => c.gender === 'BOYS');
+                } else if (pNameLower.includes('girls') || pNameLower.includes('(girls)')) {
+                    eligibleCands = eligibleCands.filter(c => c.gender === 'GIRLS');
+                }
             }
-            if (pGender !== 'ALL') eligibleCands = eligibleCands.filter(c => c.gender === pGender);
 
             const assignedCands = eligibleCands.filter(c => c.assignedPrograms && c.assignedPrograms.includes(progId));
             
             let optionsHtml = '<option value="" disabled>-- തിരഞ്ഞെടുക്കുക --</option>';
             if(assignedCands.length > 0) {
                 optionsHtml += '<optgroup label="ഈ മത്സരത്തിലുള്ളവർ">';
-                assignedCands.forEach(c => optionsHtml += `<option value="${c.id}">#${c.regNo} - ${c.name} (${c.team||''} ${c.gender||''})</option>`);
+                assignedCands.forEach(c => optionsHtml += `<option value="${c.id}" class="cand-option">#${c.regNo} - ${c.name} (${c.team||''} ${c.gender||''})</option>`);
                 optionsHtml += '</optgroup>';
             }
             optionsHtml += '<optgroup label="മറ്റു കുട്ടികൾ">';
-            eligibleCands.filter(c => !assignedCands.includes(c)).forEach(c => optionsHtml += `<option value="${c.id}">#${c.regNo} - ${c.name} (${c.team||''} ${c.gender||''})</option>`);
+            eligibleCands.filter(c => !assignedCands.includes(c)).forEach(c => optionsHtml += `<option value="${c.id}" class="cand-option">#${c.regNo} - ${c.name} (${c.team||''} ${c.gender||''})</option>`);
             optionsHtml += '</optgroup>';
 
-            const isGrp = window.isGroupProgram(prog.name, prog.isGroup);
-            const p1 = isGrp ? 10 : 5; const p2 = isGrp ? 5 : 3; const p3 = isGrp ? 3 : 1;
+            const pts = window.getProgramPoints(prog.progNo);
+            const p1 = pts.p1; const p2 = pts.p2; const p3 = pts.p3;
 
-            // Notice the customized background colors for options via CSS styles injected inline
             container.innerHTML = `
                 <div class="space-y-4 p-4 bg-black/50 rounded-xl border border-purple-800 mt-4">
-                    <div>
-                        <label class="block text-xs font-bold text-yellow-400 mb-1">ഒന്നാം സ്ഥാനം (${p1} Pts)</label>
-                        <select id="rFirst" multiple size="4" onchange="handleSelectionChange()" class="w-full bg-purple-950 border border-purple-800 rounded-lg px-3 py-2 text-white outline-none focus:border-yellow-400 custom-scrollbar focus:bg-yellow-900/30 selection:bg-yellow-600">${optionsHtml}</select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-300 mb-1">രണ്ടാം സ്ഥാനം (${p2} Pts)</label>
-                        <select id="rSecond" multiple size="4" onchange="handleSelectionChange()" class="w-full bg-purple-950 border border-purple-800 rounded-lg px-3 py-2 text-white outline-none focus:border-slate-400 custom-scrollbar focus:bg-slate-800/50 selection:bg-slate-600">${optionsHtml}</select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-amber-500 mb-1">മൂന്നാം സ്ഥാനം (${p3} Pts)</label>
-                        <select id="rThird" multiple size="4" onchange="handleSelectionChange()" class="w-full bg-purple-950 border border-purple-800 rounded-lg px-3 py-2 text-white outline-none focus:border-amber-500 custom-scrollbar focus:bg-amber-900/30 selection:bg-amber-700">${optionsHtml}</select>
-                    </div>
+                    <div><label class="block text-xs font-bold text-yellow-400 mb-1">ഒന്നാം സ്ഥാനം (${p1} Pts) - <span class="text-purple-300 font-normal">Ctrl/Cmd അമർത്തി മൾട്ടി-സെലക്ട് ചെയ്യാം</span></label>
+                    <select id="rFirst" multiple size="4" onchange="window.handleResultSelection()" class="w-full bg-purple-950 border border-purple-800 rounded-lg px-3 py-2 text-white outline-none focus:border-yellow-400 custom-scrollbar">${optionsHtml}</select></div>
+                    
+                    <div><label class="block text-xs font-bold text-slate-300 mb-1">രണ്ടാം സ്ഥാനം (${p2} Pts)</label>
+                    <select id="rSecond" multiple size="4" onchange="window.handleResultSelection()" class="w-full bg-purple-950 border border-purple-800 rounded-lg px-3 py-2 text-white outline-none focus:border-slate-400 custom-scrollbar">${optionsHtml}</select></div>
+                    
+                    <div><label class="block text-xs font-bold text-amber-500 mb-1">മൂന്നാം സ്ഥാനം (${p3} Pts)</label>
+                    <select id="rThird" multiple size="4" onchange="window.handleResultSelection()" class="w-full bg-purple-950 border border-purple-800 rounded-lg px-3 py-2 text-white outline-none focus:border-amber-500 custom-scrollbar">${optionsHtml}</select></div>
                 </div>
-                <p class="text-[10px] text-purple-300 text-center mt-2">Ctrl/Cmd അമർത്തി ഒന്നിലധികം പേരെ തിരഞ്ഞെടുക്കാം</p>
                 <button type="submit" id="publishBtn" class="w-full mt-4 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-black font-bold py-3 rounded-xl transition shadow-lg">റിസൾട്ട് പബ്ലിഷ് ചെയ്യുക</button>
             `;
+        };
+
+        window.handleResultSelection = () => {
+            const first = Array.from(document.getElementById('rFirst').selectedOptions).map(o => o.value);
+            const second = Array.from(document.getElementById('rSecond').selectedOptions).map(o => o.value);
+            const third = Array.from(document.getElementById('rThird').selectedOptions).map(o => o.value);
+            
+            const allBoxes = ['rFirst', 'rSecond', 'rThird'];
+            const allSelected = [...first, ...second, ...third];
+            
+            allBoxes.forEach(boxId => {
+                const select = document.getElementById(boxId);
+                Array.from(select.options).forEach(opt => {
+                    if (opt.value === "") return;
+                    if (allSelected.includes(opt.value) && !opt.selected) {
+                        opt.disabled = true;
+                        opt.classList.add('locked-cand');
+                    } else {
+                        opt.disabled = false;
+                        opt.classList.remove('locked-cand');
+                    }
+                });
+            });
         };
 
         window.publishResult = async (e) => {
@@ -534,13 +553,15 @@
                 return window.showAlert("ഒരു സ്ഥാനമെങ്കിലും തിരഞ്ഞെടുക്കുക!", "error");
             }
             
-            const isGrp = window.isGroupProgram(prog.name, prog.isGroup);
-            const pts1 = isGrp ? 10 : 5; const pts2 = isGrp ? 5 : 3; const pts3 = isGrp ? 3 : 1;
+            const pts = window.getProgramPoints(prog.progNo);
+            const pts1 = pts.p1; const pts2 = pts.p2; const pts3 = pts.p3;
 
             const btn = document.getElementById('publishBtn'); btn.innerText = "Publishing..."; btn.disabled = true;
             try { 
                 await setDoc(doc(db, 'results', progId), { 
-                    progId, first, second, third, pts1, pts2, pts3, isGroup: isGrp, timestamp: Date.now() 
+                    progId, first, second, third,
+                    pts1, pts2, pts3,
+                    timestamp: Date.now() 
                 }); 
                 window.showAlert("റിസൾട്ട് പ്രസിദ്ധീകരിച്ചു!"); 
                 document.getElementById('rProg').value = ""; document.getElementById('rSelectors').innerHTML = ""; 
@@ -560,7 +581,7 @@
         const getNamesBadgeHtml = (ids, borderClass, textClass, icon, pts) => { 
             const arr = Array.isArray(ids) ? ids : (ids ? [ids] : []); 
             if (arr.length === 0) return ''; 
-            return arr.map((id) => { 
+            return arr.map((id, index) => { 
                 const c = state.candidates.find(x => x.id === id); 
                 return `<div class="flex justify-between items-center bg-purple-950/80 p-2.5 rounded-lg border ${borderClass} mb-1.5">
                     <div class="flex items-center gap-2">
@@ -602,10 +623,10 @@
             let navHtml = `
             <nav class="flex overflow-x-auto border-b border-purple-800/80 bg-purple-950/90 backdrop-blur-md px-2 sm:px-4 scrollbar-hide sticky top-0 z-40 shadow-lg">
                 <button onclick="switchTab('dashboard')" class="px-5 py-3.5 font-bold text-[13px] sm:text-sm whitespace-nowrap transition-colors ${state.tab==='dashboard'?'tab-active':'tab-inactive'}">ഡാഷ്‌ബോർഡ്</button>
-                <button onclick="switchTab('points')" class="px-5 py-4 font-bold text-[13px] sm:text-sm whitespace-nowrap transition-colors ${state.tab==='points'?'tab-active':'tab-inactive'}">പോയിന്റ് ടേബിൾ</button>
                 <button onclick="switchTab('candidates')" class="px-5 py-4 font-bold text-[13px] sm:text-sm whitespace-nowrap transition-colors ${state.tab==='candidates'?'tab-active':'tab-inactive'}">കുട്ടികൾ (${state.candidates.length})</button>
                 <button onclick="switchTab('programs')" class="px-5 py-4 font-bold text-[13px] sm:text-sm whitespace-nowrap transition-colors ${state.tab==='programs'?'tab-active':'tab-inactive'}">മത്സരങ്ങൾ (${state.programs.length})</button>
                 <button onclick="switchTab('results')" class="px-5 py-4 font-bold text-[13px] sm:text-sm whitespace-nowrap transition-colors ${state.tab==='results'?'tab-active':'tab-inactive'}">റിസൾട്ടുകൾ (${state.results.length})</button>
+                <button onclick="switchTab('points')" class="px-5 py-4 font-bold text-[13px] sm:text-sm whitespace-nowrap transition-colors ${state.tab==='points'?'tab-active':'tab-inactive'}">പോയിന്റ് ടേബിൾ</button>
             </nav>`;
             
             let mainContent = '';
@@ -683,118 +704,76 @@
             }
 
             if (state.tab === 'points') {
-                let s = { 
-                    aTotal: 0, aBoys: 0, aGirls: 0, 
-                    bTotal: 0, bBoys: 0, bGirls: 0,
-                    aCats: {}, bCats: {}
-                };
-                CATEGORIES.forEach(c => { s.aCats[c]=0; s.bCats[c]=0; });
-                s.aCats['General']=0; s.bCats['General']=0;
-
-                let candPoints = {};
+                let stats = { aTotal: 0, bTotal: 0, aBoys: 0, aGirls: 0, bBoys: 0, bGirls: 0, aCats: {}, bCats: {} };
+                CATEGORIES.forEach(c => { stats.aCats[c] = 0; stats.bCats[c] = 0; });
+                stats.aCats['General'] = 0; stats.bCats['General'] = 0;
 
                 state.results.forEach(res => {
-                    var prog = state.programs.find(p=>p.id===res.progId);
-                    var isGroup = prog ? window.isGroupProgram(prog.name, prog.isGroup) : false;
-                    var cat = prog ? prog.cat : 'General';
-                    var fPts = res.pts1 || (isGroup ? 10 : 5);
-                    var sPts = res.pts2 || (isGroup ? 5 : 3);
-                    var tPts = res.pts3 || (isGroup ? 3 : 1);
+                    const prog = state.programs.find(p=>p.id===res.progId);
+                    const cat = prog ? prog.cat : 'General';
+                    const pts = window.getProgramPoints(prog ? prog.progNo : '');
+                    const fPts = res.pts1 || pts.p1;
+                    const sPts = res.pts2 || pts.p2;
+                    const tPts = res.pts3 || pts.p3;
 
-                    var addPts = (ids, pts) => {
-                        var arr = Array.isArray(ids) ? ids : (ids ? [ids] : []);
+                    const addPts = (ids, pts) => {
+                        const arr = Array.isArray(ids) ? ids : (ids ? [ids] : []);
                         arr.forEach(id => {
-                            var c = state.candidates.find(x=>x.id===id);
-                            if(c) {
-                                if(c.team === 'KHAIBAR WARRIORS') { 
-                                    s.aTotal += pts; s.aCats[cat] += pts;
-                                    if(c.gender==='BOYS') s.aBoys += pts; else if(c.gender==='GIRLS') s.aGirls += pts;
-                                } else if(c.team === 'KHANDAQ FIGHTERS') {
-                                    s.bTotal += pts; s.bCats[cat] += pts;
-                                    if(c.gender==='BOYS') s.bBoys += pts; else if(c.gender==='GIRLS') s.bGirls += pts;
+                            const c = state.candidates.find(x => x.id === id);
+                            if (c) {
+                                if (c.team === 'KHAIBAR WARRIORS') { 
+                                    stats.aTotal += pts; stats.aCats[cat] += pts;
+                                    if(c.gender === 'BOYS') stats.aBoys += pts;
+                                    if(c.gender === 'GIRLS') stats.aGirls += pts;
+                                } else if (c.team === 'KHANDAQ FIGHTERS') { 
+                                    stats.bTotal += pts; stats.bCats[cat] += pts; 
+                                    if(c.gender === 'BOYS') stats.bBoys += pts;
+                                    if(c.gender === 'GIRLS') stats.bGirls += pts;
                                 }
-                                if(!isGroup) candPoints[c.id] = (candPoints[c.id]||0) + pts;
                             }
                         });
                     };
                     addPts(res.first, fPts); addPts(res.second, sPts); addPts(res.third, tPts);
                 });
 
-                function getTop(cat, gender) {
-                    let eligible = state.candidates.filter(c => c.cat === cat && c.gender === gender);
-                    let top = null; let max = 0;
-                    eligible.forEach(c => { if(candPoints[c.id] && candPoints[c.id] > max) { max = candPoints[c.id]; top = c; }});
-                    return top ? { ...top, pts: max } : null;
-                }
-
                 mainContent = `
-                <div class="mt-4">
-                    <div class="flex justify-between items-center bg-black/40 p-6 rounded-2xl border border-purple-800 mb-6">
-                        <div class="text-center w-5/12">
-                            <h2 class="text-xl font-bold text-amber-400 mb-2">KHAIBAR WARRIORS</h2>
-                            <div class="text-6xl font-black num-font text-white">${s.aTotal}</div>
-                            <div class="flex justify-center gap-4 mt-3">
-                                <span class="text-xs text-purple-300 font-bold bg-purple-950 px-3 py-1 rounded-full border border-purple-700">Boys: ${s.aBoys}</span>
-                                <span class="text-xs text-pink-300 font-bold bg-purple-950 px-3 py-1 rounded-full border border-purple-700">Girls: ${s.aGirls}</span>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4 mb-8">
+                        <div class="glass-card p-8 rounded-2xl border-t-2 border-amber-500/80 flex flex-col items-center justify-center text-center relative overflow-hidden">
+                            ${stats.aTotal >= stats.bTotal && stats.aTotal > 0 ? '<div class="absolute top-0 w-full bg-amber-500 text-black text-xs font-black uppercase tracking-widest py-1">Leading</div>' : ''}
+                            <h3 class="font-black text-amber-400 text-2xl tracking-wider mb-2 ${stats.aTotal >= stats.bTotal && stats.aTotal > 0 ? 'mt-4' : ''}">KHAIBAR WARRIORS</h3>
+                            <div class="text-7xl font-black text-white num-font tracking-tighter mb-4">${stats.aTotal}</div>
+                            <div class="flex gap-4 w-full justify-center">
+                                <div class="bg-purple-950/80 px-4 py-2 rounded-xl border border-purple-800"><span class="block text-[10px] text-purple-300 font-bold">BOYS</span><span class="text-xl font-bold text-amber-400 num-font">${stats.aBoys}</span></div>
+                                <div class="bg-purple-950/80 px-4 py-2 rounded-xl border border-purple-800"><span class="block text-[10px] text-purple-300 font-bold">GIRLS</span><span class="text-xl font-bold text-pink-400 num-font">${stats.aGirls}</span></div>
                             </div>
                         </div>
-                        <div class="text-3xl font-black text-slate-500 italic">VS</div>
-                        <div class="text-center w-5/12">
-                            <h2 class="text-xl font-bold text-purple-400 mb-2">KHANDAQ FIGHTERS</h2>
-                            <div class="text-6xl font-black num-font text-white">${s.bTotal}</div>
-                            <div class="flex justify-center gap-4 mt-3">
-                                <span class="text-xs text-purple-300 font-bold bg-purple-950 px-3 py-1 rounded-full border border-purple-700">Boys: ${s.bBoys}</span>
-                                <span class="text-xs text-pink-300 font-bold bg-purple-950 px-3 py-1 rounded-full border border-purple-700">Girls: ${s.bGirls}</span>
+                        <div class="glass-card p-8 rounded-2xl border-t-2 border-purple-500/80 flex flex-col items-center justify-center text-center relative overflow-hidden">
+                            ${stats.bTotal > stats.aTotal ? '<div class="absolute top-0 w-full bg-amber-500 text-black text-xs font-black uppercase tracking-widest py-1">Leading</div>' : ''}
+                            <h3 class="font-black text-purple-400 text-2xl tracking-wider mb-2 ${stats.bTotal > stats.aTotal ? 'mt-4' : ''}">KHANDAQ FIGHTERS</h3>
+                            <div class="text-7xl font-black text-white num-font tracking-tighter mb-4">${stats.bTotal}</div>
+                            <div class="flex gap-4 w-full justify-center">
+                                <div class="bg-purple-950/80 px-4 py-2 rounded-xl border border-purple-800"><span class="block text-[10px] text-purple-300 font-bold">BOYS</span><span class="text-xl font-bold text-amber-400 num-font">${stats.bBoys}</span></div>
+                                <div class="bg-purple-950/80 px-4 py-2 rounded-xl border border-purple-800"><span class="block text-[10px] text-purple-300 font-bold">GIRLS</span><span class="text-xl font-bold text-pink-400 num-font">${stats.bGirls}</span></div>
                             </div>
                         </div>
                     </div>
 
-                    <h3 class="font-bold text-white text-lg mb-4">Category Scores</h3>
-                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-                        ${[...CATEGORIES, 'General'].map(cat => `
-                            <div class="glass-card p-4 rounded-xl text-center">
-                                <h4 class="text-sm font-bold text-amber-300 mb-3 border-b border-purple-800/50 pb-2">${cat}</h4>
-                                <div class="flex justify-between px-2 text-sm font-bold">
-                                    <span class="text-amber-500">${s.aCats[cat]}</span>
-                                    <span class="text-purple-400">${s.bCats[cat]}</span>
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-
-                    <h3 class="font-bold text-white text-lg mb-4">Top Scorers (Kalaprathiba & Kalathilakam)</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        ${CATEGORIES.map(c => {
-                            let tb = getTop(c, 'BOYS'); let tg = getTop(c, 'GIRLS');
-                            return `
-                            <div class="glass-card p-4 rounded-xl flex flex-col gap-3">
-                                <h4 class="text-sm font-bold text-white border-b border-purple-800/50 pb-2">${c}</h4>
-                                <div class="flex items-center justify-between bg-purple-950/50 p-3 rounded-lg border border-purple-800/50">
-                                    <div class="flex items-center gap-3">
-                                        <span class="text-2xl">🤴</span>
-                                        <div>
-                                            <p class="text-xs text-amber-500 font-bold uppercase tracking-wider">Kalaprathiba</p>
-                                            <p class="font-bold text-white text-sm">${tb?tb.name:'TBA'}</p>
-                                            <p class="text-[10px] text-purple-300">${tb?tb.team:'-'}</p>
-                                        </div>
+                    <div class="glass-card p-6 rounded-2xl border-t border-purple-800">
+                        <h3 class="font-bold text-white text-lg mb-4">Category Breakdown</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                            ${[...CATEGORIES, 'General'].map(cat => `
+                                <div class="bg-purple-950/70 rounded-xl p-4 border border-purple-800/80 flex justify-between items-center">
+                                    <span class="text-sm text-purple-200 font-extrabold uppercase">${cat}</span>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-amber-400 font-black num-font text-lg">${stats.aCats[cat]}</span>
+                                        <span class="text-purple-400 text-xs">-</span>
+                                        <span class="text-purple-300 font-black num-font text-lg">${stats.bCats[cat]}</span>
                                     </div>
-                                    <span class="text-2xl font-black text-emerald-400 num-font">${tb?tb.pts:'0'}</span>
                                 </div>
-                                <div class="flex items-center justify-between bg-purple-950/50 p-3 rounded-lg border border-purple-800/50">
-                                    <div class="flex items-center gap-3">
-                                        <span class="text-2xl">👸</span>
-                                        <div>
-                                            <p class="text-xs text-pink-400 font-bold uppercase tracking-wider">Kalathilakam</p>
-                                            <p class="font-bold text-white text-sm">${tg?tg.name:'TBA'}</p>
-                                            <p class="text-[10px] text-purple-300">${tg?tg.team:'-'}</p>
-                                        </div>
-                                    </div>
-                                    <span class="text-2xl font-black text-emerald-400 num-font">${tg?tg.pts:'0'}</span>
-                                </div>
-                            </div>`
-                        }).join('')}
+                            `).join('')}
+                        </div>
                     </div>
-                </div>`;
+                `;
             }
 
             if (state.tab === 'candidates') {
@@ -803,7 +782,10 @@
                     const matchTeam = state.filterTeam === 'All' || c.team === state.filterTeam;
                     const matchGender = state.filterGender === 'All' || c.gender === state.filterGender;
                     const matchCat = state.filterCat === 'All' || c.cat === state.filterCat;
-                    const matchSearch = !searchQ || (c.name && c.name.toLowerCase().includes(searchQ)) || (c.regNo && String(c.regNo).toLowerCase().includes(searchQ)) || (c.classDiv && c.classDiv.toLowerCase().includes(searchQ));
+                    const matchSearch = !searchQ || 
+                        (c.name && c.name.toLowerCase().includes(searchQ)) || 
+                        (c.regNo && String(c.regNo).toLowerCase().includes(searchQ)) ||
+                        (c.classDiv && c.classDiv.toLowerCase().includes(searchQ));
                     return matchTeam && matchGender && matchCat && matchSearch;
                 });
 
@@ -854,7 +836,7 @@
                             <div class="flex flex-col gap-3 mb-4">
                                 <div class="flex justify-between items-center">
                                     <h3 class="font-bold text-white text-base">രജിസ്റ്റർ ചെയ്തവർ (${filteredCands.length})</h3>
-                                    <input type="text" id="searchInput" placeholder="Search cand/chest..." value="${state.searchQuery}" oninput="window.updateSearch(this.value, 'cand')" class="bg-black/80 border border-purple-800 text-xs text-white rounded-lg px-3 py-1.5 outline-none focus:border-amber-500 w-48">
+                                    <input type="text" id="searchInput" placeholder="Search name/chest/class..." value="${state.searchQuery}" oninput="window.updateSearch(this.value, 'cand')" class="bg-black/80 border border-purple-800 text-xs text-white rounded-lg px-3 py-1.5 outline-none focus:border-amber-500 w-48">
                                 </div>
                                 <div class="grid grid-cols-3 gap-2">
                                     <select onchange="window.state.filterTeam = this.value; window.render();" class="bg-black/80 border border-purple-800 text-xs text-amber-300 rounded-lg px-2 py-1.5 outline-none">
@@ -871,10 +853,19 @@
                                     </select>
                                 </div>
                             </div>
+
                             <div class="overflow-x-auto overflow-y-auto flex-1 custom-scrollbar border border-purple-800/80 rounded-xl bg-black/40">
                                 <table class="w-full text-left text-xs sm:text-sm whitespace-nowrap">
                                     <thead class="bg-purple-950 text-amber-300 text-[10px] sm:text-xs uppercase sticky top-0 z-10 shadow border-b border-purple-800">
-                                        <tr><th class="p-3">Chest</th><th class="p-3">പേര്</th><th class="p-3">ടീം & വിഭാഗം</th><th class="p-3">Class</th><th class="p-3">Category</th><th class="p-3">Events</th><th class="p-3 text-right">Action</th></tr>
+                                        <tr>
+                                            <th class="p-3">Chest No</th>
+                                            <th class="p-3">പേര്</th>
+                                            <th class="p-3">ടീം & വിഭാഗം</th>
+                                            <th class="p-3">Class</th>
+                                            <th class="p-3">Category</th>
+                                            <th class="p-3">Events</th>
+                                            <th class="p-3 text-right">Action</th>
+                                        </tr>
                                     </thead>
                                     <tbody class="divide-y divide-purple-900/50">
                                         ${filteredCands.length === 0 ? `<tr><td colspan="7" class="text-center p-8 text-purple-300">കുട്ടികളെ കണ്ടെത്തിയില്ല.</td></tr>` : ''}
@@ -884,11 +875,23 @@
                                             <tr class="hover:bg-purple-900/30 transition">
                                                 <td class="p-3 font-mono font-bold text-amber-400 num-font text-sm">#${c.regNo}</td>
                                                 <td class="p-3"><div class="font-bold text-white">${c.name}</div></td>
-                                                <td class="p-3"><span class="text-[10px] font-bold text-amber-300 bg-purple-950 px-2 py-0.5 rounded border border-purple-800">${c.team || '-'}</span><span class="text-[9px] font-bold ${c.gender==='GIRLS'?'text-pink-300':'text-purple-300'} bg-black px-1.5 py-0.5 rounded ml-1">${c.gender || '-'}</span></td>
+                                                <td class="p-3">
+                                                    <span class="text-[10px] font-bold text-amber-300 bg-purple-950 px-2 py-0.5 rounded border border-purple-800">${c.team || '-'}</span>
+                                                    <span class="text-[9px] font-bold ${c.gender==='GIRLS'?'text-pink-300':'text-purple-300'} bg-black px-1.5 py-0.5 rounded ml-1">${c.gender || '-'}</span>
+                                                </td>
                                                 <td class="p-3 text-purple-200 font-semibold">${c.classDiv || '-'}</td>
                                                 <td class="p-3"><span class="bg-purple-950 text-purple-200 border border-purple-700 px-2 py-0.5 rounded text-[10px] font-bold uppercase">${c.cat}</span></td>
-                                                <td class="p-3"><button onclick="openAssign('${c.id}')" class="bg-amber-500/20 text-amber-300 hover:bg-amber-600 hover:text-black border border-amber-500/50 px-2.5 py-1 rounded-lg text-xs font-bold transition">${eventCount > 0 ? `${eventCount} Events` : '+ Add'}</button></td>
-                                                <td class="p-3 text-right"><div class="flex justify-end gap-1.5"><button onclick="openEditCand('${c.id}')" class="text-amber-400 hover:bg-amber-600 hover:text-black border border-amber-500/30 px-2 py-1 rounded text-xs transition font-semibold">Edit</button><button onclick="deleteCandidate('${c.id}')" class="text-red-400 hover:bg-red-600 hover:text-white border border-red-500/30 px-2 py-1 rounded text-xs transition">Del</button></div></td>
+                                                <td class="p-3">
+                                                    <button onclick="openAssign('${c.id}')" class="bg-amber-500/20 text-amber-300 hover:bg-amber-600 hover:text-black border border-amber-500/50 px-2.5 py-1 rounded-lg text-xs font-bold transition">
+                                                        ${eventCount > 0 ? `${eventCount} Events` : '+ Add'}
+                                                    </button>
+                                                </td>
+                                                <td class="p-3 text-right">
+                                                    <div class="flex justify-end gap-1.5">
+                                                        <button onclick="openEditCand('${c.id}')" class="text-amber-400 hover:bg-amber-600 hover:text-black border border-amber-500/30 px-2 py-1 rounded text-xs transition font-semibold">Edit</button>
+                                                        <button onclick="deleteCandidate('${c.id}')" class="text-red-400 hover:bg-red-600 hover:text-white border border-red-500/30 px-2 py-1 rounded text-xs transition">Del</button>
+                                                    </div>
+                                                </td>
                                             </tr>`
                                         }).join('')}
                                     </tbody>
@@ -900,27 +903,33 @@
 
             if (state.tab === 'programs') {
                 const programCats = [...CATEGORIES, 'General'];
-                const searchP = state.searchProg.toLowerCase();
+                const searchQ = state.searchQuery.toLowerCase();
                 
                 let addForm = `
                     <div class="glass-card p-5 rounded-2xl mb-6 border-t border-amber-500/40 mt-4">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="font-bold text-amber-400 text-base">മത്സരം ചേർക്കുക (Add Program)</h3>
-                            <input type="text" id="searchProgInput" placeholder="Search program/no..." value="${state.searchProg}" oninput="window.updateSearch(this.value, 'prog')" class="bg-black/80 border border-purple-800 text-xs text-white rounded-lg px-3 py-1.5 outline-none focus:border-amber-500 w-48">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
+                            <h3 class="font-bold text-amber-400 text-sm sm:text-base">പുതിയ മത്സരം ചേർക്കുക (Add Program)</h3>
+                            <input type="text" id="progSearchInput" placeholder="Search program name or no..." value="${state.searchQuery}" oninput="window.updateSearch(this.value, 'prog')" class="bg-black/80 border border-purple-800 text-xs text-white rounded-lg px-3 py-1.5 outline-none focus:border-amber-500 w-full sm:w-64">
                         </div>
                         <form onsubmit="addNewProgram(event)" class="flex flex-col md:flex-row flex-wrap gap-4 items-end">
                             <div class="w-full md:w-20">
                                 <label class="block text-[10px] font-bold text-purple-300 mb-1 uppercase">Prog No</label>
-                                <input type="text" id="pNo" class="w-full bg-black/80 border border-purple-800 rounded-lg px-3 py-2.5 text-white outline-none focus:border-amber-500 text-sm font-mono">
+                                <input type="text" id="pNo" class="w-full bg-black/80 border border-purple-800 rounded-lg px-3 py-2.5 text-white outline-none focus:border-amber-500 text-sm font-mono" placeholder="No.">
                             </div>
                             <div class="w-full md:flex-1 min-w-[150px]">
-                                <label class="block text-[10px] font-bold text-purple-300 mb-1 uppercase">മത്സരത്തിന്റെ പേര്</label>
+                                <label class="block text-[10px] font-bold text-purple-300 mb-1 uppercase">മത്സരത്തിന്റെ പേര് (Name)</label>
                                 <input type="text" id="pName" required class="w-full bg-black/80 border border-purple-800 rounded-lg px-4 py-2.5 text-white outline-none focus:border-amber-500 text-sm">
                             </div>
                             <div class="w-full md:w-auto">
                                 <label class="block text-[10px] font-bold text-purple-300 mb-1 uppercase">വിഭാഗം</label>
                                 <select id="pCat" class="w-full bg-black/80 border border-purple-800 rounded-lg px-4 py-2.5 text-white outline-none text-sm">
                                     ${programCats.map(c => `<option value="${c}">${c}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div class="w-full md:w-auto">
+                                <label class="block text-[10px] font-bold text-purple-300 mb-1 uppercase">Gender</label>
+                                <select id="pGender" class="w-full bg-black/80 border border-purple-800 rounded-lg px-4 py-2.5 text-white outline-none text-sm">
+                                    <option value="ALL">Boys & Girls</option><option value="BOYS">Boys Only</option><option value="GIRLS">Girls Only</option>
                                 </select>
                             </div>
                             <div class="w-full md:w-auto">
@@ -938,10 +947,10 @@
                 programCats.forEach(cat => {
                     const catProgs = state.programs.filter(p => {
                         const matchCat = p.cat === cat;
-                        const matchSearch = !searchP || p.name.toLowerCase().includes(searchP) || String(p.progNo).includes(searchP);
+                        const matchSearch = !searchQ || (p.name && p.name.toLowerCase().includes(searchQ)) || (p.progNo && String(p.progNo).toLowerCase().includes(searchQ));
                         return matchCat && matchSearch;
                     }).sort((a,b)=> Number(a.progNo || 0) - Number(b.progNo || 0));
-
+                    
                     if(catProgs.length === 0) return; 
                     
                     mainContent += `<div class="glass-card p-4 sm:p-5 rounded-2xl h-fit border-t border-purple-800">
@@ -950,24 +959,26 @@
                     
                     catProgs.forEach(p => {
                         const enrolledCount = state.candidates.filter(c => c.assignedPrograms && c.assignedPrograms.includes(p.id)).length;
-                        const isGrp = window.isGroupProgram(p.name, p.isGroup);
+                        const pGender = p.gender || 'ALL';
+                        const genderColor = pGender === 'BOYS' ? 'text-blue-300' : (pGender === 'GIRLS' ? 'text-pink-300' : 'text-purple-300');
+                        
                         mainContent += `
                             <li class="bg-purple-950/80 p-3 rounded-xl border border-purple-800 flex flex-col group">
                                 <div class="flex justify-between items-start mb-2">
-                                    <span class="block text-white font-bold text-sm leading-tight">${p.progNo ? `<span class="text-amber-500 font-mono mr-1">#${p.progNo}</span>` : ''}${p.name}</span>
-                                    <div class="flex gap-1.5 opacity-60 group-hover:opacity-100 transition">
+                                    <span class="block text-white font-bold text-sm leading-tight pr-2">${p.progNo ? `<span class="text-amber-500 font-mono mr-1">#${p.progNo}</span>` : ''}${p.name}</span>
+                                    <div class="flex gap-1.5 opacity-60 group-hover:opacity-100 transition flex-shrink-0">
                                         <button onclick="openEditProg('${p.id}')" class="text-[10px] text-amber-400 hover:text-amber-300 bg-black/50 px-2 py-1 rounded border border-purple-700 transition">Edit</button>
                                         <button onclick="deleteProgram('${p.id}')" class="text-[10px] text-red-400 hover:text-red-300 bg-black/50 px-2 py-1 rounded border border-purple-700 transition">Del</button>
                                     </div>
                                 </div>
-                                <div class="flex flex-wrap gap-1 mt-1 mb-2">
-                                    <span class="text-[9px] ${p.type==='Stage'?'text-amber-400':'text-purple-300'} bg-black/80 px-2 py-0.5 rounded border border-purple-800">${p.type}</span>
-                                    <span class="text-[9px] ${p.gender==='BOYS'?'text-blue-300':(p.gender==='GIRLS'?'text-pink-300':'text-slate-300')} bg-black/80 px-2 py-0.5 rounded border border-purple-800">${p.gender||'ALL'}</span>
-                                    <span class="text-[9px] ${isGrp?'text-emerald-300':'text-indigo-300'} bg-black/80 px-2 py-0.5 rounded border border-purple-800">${isGrp?'Group':'Single'}</span>
+                                <div class="flex justify-between items-center mt-1">
+                                    <div class="flex gap-1 flex-wrap">
+                                        <span class="text-[9px] ${p.type==='Stage'?'text-amber-400':'text-emerald-400'} bg-black/80 px-2 py-0.5 rounded border border-purple-800 uppercase">${p.type}</span>
+                                        <span class="text-[9px] ${p.isGroup?'text-orange-400':'text-sky-400'} bg-black/80 px-2 py-0.5 rounded border border-purple-800 uppercase">${p.isGroup?'Group':'Indiv'}</span>
+                                        <span class="text-[9px] ${genderColor} bg-black/80 px-2 py-0.5 rounded border border-purple-800 uppercase">${pGender}</span>
+                                    </div>
+                                    <button onclick="openEnrolled('${p.id}')" class="text-[10px] text-amber-300 bg-purple-900 hover:bg-amber-600 hover:text-black px-2.5 py-1 rounded font-bold border border-purple-700 transition ml-2 flex-shrink-0">👤 ${enrolledCount}</button>
                                 </div>
-                                <button onclick="openEnrolled('${p.id}')" class="text-[10px] text-amber-300 bg-purple-900 hover:bg-amber-600 hover:text-black px-2.5 py-1 rounded font-bold border border-purple-700 transition w-full text-left flex justify-between">
-                                    <span>View Candidates</span><span>👤 ${enrolledCount}</span>
-                                </button>
                             </li>`;
                     });
                     mainContent += `</ul></div>`;
@@ -976,20 +987,25 @@
             }
 
             if (state.tab === 'results') {
-                const searchR = state.searchResult.toLowerCase();
+                const searchQ = state.searchQuery.toLowerCase();
                 const sortedResults = [...state.results]
                     .filter(res => {
                         const prog = state.programs.find(p => p.id === res.progId);
                         if(!prog) return true;
-                        if(state.filterResultGender && state.filterResultGender !== 'All') {
-                            const nLower = prog.name.toLowerCase();
-                            if (state.filterResultGender === 'BOYS' && nLower.includes('girls')) return false;
-                            if (state.filterResultGender === 'GIRLS' && !nLower.includes('girls')) return false;
-                        }
-                        if(searchR && !prog.name.toLowerCase().includes(searchR) && !String(prog.progNo).includes(searchR)) return false;
-                        return true;
+                        
+                        const nLower = prog.name.toLowerCase();
+                        let genderMatch = true;
+                        if (state.filterResultGender === 'BOYS') genderMatch = (prog.gender === 'BOYS') || (nLower.includes('boys') || !nLower.includes('girls'));
+                        if (state.filterResultGender === 'GIRLS') genderMatch = (prog.gender === 'GIRLS') || nLower.includes('girls');
+                        
+                        const searchMatch = !searchQ || (prog.name && nLower.includes(searchQ)) || (prog.progNo && String(prog.progNo).toLowerCase().includes(searchQ));
+                        
+                        return genderMatch && searchMatch;
                     })
                     .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                
+                // Get programs that do NOT have a result published yet
+                const unpublishedProgs = state.programs.filter(p => !state.results.find(r => r.progId === p.id));
                 
                 mainContent = `
                     <div class="flex flex-col lg:flex-row gap-4 sm:gap-6 mt-4">
@@ -999,7 +1015,7 @@
                                 <form onsubmit="publishResult(event)">
                                     <select id="rProg" onchange="populateResultDropdowns()" class="w-full bg-black/80 border border-purple-800 rounded-lg px-3 py-2 sm:px-4 sm:py-3 text-white outline-none focus:border-amber-400 font-semibold mb-3 sm:mb-4 shadow-inner text-sm">
                                         <option value="">-- മത്സരം തിരഞ്ഞെടുക്കുക --</option>
-                                        ${[...state.programs].filter(p => !state.results.find(r=>r.progId===p.id)).sort((a,b)=>Number(a.progNo||0)-Number(b.progNo||0)).map(p => `<option value="${p.id}">${p.progNo ? `#${p.progNo} - ` : ''}${p.name} (${p.cat})</option>`).join('')}
+                                        ${[...unpublishedProgs].sort((a,b)=>Number(a.progNo||0)-Number(b.progNo||0)).map(p => `<option value="${p.id}">${p.progNo ? `#${p.progNo} - ` : ''}${p.name} (${p.cat})</option>`).join('')}
                                     </select>
                                     <div id="rSelectors"></div>
                                 </form>
@@ -1007,23 +1023,23 @@
                         </div>
                         
                         <div class="w-full lg:w-7/12 glass-card p-3 sm:p-6 rounded-2xl flex flex-col h-[500px] sm:h-[700px] border-t border-purple-800">
-                            <div class="flex justify-between items-center border-b border-purple-800 pb-3 sm:pb-4 mb-3 sm:mb-4 px-2 sm:px-0">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-purple-800 pb-3 sm:pb-4 mb-3 sm:mb-4 px-2 sm:px-0 gap-3">
                                 <h3 class="font-bold text-white text-base sm:text-xl">റിസൾട്ടുകൾ</h3>
-                                <div class="flex items-center gap-2">
-                                    <input type="text" id="searchResInput" placeholder="Search result..." value="${state.searchResult}" oninput="window.updateSearch(this.value, 'res')" class="bg-black/80 border border-purple-800 text-xs text-white rounded-lg px-2 py-1 outline-none w-28 sm:w-36">
-                                    <select onchange="window.state.filterResultGender = this.value; window.render();" class="bg-black/80 border border-purple-800 text-xs text-purple-200 rounded-lg px-2 py-1 outline-none">
-                                        <option value="All">All</option>
-                                        <option value="BOYS" ${state.filterResultGender === 'BOYS' ? 'selected' : ''}>Boys</option>
-                                        <option value="GIRLS" ${state.filterResultGender === 'GIRLS' ? 'selected' : ''}>Girls</option>
+                                <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                                    <input type="text" id="resSearchInput" placeholder="Search program..." value="${state.searchQuery}" oninput="window.updateSearch(this.value, 'res')" class="bg-black/80 border border-purple-800 text-xs text-white rounded-lg px-3 py-1.5 outline-none focus:border-amber-500 w-full sm:w-40 flex-grow sm:flex-grow-0">
+                                    <select onchange="window.state.filterResultGender = this.value; window.render();" class="bg-black/80 border border-purple-800 text-xs text-purple-200 rounded-lg px-2 py-1.5 outline-none flex-grow sm:flex-grow-0">
+                                        <option value="All">Boys & Girls</option>
+                                        <option value="BOYS" ${state.filterResultGender === 'BOYS' ? 'selected' : ''}>Boys Only</option>
+                                        <option value="GIRLS" ${state.filterResultGender === 'GIRLS' ? 'selected' : ''}>Girls Only</option>
                                     </select>
-                                    <span class="bg-purple-950 text-amber-300 text-[10px] sm:text-xs px-3 py-1 rounded-full font-bold border border-purple-800">${sortedResults.length} Pub</span>
+                                    <span class="bg-purple-950 text-amber-300 text-[10px] sm:text-xs px-3 py-1.5 rounded-full font-bold border border-purple-800 shadow-inner flex-shrink-0">${sortedResults.length} Published</span>
                                 </div>
                             </div>
                             <div class="space-y-3 sm:space-y-4 overflow-y-auto flex-1 pr-1 sm:pr-2 custom-scrollbar">
-                                ${sortedResults.length === 0 ? `<div class="text-center p-6 sm:p-10 text-purple-300 text-sm">ആദ്യ റിസൾട്ടിനായി കാത്തിരിക്കുന്നു...</div>` : ''}
+                                ${sortedResults.length === 0 ? `<div class="text-center p-6 sm:p-10 text-purple-300 text-sm">ആദ്യ റിസൾട്ടിനായി കാത്തിരിക്കുന്നു... (അല്ലെങ്കിൽ തിരയൽ ഫലം ഇല്ല)</div>` : ''}
                                 ${sortedResults.map((res, index) => {
                                     const prog = state.programs.find(p => p.id === res.progId); 
-                                    const isNew = index === 0 && state.searchResult===''; 
+                                    const isNew = index === 0 && !searchQ; 
                                     const cardClass = isNew ? "bg-purple-950/80 border-amber-500/50 shadow-[0_0_20px_rgba(245,158,11,0.15)]" : "bg-black/80 border-purple-800";
                                     return `<div class="border p-3 sm:p-5 rounded-2xl relative overflow-hidden transition-all ${cardClass}">
                                         ${isNew ? '<div class="absolute top-0 right-0 bg-amber-500 text-black text-[8px] sm:text-[9px] font-black uppercase px-2 sm:px-3 py-1 rounded-bl-lg tracking-widest animate-pulse shadow-md">Newest</div>' : ''}
