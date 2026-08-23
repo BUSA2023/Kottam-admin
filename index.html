@@ -197,6 +197,7 @@
 
         window.state = state;
 
+        // --- SMART POINT SYSTEM ---
         window.getProgramPoints = (progNo) => {
             const pNo = String(progNo).trim();
             const pts15 = ['551', '552', '553', '501', '502'];
@@ -252,17 +253,17 @@
                 onSnapshot(doc(db, 'settings', 'config'), (snap) => {
                     if (snap.exists()) { state.programs = snap.data().programs || []; } 
                     else { setDoc(doc(db, 'settings', 'config'), { programs: [] }).catch(e=>{}); }
-                    if(state.isAuthenticated) render();
+                    render(); // Call render on data update unconditionally
                 });
 
                 onSnapshot(collection(db, 'candidates'), (snap) => {
                     state.candidates = snap.docs.map(d => ({ id: d.id, assignedPrograms: [], ...d.data() }));
-                    if(state.isAuthenticated) render();
+                    render(); // Call render on data update unconditionally
                 });
 
                 onSnapshot(collection(db, 'results'), (snap) => {
                     state.results = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-                    if(state.isAuthenticated) render();
+                    render(); // Call render on data update unconditionally
                 });
             }
         });
@@ -1078,6 +1079,7 @@
         }
 
         window.render = render;
+        render(); // INITAL RENDER CALL
     </script>
 </body>
 </html>
