@@ -110,6 +110,23 @@
                         </select>
                     </div>
                 </div>
+                <div class="grid grid-cols-2 gap-2 mt-2">
+                    <div>
+                        <label class="block text-[10px] font-bold text-purple-300 uppercase mb-1">Point Scheme</label>
+                        <select id="editProgPts" class="w-full bg-black/80 border border-purple-800 rounded-lg px-3 py-2 text-white outline-none text-sm">
+                            <option value="5,3,1">5, 3, 1 (Default)</option>
+                            <option value="10,7,5">10, 7, 5</option>
+                            <option value="15,10,5">15, 10, 5</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-purple-300 uppercase mb-1">Kalaprathiba</label>
+                        <select id="editProgKala" class="w-full bg-black/80 border border-purple-800 rounded-lg px-3 py-2 text-white outline-none text-sm">
+                            <option value="true">Yes (Counts)</option>
+                            <option value="false">No (Team Only)</option>
+                        </select>
+                    </div>
+                </div>
                 <div class="flex gap-3 justify-end pt-4">
                     <button type="button" onclick="document.getElementById('editProgModal').style.display='none'" class="px-4 py-2 bg-purple-950 text-white rounded-lg text-sm border border-purple-700">Cancel</button>
                     <button type="submit" id="saveEditProgBtn" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-sm font-bold shadow-lg">Update</button>
@@ -425,8 +442,10 @@
             const name = document.getElementById('pName').value; 
             const cat = document.getElementById('pCat').value; 
             const type = document.getElementById('pType').value; 
+            const pointScheme = document.getElementById('pPts').value;
+            const kalaprathiba = document.getElementById('pKala').value === "true";
             
-            const newProg = { id: 'p' + Date.now(), progNo, name, cat, type, timestamp: Date.now() }; 
+            const newProg = { id: 'p' + Date.now(), progNo, name, cat, type, pointScheme, kalaprathiba, timestamp: Date.now() }; 
             const updatedProgs = [...state.programs, newProg]; 
             
             const btn = document.getElementById('addProgBtn'); btn.disabled = true; btn.innerText = 'Saving...';
@@ -459,6 +478,10 @@
             document.getElementById('editProgGender').value = pGender;
             document.getElementById('editProgFormat').value = (window.isGroupProgram(p.name, p.isGroup) ? "true" : "false");
             
+            // Set new dropdowns
+            document.getElementById('editProgPts').value = p.pointScheme || '5,3,1';
+            document.getElementById('editProgKala').value = p.kalaprathiba !== false ? "true" : "false";
+            
             document.getElementById('editProgModal').style.display = 'flex';
         };
 
@@ -474,7 +497,9 @@
                     cat: document.getElementById('editProgCat').value,
                     type: document.getElementById('editProgType').value,
                     gender: document.getElementById('editProgGender').value,
-                    isGroup: document.getElementById('editProgFormat').value === "true"
+                    isGroup: document.getElementById('editProgFormat').value === "true",
+                    pointScheme: document.getElementById('editProgPts').value,
+                    kalaprathiba: document.getElementById('editProgKala').value === "true"
                 } : p);
                 await updateDoc(doc(db, 'settings', 'config'), { programs: updated });
                 window.showAlert("Program updated!"); document.getElementById('editProgModal').style.display = 'none';
@@ -607,7 +632,7 @@
         };
 
         window.repairDatabase = async () => {
-            if(!confirm("This will scan your database and instantly restore any missing program names. Continue?")) return;
+            if(!confirm("This will scan your database and instantly attach the correct Points and Kalaprathiba settings to all existing programs. Continue?")) return;
             
             const btn = document.getElementById('repairBtn');
             if(btn) { btn.innerText = "Repairing..."; btn.disabled = true; }
@@ -619,26 +644,36 @@
 
                 allHardcoded.forEach(kp => {
                     let existing = updatedProgs.find(p => String(p.progNo).trim() === String(kp.no).trim());
+                    
+                    let pNo = String(kp.no).trim();
+                    let isGrp = window.isGroupProgram(existing ? existing.name : kp.name, existing ? existing.isGroup : undefined);
+                    
+                    // Default Logic
+                    let pts = '5,3,1';
+                    if (['551', '552', '553', '501', '502'].includes(pNo)) pts = '15,10,5';
+                    else if (['54', '155', '257', '458', '04', '105', '205', '206', '303', '304', '403', '360'].includes(pNo)) pts = '10,7,5';
+                    
+                    let kala = true;
+                    if (isGrp || ['107', '208', '154', '259'].includes(pNo)) kala = false;
+
                     if(existing) {
-                        if (!existing.name || existing.name !== kp.name) {
-                            existing.name = kp.name;
-                            existing.cat = kp.cat;
-                            existing.type = kp.type;
-                            restored++;
-                        }
+                        existing.pointScheme = pts;
+                        existing.kalaprathiba = kala;
+                        if (!existing.name || existing.name !== kp.name) existing.name = kp.name; // Keep name restoration feature too
+                        restored++;
                     } else {
                         const newId = 'p' + Date.now() + Math.floor(Math.random()*1000) + kp.no;
-                        updatedProgs.push({ id: newId, progNo: kp.no, name: kp.name, cat: kp.cat, type: kp.type, timestamp: Date.now() });
+                        updatedProgs.push({ id: newId, progNo: kp.no, name: kp.name, cat: kp.cat, type: kp.type, pointScheme: pts, kalaprathiba: kala, timestamp: Date.now() });
                         restored++;
                     }
                 });
 
                 await updateDoc(doc(db, 'settings', 'config'), { programs: updatedProgs });
-                window.showAlert(`Successfully restored and verified ${restored} program names!`);
+                window.showAlert(`Successfully repaired and verified ${restored} programs!`);
             } catch(e) {
                 window.showAlert("Error: " + e.message, "error");
             } finally {
-                if(btn) { btn.innerText = "🛠️ Repair Missing Names"; btn.disabled = false; }
+                if(btn) { btn.innerText = "🛠️ Repair Database"; btn.disabled = false; }
                 window.render();
             }
         };
@@ -671,13 +706,9 @@
             eligibleCands.filter(c => !assignedCands.includes(c)).forEach(c => optionsHtml += `<option value="${c.id}">#${c.regNo} - ${c.name} (${c.team||''} ${c.gender||''})</option>`);
             optionsHtml += '</optgroup>';
 
-            // SMART POINT MATCHER
-            const p15 = ['551', '552', '553', '501', '502'];
-            const p10 = ['54', '155', '257', '458', '04', '105', '205', '206', '303', '304', '403', '360'];
-            
-            let p1 = 5, p2 = 3, p3 = 1;
-            if (p15.includes(String(prog.progNo).trim())) { p1 = 15; p2 = 10; p3 = 5; }
-            else if (p10.includes(String(prog.progNo).trim())) { p1 = 10; p2 = 7; p3 = 5; }
+            // Load dynamically saved points
+            let ptsArr = (prog.pointScheme || '5,3,1').split(',').map(Number);
+            let p1 = ptsArr[0], p2 = ptsArr[1], p3 = ptsArr[2];
 
             container.innerHTML = `
                 <div class="space-y-4 p-4 bg-black/50 rounded-xl border border-purple-800 mt-4">
@@ -729,12 +760,8 @@
                 return window.showAlert("ഏതെങ്കിലും ഒരു സ്ഥാനം നിർബന്ധമാണ്!", "error");
             }
             
-            const p15 = ['551', '552', '553', '501', '502'];
-            const p10 = ['54', '155', '257', '458', '04', '105', '205', '206', '303', '304', '403', '360'];
-            
-            let pts1 = 5, pts2 = 3, pts3 = 1;
-            if (p15.includes(String(prog.progNo).trim())) { pts1 = 15; pts2 = 10; pts3 = 5; }
-            else if (p10.includes(String(prog.progNo).trim())) { pts1 = 10; pts2 = 7; pts3 = 5; }
+            let ptsArr = (prog.pointScheme || '5,3,1').split(',').map(Number);
+            let pts1 = ptsArr[0], pts2 = ptsArr[1], pts3 = ptsArr[2];
 
             const btn = document.getElementById('publishBtn'); btn.innerText = "Publishing..."; btn.disabled = true;
             try { 
@@ -824,10 +851,6 @@
                 var stats = { teamA: { total:0, boys:0, girls:0 }, teamB: { total:0, boys:0, girls:0 } };
                 var candPoints = {};
                 
-                const p15 = ['551', '552', '553', '501', '502'];
-                const p10 = ['54', '155', '257', '458', '04', '105', '205', '206', '303', '304', '403', '360'];
-                const noIndividualProgIds = ['107', '208', '154', '259']; // Conversations
-
                 state.results.forEach(res => {
                     var prog = state.programs.find(p => p.id === res.progId);
                     if (!prog) return;
@@ -835,11 +858,18 @@
                     var isGrp = window.isGroupProgram(prog.name, prog.isGroup);
                     var pNo = String(prog.progNo).trim();
                     
-                    var fPts = 5, sPts = 3, tPts = 1;
-                    if (p15.includes(pNo)) { fPts = 15; sPts = 10; tPts = 5; }
-                    else if (p10.includes(pNo)) { fPts = 10; sPts = 7; tPts = 5; }
+                    var ptsArr = (prog.pointScheme || '5,3,1').split(',').map(Number);
+                    var fPts = ptsArr[0], sPts = ptsArr[1], tPts = ptsArr[2];
                     
+                    // Support legacy result overrides if any
                     if (res.pts1) fPts = res.pts1; if (res.pts2) sPts = res.pts2; if (res.pts3) tPts = res.pts3;
+
+                    var isKala = prog.kalaprathiba;
+                    // Fallback logic for legacy data if repair hasn't been clicked yet
+                    if (isKala === undefined) {
+                        var noIndiv = ['107', '208', '154', '259'].includes(pNo);
+                        isKala = !(isGrp || noIndiv);
+                    }
 
                     var addPts = function(ids, pts) {
                         var arr = Array.isArray(ids) ? ids : (ids ? [ids] : []);
@@ -852,8 +882,7 @@
                                     if(c.gender === 'BOYS') stats[tKey].boys += pts;
                                     if(c.gender === 'GIRLS') stats[tKey].girls += pts;
                                 }
-                                // Add Kalaprathiba Points (Excluding Group & Conversation events)
-                                if (!isGrp && !noIndividualProgIds.includes(pNo)) {
+                                if (isKala) {
                                     candPoints[c.id] = (candPoints[c.id] || 0) + pts;
                                 }
                             }
@@ -1129,7 +1158,7 @@
                             <div class="flex items-center gap-3">
                                 <h3 class="font-bold text-amber-400 text-sm sm:text-base">പുതിയ മത്സരം ചേർക്കുക</h3>
                                 <button id="repairBtn" onclick="window.repairDatabase()" class="bg-red-600/90 hover:bg-red-500 text-white text-[10px] sm:text-xs font-bold px-3 py-1 rounded transition shadow border border-red-500 flex items-center gap-1">
-                                    🛠️ Repair Missing Names
+                                    🛠️ Repair Database
                                 </button>
                             </div>
                             <input type="text" id="searchProgInput" placeholder="Search Programs..." value="${state.searchProgQuery}" oninput="window.updateProgSearch(this.value)" class="bg-black/80 border border-purple-800 text-xs text-white rounded-lg px-3 py-2 outline-none focus:border-amber-500 w-full sm:w-64">
@@ -1153,6 +1182,18 @@
                                 <label class="block text-[10px] font-bold text-purple-300 mb-1 uppercase">തരം</label>
                                 <select id="pType" class="w-full bg-black/80 border border-purple-800 rounded-lg px-4 py-2.5 text-white outline-none text-sm">
                                     <option value="Stage">Stage</option><option value="Non-Stage">Non-Stage</option>
+                                </select>
+                            </div>
+                            <div class="w-full md:w-auto">
+                                <label class="block text-[10px] font-bold text-purple-300 mb-1 uppercase">Points</label>
+                                <select id="pPts" class="w-full bg-black/80 border border-purple-800 rounded-lg px-4 py-2.5 text-white outline-none text-sm">
+                                    <option value="5,3,1">5, 3, 1</option><option value="10,7,5">10, 7, 5</option><option value="15,10,5">15, 10, 5</option>
+                                </select>
+                            </div>
+                            <div class="w-full md:w-auto">
+                                <label class="block text-[10px] font-bold text-purple-300 mb-1 uppercase">Kalaprathiba</label>
+                                <select id="pKala" class="w-full bg-black/80 border border-purple-800 rounded-lg px-4 py-2.5 text-white outline-none text-sm">
+                                    <option value="true">Yes (Counts)</option><option value="false">No (Team Only)</option>
                                 </select>
                             </div>
                             <button type="submit" id="addProgBtn" class="w-full md:w-auto bg-amber-600 hover:bg-amber-500 text-white font-bold px-5 py-2.5 rounded-lg transition shadow-lg text-sm">+ ചേർക്കുക</button>
@@ -1194,6 +1235,12 @@
                                         <button onclick="openEditProg('${p.id}')" class="text-[10px] text-amber-400 hover:text-amber-300 bg-black/50 px-2 py-1 rounded border border-purple-700 transition">Edit</button>
                                         <button onclick="deleteProgram('${p.id}')" class="text-[10px] text-red-400 hover:text-red-300 bg-black/50 px-2 py-1 rounded border border-purple-700 transition">Del</button>
                                     </div>
+                                </div>
+                                <div class="flex flex-wrap gap-1 mt-1 mb-2">
+                                    <span class="text-[9px] text-yellow-300 bg-black/80 px-2 py-0.5 rounded border border-purple-800 font-bold uppercase">PTS: ${p.pointScheme || '5,3,1'}</span>
+                                    <span class="text-[9px] ${p.kalaprathiba !== false ? 'text-emerald-400' : 'text-red-400'} bg-black/80 px-2 py-0.5 rounded border border-purple-800 font-bold uppercase">
+                                        ${p.kalaprathiba !== false ? '⭐ KALAPRATHIBA' : '🚫 TEAM ONLY'}
+                                    </span>
                                 </div>
                                 <div class="flex flex-wrap gap-1 mt-1 mb-2">
                                     <span class="text-[9px] ${p.type==='Stage'?'text-amber-400':'text-teal-300'} bg-black/80 px-2 py-0.5 rounded border border-purple-800 font-bold uppercase">${p.type}</span>
