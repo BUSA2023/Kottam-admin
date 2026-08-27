@@ -59,8 +59,8 @@
     </div>
 
     <div id="editProgModal" style="display: none;" class="fixed inset-0 bg-black/90 z-[300] items-center justify-center p-4 backdrop-blur-sm">
-        <div class="glass-card p-6 rounded-2xl max-w-md w-full shadow-2xl border border-amber-500/30">
-            <h3 class="text-lg font-bold text-amber-400 mb-4 border-b border-purple-800 pb-2">Edit Program</h3>
+        <div class="glass-card p-6 rounded-2xl max-w-md w-full shadow-2xl border border-amber-500/30 overflow-y-auto max-h-[90vh] custom-scrollbar">
+            <h3 class="text-lg font-bold text-amber-400 mb-4 border-b border-purple-800 pb-2">Edit Program Settings</h3>
             <form id="editProgForm" onsubmit="saveEditProg(event)" class="space-y-3">
                 <input type="hidden" id="editProgId">
                 <div class="grid grid-cols-3 gap-2">
@@ -73,6 +73,25 @@
                         <input type="text" id="editProgName" required class="w-full bg-black/80 border border-purple-800 rounded-lg px-3 py-2 text-white outline-none focus:border-amber-500 text-sm">
                     </div>
                 </div>
+                
+                <div class="grid grid-cols-2 gap-2 mt-2">
+                    <div>
+                        <label class="block text-[10px] font-bold text-purple-300 uppercase mb-1">Points Scheme</label>
+                        <select id="editProgPoints" class="w-full bg-black/80 border border-purple-800 rounded-lg px-3 py-2 text-white outline-none focus:border-green-400 text-sm">
+                            <option value="5,3,1">5, 3, 1 (Default)</option>
+                            <option value="10,7,5">10, 7, 5 (Medium)</option>
+                            <option value="15,10,5">15, 10, 5 (High)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-yellow-300 uppercase mb-1">Kalaprathiba</label>
+                        <select id="editProgKalaprathiba" class="w-full bg-black/80 border border-purple-800 rounded-lg px-3 py-2 text-white outline-none focus:border-yellow-400 text-sm">
+                            <option value="true">Yes (Counts)</option>
+                            <option value="false">No (Team Only)</option>
+                        </select>
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-2 gap-2 mt-2">
                     <div>
                         <label class="block text-[10px] font-bold text-purple-300 uppercase mb-1">Category</label>
@@ -110,26 +129,9 @@
                         </select>
                     </div>
                 </div>
-                <div class="grid grid-cols-2 gap-2 mt-2">
-                    <div>
-                        <label class="block text-[10px] font-bold text-purple-300 uppercase mb-1">Point Scheme</label>
-                        <select id="editProgPts" class="w-full bg-black/80 border border-purple-800 rounded-lg px-3 py-2 text-white outline-none text-sm">
-                            <option value="5,3,1">5, 3, 1 (Default)</option>
-                            <option value="10,7,5">10, 7, 5</option>
-                            <option value="15,10,5">15, 10, 5</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-purple-300 uppercase mb-1">Kalaprathiba</label>
-                        <select id="editProgKala" class="w-full bg-black/80 border border-purple-800 rounded-lg px-3 py-2 text-white outline-none text-sm">
-                            <option value="true">Yes (Counts)</option>
-                            <option value="false">No (Team Only)</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="flex gap-3 justify-end pt-4">
+                <div class="flex gap-3 justify-end pt-4 border-t border-purple-800/50 mt-4">
                     <button type="button" onclick="document.getElementById('editProgModal').style.display='none'" class="px-4 py-2 bg-purple-950 text-white rounded-lg text-sm border border-purple-700">Cancel</button>
-                    <button type="submit" id="saveEditProgBtn" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-sm font-bold shadow-lg">Update</button>
+                    <button type="submit" id="saveEditProgBtn" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-sm font-bold shadow-lg">Save Settings</button>
                 </div>
             </form>
         </div>
@@ -162,10 +164,8 @@
         </div>
     </div>
 
-    <!-- Main App Container -->
     <div id="app" class="min-h-screen flex flex-col"></div>
 
-    <!-- Firebase Imports and Config -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -191,6 +191,7 @@
         
         const ADMIN_PASSWORD = "admin";
 
+        /* --- ALL PRELOADED PROGRAM AND CANDIDATE DATA --- */
         const KIDDIES_PROGRAMS = [
             { no: "01", name: "Fathiha Recitation (Girls)", cat: "Kiddies", type: "Stage", cands: ["514", "711", "515", "712"] },
             { no: "02", name: "Story Telling (Girls)", cat: "Kiddies", type: "Stage", cands: ["703", "504", "711", "503"] },
@@ -325,6 +326,524 @@
             { no: "553", name: "Arabic Group Song (Boys)", cat: "General", type: "Stage", cands: ["416", "410", "413", "396", "397", "204", "200", "211", "203", "197"] }
         ];
 
+        const KHAIBAR_BOYS_DATA = [
+            { regNo: "101", name: "Shahzad Valiya Kandathil", classDiv: "1B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "102", name: "Muhammad Shameem Kodivalappil", classDiv: "1B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "103", name: "Irfad Ali Pattasseri", classDiv: "1B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "104", name: "Abdul Hadi Panakkal", classDiv: "1B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "105", name: "Muhammed Musa Salah Pattasseri", classDiv: "1B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "106", name: "Muhammed Ajfan Pulikkalakath", classDiv: "1B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "107", name: "Lahiz Ishaan Pathoor", classDiv: "1B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "108", name: "Mohammed Aizam Hazin Edayodath Parambil", classDiv: "1B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "109", name: "Muhammed Zameel Ali Thayyil", classDiv: "1B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "110", name: "Hamiz Mohammed Pallikkal", classDiv: "1B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "111", name: "Adhi HaizamTappi Thoniyeri", classDiv: "1B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "112", name: "Muhammed Diyan Vadakkan Thirikkod", classDiv: "2B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "113", name: "Azeem Abdussalam Naduthodi", classDiv: "2B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "114", name: "Mohamed Hamdan Velutham Veetil", classDiv: "2B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "115", name: "Muhammed Faheem Pottanikkal", classDiv: "2B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "116", name: "Muhammed Izyan Kunnatheri", classDiv: "2B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "117", name: "Muhammed Shazin Panambilayi", classDiv: "2B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "118", name: "Muhammed Aman Panambilayi", classDiv: "2B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "119", name: "Muhammed Danish Vadakkan Thirikkod", classDiv: "2B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "120", name: "Muhammed Adil Kondanath", classDiv: "2B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "121", name: "Muhammed Faseeh Urpayi", classDiv: "2B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "122", name: "Hussain Layan Manakkadavath", classDiv: "3B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "123", name: "Muhammed Shahid Urpayi", classDiv: "3B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "124", name: "Muhammad Dhanish Valiya Kandathil", classDiv: "3B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "125", name: "Mohammed Shahin Pottanikkal", classDiv: "3B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "126", name: "Muhammed Rayan Kannam Palli", classDiv: "3B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "127", name: "Mohammed Hamdan Thayyil", classDiv: "3B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "128", name: "Dhaniyaal Muhammed Palappura", classDiv: "3B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "129", name: "Mohammad Raseel Pattasseri", classDiv: "3B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "130", name: "Muhammed Hanan Kodiyadan", classDiv: "3B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "131", name: "Muhammed Rayyan Thekkumcheri", classDiv: "3B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "132", name: "Zayaan Nizam Thappithoniyeri", classDiv: "3B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "133", name: "Muhammed Sahal Muthirakkilayi", classDiv: "3B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "134", name: "Sajid Ahmed Kattupeedika", classDiv: "3B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "135", name: "Muhammed Saihan Panakkal", classDiv: "3B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "136", name: "Muhammed Zakariya Konnakkal", classDiv: "4B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "137", name: "Muhammed Nijah Ullisseri", classDiv: "4B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "138", name: "Muhammed Raihan Pulikkalakath", classDiv: "4B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "139", name: "Muhammed Mihjah Kozhiparambath", classDiv: "4B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "140", name: "Muhammed Rabeeh Kodiyadan", classDiv: "4B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "141", name: "Muhammed Shadin Valiya Kandathil", classDiv: "4B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "142", name: "Jadallah Pottanikkal", classDiv: "4B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "143", name: "Ahammed Razi Theyyil", classDiv: "4B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "144", name: "Muhammad Shazin Pulikkalakath", classDiv: "4B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "145", name: "Nihal Pulikkalakath", classDiv: "4B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "146", name: "Mohammed Rayan Pattasseri", classDiv: "4B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "147", name: "Muhammed Hamiz Karuthedath", classDiv: "4B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "148", name: "Sayyid Muhaammed Nabhan Valiyakkathodi", classDiv: "4B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "149", name: "Muhammed Ridwan Malayamballi", classDiv: "4B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "150", name: "Muhammed Shabeeh Pathinaram Kandathil", classDiv: "5B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "151", name: "Muhammed Shaheel Nottanveettil", classDiv: "5B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "152", name: "Muhammed Anfal Thekkuncheri", classDiv: "5B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "153", name: "Muhammed Jazal Panambilayi", classDiv: "5B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "154", name: "Muhammed Midlaj Naduthodi", classDiv: "5B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "155", name: "Muhammed Nihal Melepurath", classDiv: "5B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "156", name: "Muhammed Mishab Thayyil", classDiv: "5B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "157", name: "Muhammed Mishab Pattasseri", classDiv: "5B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "158", name: "Muhammed Zayan Naduthodi", classDiv: "5B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "159", name: "Muhammed Ayijaz Panambilayi", classDiv: "5B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "160", name: "Muhammed Rizvan Pachayi", classDiv: "5B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "161", name: "Muhammed Razal Panarthodika", classDiv: "5B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "162", name: "Muhammed Rabeeh Pathinaram Kandathil", classDiv: "5B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "163", name: "Muhammed Nazih Kunnatheri", classDiv: "5B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "164", name: "Muhammed Labeeb Azhu Valappil", classDiv: "5B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "165", name: "Muhammed Fadil Pottanikkal", classDiv: "5B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "166", name: "Muhammed Zaheen Thekkumcheri", classDiv: "5B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "167", name: "Muhammed Shaddhad Onangallam Parambil", classDiv: "5B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "168", name: "Ziyad Nalledath", classDiv: "6B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "169", name: "Muhammed Afnan Pattasseri", classDiv: "6B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "170", name: "Shahzad Rahman Kunnatheri", classDiv: "6B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "171", name: "Muhammed Ihthisham Kalliyath", classDiv: "6B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "172", name: "Muhammed Mishab Palakkat", classDiv: "6B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "173", name: "Muhammed Hamdan Thekkuncheri", classDiv: "6B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "174", name: "Muhammed Rabeeh Pattasseri", classDiv: "6B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "175", name: "Muhammed Javad Urpayi", classDiv: "6B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "176", name: "Rabeeh Valiya Peediyekkal", classDiv: "6B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "177", name: "Muhammed Razal Melottil", classDiv: "7B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "178", name: "Muhammed Shadil Thayyil", classDiv: "7B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "179", name: "Aseen Therambil", classDiv: "7B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "180", name: "Muhammed Asil Palakkatt", classDiv: "7B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "181", name: "Infas Muhammed Anayam Chirakkal", classDiv: "7B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "182", name: "Muhammed Minhaj Thekkum Cheri", classDiv: "7B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "183", name: "muhammed Shifin Vazhangattil", classDiv: "7B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "184", name: "Faaz Rahman Elimbattil", classDiv: "7B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "185", name: "Hijaz Muhammed Mattath", classDiv: "7B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "186", name: "Muhammed Shazil Therambil", classDiv: "8B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "187", name: "Muhammed Shibin Panambilayi", classDiv: "8B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "188", name: "Muhammed Shihad Kodiyadan", classDiv: "8B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "189", name: "Muhammed Anshah Thappi Thonyeri", classDiv: "8B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "190", name: "Muhammed Anshif Valiya Kandathil", classDiv: "8B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "191", name: "Muhammed Ameen Thayyil", classDiv: "8B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "192", name: "Ashmin Shan Panambilayi", classDiv: "8B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "193", name: "Muhammed Faheem Pattassery", classDiv: "8B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "194", name: "Sayyid Hirash Kodinhi Pallikkal", classDiv: "8B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "195", name: "Shahim Muhammed Ezhuvzn Thodi", classDiv: "8B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "196", name: "Muhammed Nijad Alavi Pattasseri", classDiv: "8B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "197", name: "Muhammed Ribin Pulikkalakath", classDiv: "9B", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "198", name: "Muhammed Nihal Urpayi", classDiv: "9B", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "199", name: "Muhammed Shabeen Pallikkal", classDiv: "9B", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "200", name: "Muhammed Afnan Kunnatheri", classDiv: "10", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "201", name: "Muhd Hisham Yarbas Kunnatheri", classDiv: "10", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "202", name: "Muhammed Rabeeh Edayodath Parambil", classDiv: "10", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "203", name: "Muhammed Mashood Panakkal", classDiv: "10", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "204", name: "Muhammed Fadil Narikodan", classDiv: "10", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "205", name: "Muhammed Rihan Palakkat", classDiv: "10", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "206", name: "Muhammed Rabeeh Kudukkengal", classDiv: "+1", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "207", name: "Muhammed Nismal Paramberi", classDiv: "+1", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "208", name: "Muhammed Sirhan Pallikkal", classDiv: "+1", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "209", name: "Muhammed Shifnan Kodiyadan", classDiv: "+1", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "210", name: "Majid Pattasseri", classDiv: "+1", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "211", name: "Ajhad", classDiv: "+2", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "212", name: "Shahroz", classDiv: "6B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "BOYS" },
+            { regNo: "213", name: "Muhammed Shafin Pottanikkal", classDiv: "10", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "BOYS" }
+        ];
+
+        const KHAIBAR_GIRLS_DATA = [
+            { regNo: "501", name: "Fathima Shifa Kolathu Mattil", classDiv: "1B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "502", name: "Rayah Lamees Valiya Peediyeckal", classDiv: "1B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "503", name: "Fathima Miyaza Kodi Valappil", classDiv: "1B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "504", name: "Fathima Ifrah Kodi Valappil", classDiv: "1B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "505", name: "Bahja Mariyam Eleyamcherry", classDiv: "1B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "506", name: "Ansha Panarthodika", classDiv: "1B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "507", name: "Aysha Aymin Muringa Thodi", classDiv: "1B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "508", name: "Ayra Vahid Kozhiparambath", classDiv: "1B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "509", name: "Shanza Melottil", classDiv: "1B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "510", name: "Rilza Kadeeja Pulikkalakath", classDiv: "1B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "511", name: "Ayra Rasheed Elimbattil", classDiv: "1B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "512", name: "Ayisha Marva Valiya Peediyeckal", classDiv: "2B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "513", name: "Helena Ozhuku Parambil", classDiv: "2B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "514", name: "Ifra Khadeja Cherukatt", classDiv: "2B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "515", name: "Fathima Mirsha Thekkum Cheri", classDiv: "2B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "516", name: "Fathima Riya Vadakkan Thirikkod", classDiv: "2B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "517", name: "Aslaha Muthuvattupallikkal", classDiv: "2B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "518", name: "Fathima Sana", classDiv: "2B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "519", name: "Shaza Fathima", classDiv: "2B", cat: "Kiddies", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "520", name: "Fathima Afva Konnakkal", classDiv: "3B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "521", name: "Nafeesa Farha Pattasseri", classDiv: "3B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "522", name: "Ayisha Ridha Naduthodi", classDiv: "3B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "523", name: "Shafna Pathinaram Kandathil", classDiv: "3B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "524", name: "Fathima Farha Pattasseri", classDiv: "3B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "525", name: "Fathima Jaza Thayyil", classDiv: "3B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "526", name: "Fathima Ridha Kooriyadan", classDiv: "3B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "527", name: "Fathima Jimsha Pattasseri", classDiv: "3B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "528", name: "Shifna Vazhangattil", classDiv: "3B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "529", name: "Shazmin Faisal Valiya Kandathil", classDiv: "4B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "530", name: "Fathima Niha Thekkuncheri", classDiv: "4B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "531", name: "Fathima Haiza Velutham Veetil", classDiv: "4B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "532", name: "Nadiya Kadeeja Pattasseri", classDiv: "4B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "533", name: "Ajwa Therambil", classDiv: "4B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "534", name: "Fathima Shifa Kulathoor", classDiv: "4B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "535", name: "Fathima Shahma Kulathoor", classDiv: "4B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "536", name: "Hadiya Yasir Kodivalappil", classDiv: "4B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "537", name: "Fathima Hanfa Vadakkan Tharikkod", classDiv: "4B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "538", name: "Shafeera Pattasheri", classDiv: "4B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "539", name: "Ayisha Shazma Ezhuvanthodi", classDiv: "4B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "540", name: "Rinsha Panarthodika", classDiv: "4B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "541", name: "Hamda Mariyam Valiyakandathil", classDiv: "4B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "542", name: "Ayisha Kodiyadan", classDiv: "4B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "543", name: "Fathima Rimsha Pattasseri", classDiv: "4B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "544", name: "Ayisha Shajwa Edeyodath Parambil", classDiv: "4B", cat: "Sub Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "545", name: "Rida Fathima Pulikkalakath", classDiv: "5B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "546", name: "Insha Fathima Elimbattil", classDiv: "5B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "547", name: "Shaima Sherin Melottil", classDiv: "5B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "548", name: "Fathima Salha Pattasseri", classDiv: "5B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "549", name: "Fathima Dhilna Vadakkan Thirikkood", classDiv: "5B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "550", name: "Fathima Hanna Pallikkal", classDiv: "5B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "551", name: "Nazaliya Fathima Therambil", classDiv: "5B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "552", name: "Haifa Naduthodi", classDiv: "5B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "553", name: "Fathima Azva Thayyil", classDiv: "5B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "554", name: "Afrin Mehra Panambilayi", classDiv: "5B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "555", name: "Hadiya Maryam Kunnatheri", classDiv: "5B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "556", name: "Ayisha Nuha Vadakkan Tharikkod", classDiv: "5B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "557", name: "ILfa Fathima Edayodath Paramb", classDiv: "5B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "558", name: "Sanha Sherin Thandarakkal", classDiv: "6B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "559", name: "Shahala Aramakka Veettil", classDiv: "6B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "560", name: "Fathima Shensi Pattasseri", classDiv: "6B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "561", name: "Fathima Nimna Thekkuncheri", classDiv: "6B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "562", name: "Fathima Nashwa Panambilayi", classDiv: "6B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "563", name: "Fathima Asla Ullisseri", classDiv: "6B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "564", name: "Insha Fathima Kunnatheri", classDiv: "6B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "565", name: "Fathima Rinsha Panambilayi", classDiv: "6B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "566", name: "Fathima Rifa Vadakkan Tharikkod", classDiv: "6B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "567", name: "Rimna Pulikkalakath", classDiv: "6B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "568", name: "Rimsha Pulikkalakath", classDiv: "6B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "569", name: "Amna Sulthan Karuthedath", classDiv: "6B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "570", name: "Thaswa Zainab Puthan Peediyeckal", classDiv: "6B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "571", name: "Fathima Nafla Uoorpayi", classDiv: "6B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "572", name: "Fathima Mirsha Edayodath Parambil", classDiv: "6B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "573", name: "Fathima Rushda Pattasseri", classDiv: "6B", cat: "Junior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "574", name: "Ziya Sherin Puthan Peediyeckal", classDiv: "7B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "575", name: "Shahana Vadakkan Tharikkod", classDiv: "7B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "576", name: "Ayisha Rifa Pattasseri", classDiv: "7B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "577", name: "Husna Fathima Narikkodan", classDiv: "7B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "578", name: "Dhana Pottanikkal", classDiv: "7B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "579", name: "Fathima Ifra Kunnatheri", classDiv: "7B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "580", name: "Fathima Shifa Panakkal", classDiv: "7B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "581", name: "Fathima Saja Thayyil", classDiv: "7B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "582", name: "Fathima Sana Thekkum Cheri", classDiv: "7B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "583", name: "Sanha Fathima Urpayi", classDiv: "7B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "584", name: "Shahana Jasmin Pattasseri", classDiv: "7B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "585", name: "Fathima Rushda Therambil", classDiv: "8B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "586", name: "Rafna Pathinaram Kandathil", classDiv: "8B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "587", name: "Fathima Shahma Pallikkal", classDiv: "8B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "588", name: "Hiba Fathima Muringa Thodi", classDiv: "8B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "589", name: "Niha Ellath", classDiv: "8B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "590", name: "Fathima Rana Vadakkan Thirikkod", classDiv: "8B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "591", name: "Felda Nafeesa Panakkal", classDiv: "8B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "592", name: "Kenza Fathima Palakkat", classDiv: "8B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "593", name: "Fathima Shahma Pathinaram Kandathil", classDiv: "8B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "594", name: "Heba Fathima Palakkat", classDiv: "8B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "595", name: "Mirfa Thekkuncheri", classDiv: "8B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "596", name: "Fathima Sanha Pattalathil", classDiv: "8B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "597", name: "Fathima Thekkuncheri", classDiv: "8B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "598", name: "Fathima Nazha Usnall Nveettil", classDiv: "8B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "599", name: "Fathima Anshida Kodiyadan", classDiv: "8B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "600", name: "Dilfa Panarthodika", classDiv: "8B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "601", name: "Fathima Shasfa Kunnatheri", classDiv: "8B", cat: "Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "602", name: "Rinsha Fathima Pathoor", classDiv: "9B", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "603", name: "Fathima Rishva Panar Thodika", classDiv: "9B", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "604", name: "Fathima Shifa Therambil", classDiv: "9B", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "605", name: "Rinfa Pulikkalakath", classDiv: "9B", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "606", name: "Ayisha Rida Pulikkalakath", classDiv: "9B", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "607", name: "Fathima Rishana Pathoor", classDiv: "9B", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "608", name: "Minha Naduthodi", classDiv: "9B", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "609", name: "Shiya Fathima Therambil", classDiv: "9B", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "610", name: "Fella Fathima Panakkal", classDiv: "9B", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "611", name: "Sayyidath Ayisha Shaba Kodinhi Pallikkal", classDiv: "9B", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "612", name: "Rushda Nalledath", classDiv: "9B", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "613", name: "Shahma Sherin Kunnatheri", classDiv: "9B", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "614", name: "Fathima Rifna Thayyil", classDiv: "10", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "615", name: "Jasriya Nasrin Pulikkalakath", classDiv: "10", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "616", name: "Sanha Fathima Panambilayi", classDiv: "10", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "617", name: "Fathima Anshida Pattasseri", classDiv: "10", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "618", name: "Ishmath Valiya Kandathil", classDiv: "10", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "619", name: "Hina Rasla Kannam Palli", classDiv: "10", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "620", name: "Fida Fathima Pattasseri", classDiv: "10", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "621", name: "Naja Nourin Pachayi", classDiv: "10", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "622", name: "Nasla Valiya Peediyeckal", classDiv: "10", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "623", name: "Hinada", classDiv: "10", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "624", name: "Farshida Sherin Thattan Kandi", classDiv: "+1", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "625", name: "Fida Mulla Madakkal", classDiv: "+1", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "626", name: "Ramsiya Nasrin Urpayi", classDiv: "+1", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "627", name: "Sayyidath Hizza Kodinhi Pallikkal", classDiv: "+1", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "628", name: "Nadiya Farsana Mulla Madakkal", classDiv: "+2", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "629", name: "Fathima Minha Thekkun Chery", classDiv: "+2", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "630", name: "Fathima Rinsha Therambil", classDiv: "+2", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "631", name: "Nadha Fathima Eleyen Chery", classDiv: "+2", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "632", name: "Naja Fathima Eleyen Chery", classDiv: "+2", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "633", name: "Fathima Shaba Thayyil", classDiv: "+2", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "634", name: "Salma Jasmin Mattath", classDiv: "+2", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "635", name: "Fathima Minsha Edayodath Paramb", classDiv: "+2", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" },
+            { regNo: "636", name: "Shahzadi palakkatt", classDiv: "+2", cat: "Super Senior", team: "KHAIBAR WARRIORS", gender: "GIRLS" }
+        ];
+
+        const KHANDAQ_BOYS_DATA = [
+            { regNo: "301", name: "Muhammad Adhnan Vadikkadavath", classDiv: "1A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "302", name: "Muhammed Aamir Zayan Mullakkoya Makkanath", classDiv: "1A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "303", name: "Muhammed Ajlan Thekkumcheri", classDiv: "1A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "304", name: "Muhammad Ishaal Kunnatheri", classDiv: "1A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "305", name: "Mohammad Razi Thayyil", classDiv: "1A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "306", name: "Muhammad Shazin Thayyil", classDiv: "1A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "307", name: "Anan Thottappali", classDiv: "1A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "308", name: "Mohammed Mishaal Naduthodi", classDiv: "1A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "309", name: "Aman Pachayi", classDiv: "1A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "310", name: "Muhammed Harshil Vitattil", classDiv: "1A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "311", name: "Hyzin Naduthodi", classDiv: "1A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "312", name: "Muhammad Nashif Kakkad", classDiv: "1A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "313", name: "Muhammad Hadi Vadakkan Thirikkod", classDiv: "2A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "314", name: "Muhammad Faheem Narikkodan", classDiv: "2A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "315", name: "Adnan Panarthodika", classDiv: "2A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "316", name: "Zayn Malik Muringathodi", classDiv: "2A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "317", name: "Razi Ramzan Thayyil", classDiv: "2A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "318", name: "Muhammed Izin Panambilayi", classDiv: "2A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "319", name: "Faadhi Ahmed Thekkum Cheri", classDiv: "2A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "320", name: "Emin Zohan Maliyatt", classDiv: "2A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "321", name: "Subhan Raza", classDiv: "2A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "322", name: "Muhammed Fezin Panakkal", classDiv: "2A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "323", name: "Muhammad Midlaj Kodiyadan", classDiv: "3A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "324", name: "Muhammed Shaheem Pattalathil", classDiv: "3A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "325", name: "Muhammed Ajnas Muringathodi", classDiv: "3A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "326", name: "Eisa Anwar Thekkumcheri", classDiv: "3A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "327", name: "Muhammed Fajar Pottanikkal", classDiv: "3A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "328", name: "Muhammed Jazlan Melepurath", classDiv: "3A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "329", name: "Ahammed Shafeeh Thattan Kandi", classDiv: "3A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "330", name: "Muhammed Rayan Thandarakkal", classDiv: "3A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "331", name: "Mohammed Zayan Valiyakandathil", classDiv: "3A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "332", name: "Muhammed Bishr Vadakkan Thirikkod", classDiv: "3A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "333", name: "Muhammed Nazil Therambil", classDiv: "3A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "334", name: "Shahid Thayyil", classDiv: "4A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "335", name: "Muhammed Shayan Kavungal", classDiv: "4A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "336", name: "Muhammed Ameen Elimbattil", classDiv: "4A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "337", name: "Mohammed Aman Palakkatt", classDiv: "4A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "338", name: "Muhammed Aflah Urppayi", classDiv: "4A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "339", name: "Muhammad Hamdan Panakkal", classDiv: "4A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "340", name: "Muhammead Raihan Kodiyadan", classDiv: "4A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "341", name: "Abdu Rasheed Panarthodika", classDiv: "4A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "342", name: "Muhammed Ashab Palakkatt", classDiv: "4A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "343", name: "Ansil Pattasheri", classDiv: "4A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "344", name: "Shahal Vadakkan Thirikkode", classDiv: "4A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "345", name: "Muhammed Rajvan Pattasseri", classDiv: "4A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "346", name: "Muhammed Ramzin Pulikkalakath", classDiv: "4A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "347", name: "Ishan Muhammed Mattath", classDiv: "4A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "348", name: "Muhammad Shahzin Anayam Chirakkal", classDiv: "4A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "349", name: "Muhammed Aban", classDiv: "4A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "350", name: "Ashmal Thekkuncheri", classDiv: "5A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "351", name: "Muhammed Shiyaz Pattasseri", classDiv: "5A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "352", name: "Muhammed Adhish Melottil", classDiv: "5A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "353", name: "Ameen Panarthodika", classDiv: "5A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "354", name: "Muhammed Shahal Pathinaram Kandathil", classDiv: "5A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "355", name: "Amar Abdussalam Naduthodi", classDiv: "5A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "356", name: "Nidhal Shamseer Naduthodi", classDiv: "5A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "357", name: "Ayman Thekkuncheri", classDiv: "5A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "358", name: "Ameen Valiya Kandathil", classDiv: "5A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "359", name: "Hamdan Pilasseri", classDiv: "5A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "360", name: "Shahzin Karuthedath", classDiv: "5A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "361", name: "Muhammed Hamdan Kodiyadan", classDiv: "5A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "362", name: "Nazil Nizam", classDiv: "5A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "363", name: "Muhammed Danish Panakkal", classDiv: "5A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "364", name: "Muhammed Ridwan Anayam Chirakkal", classDiv: "5A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "365", name: "Lazim Ali Pathoor", classDiv: "6A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "366", name: "Muhammed Saihan Valiya Kandathil", classDiv: "6A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "367", name: "Anjal Shan Aramakkaveettil Muthedath", classDiv: "6A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "368", name: "Johan Illath", classDiv: "6A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "369", name: "Faseehu Lisan Thattankandi", classDiv: "6A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "370", name: "Shan Muhammed Ezhuyan Thodi", classDiv: "6A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "371", name: "Rayyan Ibrahim Panarthodika", classDiv: "6A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "372", name: "Adhil Pathoor", classDiv: "6A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "373", name: "Muhammed Ayan Pattasseri", classDiv: "6A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "374", name: "Muhammed Misbah Kulathoor", classDiv: "7A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "375", name: "Muhammed Rayyan Veluthan Veettil", classDiv: "7A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "376", name: "Muhammed Afreed Urpayi", classDiv: "7A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "377", name: "Al Ihsan Vadikkadavath", classDiv: "7A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "378", name: "Muhammed Adnan Narikkodan", classDiv: "7A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "379", name: "Muhammed Rifan Pathoor", classDiv: "7A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "380", name: "Muhammed Shan Eleyencheri", classDiv: "7A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "381", name: "Muhammed Faizan Malayam Palli", classDiv: "7A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "382", name: "Sadin Ahmad Kattu Peediyekkal", classDiv: "7A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "383", name: "Muhammed Shamir Melottil", classDiv: "7A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "384", name: "Muhammed Shaheem Valiya Peediyekkal", classDiv: "8A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "385", name: "Ramees Pilasheri", classDiv: "8A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "386", name: "Muhammed Shifan Therambil", classDiv: "8A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "387", name: "Muhammed Rifan Therambil", classDiv: "8A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "388", name: "Meyaz Muhammed Thekkum Cheri", classDiv: "8A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "389", name: "Muhammed Dilshad Vadakkan Tharikod", classDiv: "8A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "390", name: "Muhammed Razeen Naduthodi", classDiv: "8A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "391", name: "Muhammed Shimlal Pattasheri", classDiv: "8A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "392", name: "Muhammed Razin Panakkal", classDiv: "8A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "393", name: "Muhammed Sadim Thekkun Chery", classDiv: "8A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "394", name: "Muhammed Rishan Mele Purath", classDiv: "8A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "395", name: "Sayyid Muhammad Shareef Parammal", classDiv: "8A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "396", name: "Muhammed Risil Valiya Peediyekkal", classDiv: "8A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "397", name: "Nihal Nalledath", classDiv: "8A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "398", name: "Muhammed Shefin Panarthodika", classDiv: "8A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "399", name: "Muhammed Sinan Muringa Thodi", classDiv: "9A", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "400", name: "Muhammed Shibili Pallikkal", classDiv: "9A", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "401", name: "Muhammed Hishan Thekkun Chery", classDiv: "9A", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "402", name: "Muhammed Anshid Melottil", classDiv: "9A", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "403", name: "Jifin Muhammed Pathoor", classDiv: "9A", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "404", name: "Muhammed Shibili Panambilayi", classDiv: "10", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "405", name: "Muhammed Rayyan Panakkal", classDiv: "10", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "406", name: "Muhammed Shamveel Pattasseri", classDiv: "10", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "407", name: "Muhammed Razin Malayam Palli", classDiv: "10", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "408", name: "Muhammed Ashmil Thappithoniyeri", classDiv: "10", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "409", name: "Muhammed Shahan Panakkal", classDiv: "10", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "410", name: "Shamil Muhammed Ezhuvan Thody", classDiv: "10", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "411", name: "Muhammed Shadil Nalledath", classDiv: "+1", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "412", name: "Shibil Nalledath", classDiv: "+1", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "413", name: "Shamil Naduthodi", classDiv: "+1", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "414", name: "Afeef", classDiv: "+1", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "415", name: "Shabeel", classDiv: "+1", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" },
+            { regNo: "416", name: "Basith", classDiv: "+2", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "BOYS" }
+        ];
+
+        const KHANDAQ_GIRLS_DATA = [
+            { regNo: "701", name: "Ayisha Izza Pattasseri", classDiv: "1A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "702", name: "Insha Fathima Valiya Kandathil", classDiv: "1A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "703", name: "Fathima Yooha Panakkal", classDiv: "1A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "704", name: "Ayisha Jaza Panakkal", classDiv: "1A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "705", name: "Fathima Farha Urppayi", classDiv: "1A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "706", name: "Fathima Heyza Vadakkan Tharikode", classDiv: "1A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "707", name: "Sheza Mehrin Mullanmadakkal", classDiv: "1A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "708", name: "Mayaza Ellath", classDiv: "1A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "709", name: "Shezwa Mehak Pachayi", classDiv: "1A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "710", name: "Shezra Mehak Pachayi", classDiv: "1A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "711", name: "Shanza Fathima Narikkodan", classDiv: "2A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "712", name: "Fathima Arza Keezhu Veettil", classDiv: "2A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "713", name: "Layha Fathima Panambilayi", classDiv: "2A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "714", name: "Ayisha Farooque Chemban", classDiv: "2A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "715", name: "Ayisha Mehra Edayodath Parambil", classDiv: "2A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "716", name: "Eshaal Ramiz Alikkkadavath", classDiv: "2A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "717", name: "Shaiqa Thekkum Cheri", classDiv: "2A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "718", name: "Sheza Fathima", classDiv: "2A", cat: "Kiddies", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "719", name: "Sana Mehara Kuttikkattil", classDiv: "3A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "720", name: "Fathima Rushda Mulla Madakkal", classDiv: "3A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "721", name: "Ayisha Jaza Naduthodi", classDiv: "3A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "722", name: "Mariyam Anwar Thekkumcheri", classDiv: "3A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "723", name: "Fathima Muizza Kodivallappil", classDiv: "3A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "724", name: "Sheza Fathima Vadakkethil", classDiv: "3A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "725", name: "Riya Pathoor", classDiv: "3A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "726", name: "Nuzha Fathima Therambil", classDiv: "3A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "727", name: "Fathima Resmin Kooriyadan", classDiv: "3A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "728", name: "Fathima Liya Kumban Kadavath", classDiv: "3A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "729", name: "Fathima Shaza Therambil", classDiv: "3A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "730", name: "Fathima Raja Kodiyadan", classDiv: "4A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "731", name: "Fathima Risa Valiya Peediyeckal", classDiv: "4A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "732", name: "Haifa Fathima Pathoor", classDiv: "4A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "733", name: "Liya Kulathoor", classDiv: "4A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "734", name: "Hisha Meharin Theyyil", classDiv: "4A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "735", name: "Azra Fathima Panakkal", classDiv: "4A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "736", name: "Shaza Fathima Valiyakandathil", classDiv: "4A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "737", name: "Fathima Nashva Chanaparambil", classDiv: "4A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "738", name: "Aqsa Therambil", classDiv: "4A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "739", name: "Fathima Nouriya Kulathoor", classDiv: "4A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "740", name: "Fathima Shadha Panakkal", classDiv: "4A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "741", name: "Izna Fathima Panambilayi", classDiv: "4A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "742", name: "Rana Laiba Valiya Peediyeckal", classDiv: "4A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "743", name: "Fathima Ishma Kodiyadan", classDiv: "4A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "744", name: "Raifah Thekkumcheri", classDiv: "4A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "745", name: "Fathima Layyina Pathoor", classDiv: "4A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "746", name: "Nafla Nasrin Elimbattil", classDiv: "4A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "747", name: "Hanan Zahra", classDiv: "4A", cat: "Sub Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "748", name: "Jishana Nasrin Pulikkalakath", classDiv: "5A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "749", name: "Sanha Fathima Nalledath", classDiv: "5A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "750", name: "Salha Fathima Nalledath", classDiv: "5A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "751", name: "Shifa Valiya Kandathil", classDiv: "5A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "752", name: "Niha Maryam Urpayi", classDiv: "5A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "753", name: "Fathima Shifa Pathinaram Kandathil", classDiv: "5A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "754", name: "Fathima Maliyatt", classDiv: "5A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "755", name: "Fathima Liya Paramberi", classDiv: "5A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "756", name: "Fathima Rua Cherukad", classDiv: "5A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "757", name: "Nuha Farha Pattasseri", classDiv: "5A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "758", name: "Fathima Ashva Kizhu Veettil", classDiv: "5A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "759", name: "Aysha Faiha Urpayi", classDiv: "5A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "760", name: "Jaza Janna Thattan Kandi", classDiv: "5A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "761", name: "Kadeeja Swafa Valiya Peediyeckal", classDiv: "5A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "762", name: "Shahana Therambil", classDiv: "6A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "763", name: "Nusmiya Kulathoor", classDiv: "6A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "764", name: "Fathima Faiha Urpayi", classDiv: "6A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "765", name: "Mehra Pilasseri", classDiv: "6A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "766", name: "Fathima Shifa Tharayil", classDiv: "6A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "767", name: "Risvi Pulikkalakath", classDiv: "6A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "768", name: "Fathima Jasa Pathoor", classDiv: "6A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "769", name: "Fathima Faiha Kunnatheri", classDiv: "6A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "770", name: "Fella Illath", classDiv: "6A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "771", name: "Fathima Shasa Karuthedath", classDiv: "6A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "772", name: "Fathima Diya Pattasseri", classDiv: "6A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "773", name: "Ayisha Izza Palakkatt", classDiv: "6A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "774", name: "Fathima Minha Pattalathil", classDiv: "6A", cat: "Junior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "775", name: "Fathima Shifna Neelengal", classDiv: "7A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "776", name: "Fathima Nashva Panakkal", classDiv: "7A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "777", name: "Nashva Fathima Thekkun Chery", classDiv: "7A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "778", name: "Ayisha Minha Thayyil", classDiv: "7A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "779", name: "Haniya Pattasheri", classDiv: "7A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "780", name: "Fathima Riya Kodiyadan", classDiv: "7A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "781", name: "Fathima Lubna Vadikkadavath", classDiv: "7A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "782", name: "Swafa Pulikkalakath", classDiv: "7A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "783", name: "Mehrin Pulikkalakath", classDiv: "7A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "784", name: "Fathima Rajha Malayampalli", classDiv: "7A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "785", name: "Sanha Fathima Elimbattil", classDiv: "7A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "786", name: "Nasra Fathima Therambil", classDiv: "7A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "787", name: "Sana Beevi Kodinhi Pallikkal", classDiv: "7A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "788", name: "Fathima Faiza Malayampalli", classDiv: "7A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "789", name: "Shaza Hisham", classDiv: "7A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "790", name: "Ayisha Shifna Anayamchirakkal", classDiv: "8A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "791", name: "Rifa Muthala Veettil", classDiv: "8A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "792", name: "Nafla Swalih Pattasheri", classDiv: "8A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "793", name: "Raja Fathima Thayyil", classDiv: "8A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "794", name: "Fathima Nida Veluthan Veettil", classDiv: "8A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "795", name: "Fathima Riduva Thayyil", classDiv: "8A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "796", name: "Shasfa Panakkal", classDiv: "8A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "797", name: "Rifa Panakkal", classDiv: "8A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "798", name: "Ayisha Valiya Kandathil", classDiv: "8A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "799", name: "Fathima Simin Palappura", classDiv: "8A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "800", name: "Misna Kunnatheri", classDiv: "8A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "801", name: "Afla Mishan Urpai", classDiv: "8A", cat: "Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "802", name: "Fathima Afra Konnakkal", classDiv: "9A", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "803", name: "Fathima Rasha Mulla Madakkal", classDiv: "9A", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "804", name: "Fathima Minha Pallikkal", classDiv: "9A", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "805", name: "Fathima Bisma Chana Parambil", classDiv: "9A", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "806", name: "Fathima Nada Thekkun Cheri", classDiv: "9A", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "807", name: "Fathima Hiba Vadakkan Thirikkod", classDiv: "9A", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "808", name: "Anshifa Kalampilayi", classDiv: "9A", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "809", name: "Shada Eleyen Chery", classDiv: "9A", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "810", name: "Askarua Panakkal", classDiv: "9A", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "811", name: "Sanha Fathima Puthalath", classDiv: "9A", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "812", name: "Shifa Fathima Edeyodath Paramb", classDiv: "9A", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "813", name: "Shaziya Faisal Valiya Kandathil", classDiv: "9A", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "814", name: "Asmila Pathoor", classDiv: "9A", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "815", name: "Fathima Aneena Vittattil", classDiv: "9A", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "816", name: "Shaheeda Hanna Vittaattil", classDiv: "9A", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "817", name: "Liya Mervin Thekkuncheri", classDiv: "9A", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "818", name: "Amna Anwer Thekkuncheri", classDiv: "9A", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "819", name: "Shifana Sherin Melottil", classDiv: "10", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "820", name: "Fathima Rizwa Panakkal", classDiv: "10", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "821", name: "Ziya Sherin", classDiv: "10", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "822", name: "Ayisha Ashrin Malayram Palli", classDiv: "10", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "823", name: "Fathima Suhana Panarthodika", classDiv: "10", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "824", name: "Nadiya Thansi", classDiv: "10", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "825", name: "Kadeeja Hanna Pottanikkal", classDiv: "10", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "826", name: "Sanha Fathima Narikodan", classDiv: "10", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "827", name: "Anfa Elimbattil", classDiv: "10", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "828", name: "Aslaha Raya Maliyat", classDiv: "10", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "829", name: "Safuva Aramekkaveettil Moothdath", classDiv: "+1", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "830", name: "Niya Yasir Kodivalappil", classDiv: "+1", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "831", name: "Fathima Safla Therambil", classDiv: "+1", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "832", name: "Ayisha Rifa Thekkunchery", classDiv: "+1", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "833", name: "Nasrin Naduthodi", classDiv: "+2", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "834", name: "Ayisha Munawara Pallikkal", classDiv: "+2", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "835", name: "Rifa Sherin Thekkun Cheri", classDiv: "+2", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "836", name: "Swafa Zainab Aramakka Veettil", classDiv: "+2", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "837", name: "Nadha Farha Pattashery", classDiv: "+2", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "838", name: "Fathima Rushda Kodiyadan", classDiv: "+2", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "839", name: "Dhilna Panambilayi", classDiv: "+2", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "840", name: "Fathima Shahana Eleyen Cheri", classDiv: "+2", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" },
+            { regNo: "841", name: "Anfidha", classDiv: "+1", cat: "Super Senior", team: "KHANDAQ FIGHTERS", gender: "GIRLS" }
+        ];
+
         let state = {
             isAuthenticated: sessionStorage.getItem('admin_auth') === 'true',
             tab: 'dashboard', 
@@ -436,22 +955,125 @@
         window.handleLogout = () => { state.isAuthenticated = false; sessionStorage.removeItem('admin_auth'); render(); };
         window.switchTab = (tab) => { state.tab = tab; render(); };
 
+        window.importList = async (listType) => {
+            let dataToImport = [];
+            let label = "";
+
+            if(listType === 'KW_BOYS') { dataToImport = KHAIBAR_BOYS_DATA; label = "Khaibar Warriors (Boys - 113)"; } 
+            else if(listType === 'KW_GIRLS') { dataToImport = KHAIBAR_GIRLS_DATA; label = "Khaibar Warriors (Girls - 136)"; } 
+            else if(listType === 'KF_BOYS') { dataToImport = KHANDAQ_BOYS_DATA; label = "Khandaq Fighters (Boys - 116)"; } 
+            else if(listType === 'KF_GIRLS') { dataToImport = KHANDAQ_GIRLS_DATA; label = "Khandaq Fighters (Girls - 140)"; } 
+            else { dataToImport = [...KHAIBAR_BOYS_DATA, ...KHAIBAR_GIRLS_DATA, ...KHANDAQ_BOYS_DATA, ...KHANDAQ_GIRLS_DATA]; label = "All Teams Data (505 Candidates)"; }
+
+            if (!confirm(`${label} ഡാറ്റാബേസിലേക്ക് സിങ്ക് ചെയ്യണോ?`)) return;
+
+            try {
+                let count = 0;
+                const existingChestNos = new Set(state.candidates.map(c => String(c.regNo)));
+                let batches = []; let currentBatch = writeBatch(db); let opCount = 0;
+
+                for (const item of dataToImport) {
+                    if (!existingChestNos.has(String(item.regNo))) {
+                        const docRef = doc(collection(db, 'candidates'));
+                        currentBatch.set(docRef, {
+                            name: item.name, regNo: String(item.regNo), classDiv: item.classDiv,
+                            cat: item.cat, team: item.team, gender: item.gender,
+                            assignedPrograms: [], timestamp: Date.now() + count
+                        });
+                        count++; opCount++;
+                        if (opCount >= 400) { batches.push(currentBatch); currentBatch = writeBatch(db); opCount = 0; }
+                    }
+                }
+                
+                if (opCount > 0) batches.push(currentBatch);
+                for(let b of batches) await b.commit();
+                
+                window.showAlert(`${count} പുതിയ കുട്ടികളെ വിജയികരമായി ചേർത്തു!`);
+            } catch (err) { window.showAlert("Error: " + err.message, "error"); }
+        };
+
+        window.syncCategory = async (catName) => {
+            let list = [];
+            if (catName === 'Kiddies') list = KIDDIES_PROGRAMS;
+            if (catName === 'Sub Junior') list = SUBJUNIOR_PROGRAMS;
+            if (catName === 'Junior') list = JUNIOR_PROGRAMS;
+            if (catName === 'Senior') list = SENIOR_PROGRAMS;
+            if (catName === 'Super Senior') list = SUPERSENIOR_PROGRAMS;
+            if (catName === 'General') list = GENERAL_PROGRAMS;
+
+            if (!confirm(`Sync ${catName} programs and automatically assign candidates?`)) return;
+            try {
+                let updatedProgs = [...state.programs];
+                const newIdsMap = {}; 
+                let progsAdded = 0;
+
+                list.forEach(kp => {
+                    let existing = updatedProgs.find(p => p.progNo === kp.no);
+                    
+                    const p15 = ['551', '552', '553', '501', '502'];
+                    const p10 = ['54', '155', '257', '458', '04', '105', '205', '206', '303', '304', '403', '360'];
+                    const noIndiv = ['107', '208', '154', '259'];
+                    
+                    let scheme = "5,3,1";
+                    if(p15.includes(String(kp.no).trim())) scheme = "15,10,5";
+                    else if(p10.includes(String(kp.no).trim())) scheme = "10,7,5";
+
+                    let isGrp = window.isGroupProgram(kp.name, false);
+                    let isKala = (!isGrp && !noIndiv.includes(String(kp.no).trim()));
+
+                    if(!existing) {
+                        const newId = 'p' + Date.now() + Math.floor(Math.random()*1000) + kp.no;
+                        updatedProgs.push({ id: newId, progNo: kp.no, name: kp.name, cat: kp.cat, type: kp.type, pointScheme: scheme, isKalaprathiba: isKala, timestamp: Date.now() });
+                        newIdsMap[kp.no] = newId; progsAdded++;
+                    } else { 
+                        newIdsMap[kp.no] = existing.id; 
+                    }
+                });
+
+                await updateDoc(doc(db, 'settings', 'config'), { programs: updatedProgs });
+
+                let assignCount = 0; let batches = []; let currentBatch = writeBatch(db); let opCount = 0;
+
+                for (const kp of list) {
+                    const progId = newIdsMap[kp.no];
+                    if(!progId) continue;
+                    
+                    for (const chestNo of kp.cands) {
+                        const cand = state.candidates.find(c => String(c.regNo) === String(chestNo));
+                        if(cand) {
+                            let assigned = cand.assignedPrograms || [];
+                            if(!assigned.includes(progId)) {
+                                assigned.push(progId);
+                                currentBatch.update(doc(db, 'candidates', cand.id), { assignedPrograms: assigned });
+                                assignCount++; opCount++;
+                                if(opCount >= 400) { batches.push(currentBatch); currentBatch = writeBatch(db); opCount = 0; }
+                            }
+                        }
+                    }
+                }
+                if(opCount > 0) batches.push(currentBatch);
+                for(let b of batches) await b.commit();
+                
+                window.showAlert(`Success! Added ${progsAdded} programs and assigned ${assignCount} entries.`);
+            } catch(e) { window.showAlert("Error: " + e.message, "error"); }
+        };
+
         window.addNewProgram = async (e) => {
             e.preventDefault(); 
             const progNo = document.getElementById('pNo').value;
             const name = document.getElementById('pName').value; 
             const cat = document.getElementById('pCat').value; 
             const type = document.getElementById('pType').value; 
-            const pointScheme = document.getElementById('pPts').value;
-            const kalaprathiba = document.getElementById('pKala').value === "true";
+            const pointScheme = document.getElementById('pPoints').value;
+            const isKalaprathiba = document.getElementById('pKalaprathiba').value === "true";
             
-            const newProg = { id: 'p' + Date.now(), progNo, name, cat, type, pointScheme, kalaprathiba, timestamp: Date.now() }; 
+            const newProg = { id: 'p' + Date.now(), progNo, name, cat, type, pointScheme, isKalaprathiba, timestamp: Date.now() }; 
             const updatedProgs = [...state.programs, newProg]; 
             
             const btn = document.getElementById('addProgBtn'); btn.disabled = true; btn.innerText = 'Saving...';
             try { await updateDoc(doc(db, 'settings', 'config'), { programs: updatedProgs }); window.showAlert("മത്സരം ചേർത്തു!"); e.target.reset(); } 
             catch(err) { window.showAlert("Error: " + err.message, "error"); }
-            finally { btn.disabled = false; btn.innerText = '+ ചേർക്കുക'; }
+            finally { btn.disabled = false; btn.innerText = '+ Add'; }
         };
 
         window.deleteProgram = async (id) => {
@@ -470,6 +1092,17 @@
             document.getElementById('editProgCat').value = p.cat;
             document.getElementById('editProgType').value = p.type;
             
+            document.getElementById('editProgPoints').value = p.pointScheme || "5,3,1";
+            let isKala = true;
+            if (p.hasOwnProperty('isKalaprathiba')) {
+                isKala = p.isKalaprathiba;
+            } else {
+                let isGrp = window.isGroupProgram(p.name, p.isGroup);
+                let pNo = String(p.progNo).trim();
+                isKala = (!isGrp && !['107', '208', '154', '259'].includes(pNo));
+            }
+            document.getElementById('editProgKalaprathiba').value = isKala ? "true" : "false";
+            
             let pGender = p.gender || 'ALL';
             if (pGender === 'ALL') {
                 if(p.name.toLowerCase().includes('boys')) pGender = 'BOYS';
@@ -477,10 +1110,6 @@
             }
             document.getElementById('editProgGender').value = pGender;
             document.getElementById('editProgFormat').value = (window.isGroupProgram(p.name, p.isGroup) ? "true" : "false");
-            
-            // Set new dropdowns
-            document.getElementById('editProgPts').value = p.pointScheme || '5,3,1';
-            document.getElementById('editProgKala').value = p.kalaprathiba !== false ? "true" : "false";
             
             document.getElementById('editProgModal').style.display = 'flex';
         };
@@ -498,13 +1127,13 @@
                     type: document.getElementById('editProgType').value,
                     gender: document.getElementById('editProgGender').value,
                     isGroup: document.getElementById('editProgFormat').value === "true",
-                    pointScheme: document.getElementById('editProgPts').value,
-                    kalaprathiba: document.getElementById('editProgKala').value === "true"
+                    pointScheme: document.getElementById('editProgPoints').value,
+                    isKalaprathiba: document.getElementById('editProgKalaprathiba').value === "true"
                 } : p);
                 await updateDoc(doc(db, 'settings', 'config'), { programs: updated });
                 window.showAlert("Program updated!"); document.getElementById('editProgModal').style.display = 'none';
             } catch(err) { window.showAlert("Error: " + err.message, "error"); }
-            finally { btn.innerText = 'Update'; btn.disabled = false; }
+            finally { btn.innerText = 'Save Settings'; btn.disabled = false; }
         };
 
         window.addCandidate = async (e) => {
@@ -517,8 +1146,9 @@
             let regNo = document.getElementById('cRegNo').value; 
             
             if(!regNo) {
+                const prefix = CAT_PREFIX[cat] || 'K'; 
                 const catCount = state.candidates.filter(c => c.cat === cat).length; 
-                regNo = 'K' + (101 + catCount); 
+                regNo = prefix + (101 + catCount); 
             }
             
             const btn = document.getElementById('addCandBtn'); btn.innerText = "Saving..."; btn.disabled = true; 
@@ -632,48 +1262,48 @@
         };
 
         window.repairDatabase = async () => {
-            if(!confirm("This will scan your database and instantly attach the correct Points and Kalaprathiba settings to all existing programs. Continue?")) return;
+            if(!confirm("This will scan all existing programs and perfectly attach their default Point Schemes and Kalaprathiba settings. Continue?")) return;
             
             const btn = document.getElementById('repairBtn');
-            if(btn) { btn.innerText = "Repairing..."; btn.disabled = true; }
+            if(btn) { btn.innerText = "Scanning & Upgrading..."; btn.disabled = true; }
 
             try {
                 let allHardcoded = [...KIDDIES_PROGRAMS, ...SUBJUNIOR_PROGRAMS, ...JUNIOR_PROGRAMS, ...SENIOR_PROGRAMS, ...SUPERSENIOR_PROGRAMS, ...GENERAL_PROGRAMS];
                 let updatedProgs = [...state.programs];
-                let restored = 0;
+                let upgradedCount = 0;
 
                 allHardcoded.forEach(kp => {
                     let existing = updatedProgs.find(p => String(p.progNo).trim() === String(kp.no).trim());
                     
-                    let pNo = String(kp.no).trim();
+                    const p15 = ['551', '552', '553', '501', '502'];
+                    const p10 = ['54', '155', '257', '458', '04', '105', '205', '206', '303', '304', '403', '360'];
+                    const noIndiv = ['107', '208', '154', '259'];
+                    
+                    let scheme = "5,3,1";
+                    if(p15.includes(String(kp.no).trim())) scheme = "15,10,5";
+                    else if(p10.includes(String(kp.no).trim())) scheme = "10,7,5";
+
                     let isGrp = window.isGroupProgram(existing ? existing.name : kp.name, existing ? existing.isGroup : undefined);
-                    
-                    // Default Logic
-                    let pts = '5,3,1';
-                    if (['551', '552', '553', '501', '502'].includes(pNo)) pts = '15,10,5';
-                    else if (['54', '155', '257', '458', '04', '105', '205', '206', '303', '304', '403', '360'].includes(pNo)) pts = '10,7,5';
-                    
-                    let kala = true;
-                    if (isGrp || ['107', '208', '154', '259'].includes(pNo)) kala = false;
+                    let isKala = (!isGrp && !noIndiv.includes(String(kp.no).trim()));
 
                     if(existing) {
-                        existing.pointScheme = pts;
-                        existing.kalaprathiba = kala;
+                        existing.pointScheme = existing.pointScheme || scheme;
+                        existing.kalaprathiba = existing.hasOwnProperty('isKalaprathiba') ? existing.isKalaprathiba : isKala;
                         if (!existing.name || existing.name !== kp.name) existing.name = kp.name; // Keep name restoration feature too
-                        restored++;
+                        upgradedCount++;
                     } else {
                         const newId = 'p' + Date.now() + Math.floor(Math.random()*1000) + kp.no;
-                        updatedProgs.push({ id: newId, progNo: kp.no, name: kp.name, cat: kp.cat, type: kp.type, pointScheme: pts, kalaprathiba: kala, timestamp: Date.now() });
-                        restored++;
+                        updatedProgs.push({ id: newId, progNo: kp.no, name: kp.name, cat: kp.cat, type: kp.type, pointScheme: scheme, isKalaprathiba: isKala, timestamp: Date.now() });
+                        upgradedCount++;
                     }
                 });
 
                 await updateDoc(doc(db, 'settings', 'config'), { programs: updatedProgs });
-                window.showAlert(`Successfully repaired and verified ${restored} programs!`);
+                window.showAlert(`Successfully upgraded/restored ${upgradedCount} programs with full settings!`);
             } catch(e) {
                 window.showAlert("Error: " + e.message, "error");
             } finally {
-                if(btn) { btn.innerText = "🛠️ Repair Database"; btn.disabled = false; }
+                if(btn) { btn.innerText = "🛠️ Repair Missing Names & Settings"; btn.disabled = false; }
                 window.render();
             }
         };
@@ -816,10 +1446,6 @@
                         <div class="flex flex-col items-center justify-center mb-6">
                             <span class="text-xs text-amber-400 font-extrabold tracking-widest uppercase mb-1">LADAL MADEENA 2K26</span>
                             <h2 class="text-2xl font-black text-purple-200 tracking-tight">ADMIN PORTAL</h2>
-                            <div class="flex gap-2 mt-2 justify-center">
-                                <span class="text-[10px] bg-purple-900/80 text-amber-300 px-2.5 py-0.5 rounded-full font-bold border border-purple-600">KHAIBAR</span>
-                                <span class="text-[10px] bg-purple-900/80 text-purple-300 px-2.5 py-0.5 rounded-full font-bold border border-purple-600">KHANDAQ</span>
-                            </div>
                         </div>
                         <p class="text-purple-300 text-xs mb-6">Enter password to manage fest data</p>
                         <form onsubmit="handleLogin(event)" class="space-y-4">
@@ -841,63 +1467,83 @@
             
             let mainContent = '';
 
-            if (state.tab === 'dashboard') {
-                const kwBoys = state.candidates.filter(c => c.team === 'KHAIBAR WARRIORS' && c.gender === 'BOYS').length;
-                const kwGirls = state.candidates.filter(c => c.team === 'KHAIBAR WARRIORS' && c.gender === 'GIRLS').length;
-                const kfBoys = state.candidates.filter(c => c.team === 'KHANDAQ FIGHTERS' && c.gender === 'BOYS').length;
-                const kfGirls = state.candidates.filter(c => c.team === 'KHANDAQ FIGHTERS' && c.gender === 'GIRLS').length;
+            // GLOBAL STATS & POINTS CALCULATION
+            const kwBoys = state.candidates.filter(c => c.team === 'KHAIBAR WARRIORS' && c.gender === 'BOYS').length;
+            const kwGirls = state.candidates.filter(c => c.team === 'KHAIBAR WARRIORS' && c.gender === 'GIRLS').length;
+            const kfBoys = state.candidates.filter(c => c.team === 'KHANDAQ FIGHTERS' && c.gender === 'BOYS').length;
+            const kfGirls = state.candidates.filter(c => c.team === 'KHANDAQ FIGHTERS' && c.gender === 'GIRLS').length;
 
-                // STATS CALCULATION
-                var stats = { teamA: { total:0, boys:0, girls:0 }, teamB: { total:0, boys:0, girls:0 } };
-                var candPoints = {};
+            var stats = { teamA: { total:0, boys:0, girls:0 }, teamB: { total:0, boys:0, girls:0 } };
+            var candKalaData = {}; 
+            var candTotalPts = {};
+            
+            const noIndividualProgIds = ['107', '208', '154', '259']; // Conversations
+
+            state.results.forEach(res => {
+                var prog = state.programs.find(p => p.id === res.progId);
+                if (!prog) return;
+
+                var isGrp = window.isGroupProgram(prog.name, prog.isGroup);
+                var pNo = String(prog.progNo).trim();
                 
-                state.results.forEach(res => {
-                    var prog = state.programs.find(p => p.id === res.progId);
-                    if (!prog) return;
+                var ptsArr = (prog.pointScheme || '5,3,1').split(',').map(Number);
+                var fPts = ptsArr[0], sPts = ptsArr[1], tPts = ptsArr[2];
+                
+                if (res.pts1) fPts = res.pts1; if (res.pts2) sPts = res.pts2; if (res.pts3) tPts = res.pts3;
 
-                    var isGrp = window.isGroupProgram(prog.name, prog.isGroup);
-                    var pNo = String(prog.progNo).trim();
-                    
-                    var ptsArr = (prog.pointScheme || '5,3,1').split(',').map(Number);
-                    var fPts = ptsArr[0], sPts = ptsArr[1], tPts = ptsArr[2];
-                    
-                    // Support legacy result overrides if any
-                    if (res.pts1) fPts = res.pts1; if (res.pts2) sPts = res.pts2; if (res.pts3) tPts = res.pts3;
+                var isKala = prog.kalaprathiba;
+                if (isKala === undefined) {
+                    isKala = !(isGrp || noIndividualProgIds.includes(pNo));
+                }
 
-                    var isKala = prog.kalaprathiba;
-                    // Fallback logic for legacy data if repair hasn't been clicked yet
-                    if (isKala === undefined) {
-                        var noIndiv = ['107', '208', '154', '259'].includes(pNo);
-                        isKala = !(isGrp || noIndiv);
-                    }
-
-                    var addPts = function(ids, pts) {
-                        var arr = Array.isArray(ids) ? ids : (ids ? [ids] : []);
-                        arr.forEach(id => {
-                            var c = state.candidates.find(x => x.id === id); 
-                            if(c) { 
-                                var tKey = c.team === 'KHAIBAR WARRIORS' ? 'teamA' : (c.team === 'KHANDAQ FIGHTERS' ? 'teamB' : null);
-                                if(tKey) {
-                                    stats[tKey].total += pts; 
-                                    if(c.gender === 'BOYS') stats[tKey].boys += pts;
-                                    if(c.gender === 'GIRLS') stats[tKey].girls += pts;
-                                }
-                                if (isKala) {
-                                    candPoints[c.id] = (candPoints[c.id] || 0) + pts;
-                                }
+                var addPts = function(ids, pts) {
+                    var arr = Array.isArray(ids) ? ids : (ids ? [ids] : []);
+                    arr.forEach(id => {
+                        var c = state.candidates.find(x => x.id === id); 
+                        if(c) { 
+                            var tKey = c.team === 'KHAIBAR WARRIORS' ? 'teamA' : (c.team === 'KHANDAQ FIGHTERS' ? 'teamB' : null);
+                            if(tKey) {
+                                stats[tKey].total += pts; 
+                                if(c.gender === 'BOYS') stats[tKey].boys += pts;
+                                if(c.gender === 'GIRLS') stats[tKey].girls += pts;
                             }
-                        });
-                    };
-                    addPts(res.first, fPts); addPts(res.second, sPts); addPts(res.third, tPts);
-                });
+                            
+                            candTotalPts[c.id] = (candTotalPts[c.id] || 0) + pts;
+                            
+                            if (isKala) {
+                                if(!candKalaData[c.id]) candKalaData[c.id] = { total: 0, programs: [] };
+                                candKalaData[c.id].total += pts;
+                                candKalaData[c.id].programs.push({ name: prog.name, progNo: prog.progNo, pts: pts });
+                            }
+                        }
+                    });
+                };
+                addPts(res.first, fPts); addPts(res.second, sPts); addPts(res.third, tPts);
+            });
 
-                // Top Scorers Helper
+            if (state.tab === 'dashboard') {
                 function getTopScorer(cat, gender) {
                     let eligible = state.candidates.filter(c => c.cat === cat && c.gender === gender);
                     let top = null; let max = 0;
-                    eligible.forEach(c => { if(candPoints[c.id] && candPoints[c.id] > max) { max = candPoints[c.id]; top = c; }});
-                    return top ? { ...top, pts: max } : null;
+                    eligible.forEach(c => { 
+                        let cData = candKalaData[c.id];
+                        if(cData && cData.total > max) { 
+                            max = cData.total; 
+                            top = { ...c, pts: max, programs: cData.programs }; 
+                        }
+                    });
+                    return top;
                 }
+
+                const renderKalaDetails = (top) => {
+                    if(!top) return '<div class="text-[10px] text-slate-500 italic mt-1 pb-1">No individual points yet</div>';
+                    return `<div class="mt-2 pt-2 border-t border-purple-800/50">
+                        <p class="text-[8px] text-purple-300 font-bold mb-1 uppercase tracking-widest">Scoring Events:</p>
+                        <div class="max-h-20 overflow-y-auto custom-scrollbar space-y-1 pr-1">
+                            ${top.programs.map(p => `<div class="flex justify-between items-start text-[9px] leading-tight"><span class="text-purple-200 line-clamp-2 pr-1">${p.progNo ? `#${p.progNo} ` : ''}${p.name}</span><span class="text-amber-400 font-bold shrink-0">+${p.pts}</span></div>`).join('')}
+                        </div>
+                    </div>`;
+                };
 
                 let kalaprathibaHtml = `
                     <div class="glass-card p-4 sm:p-6 rounded-2xl border-t-2 border-yellow-500/80 mb-8">
@@ -909,27 +1555,35 @@
                     var topB = getTopScorer(c, 'BOYS');
                     var topG = getTopScorer(c, 'GIRLS');
                     kalaprathibaHtml += `
-                        <div class="bg-purple-950/80 rounded-xl border border-purple-700 p-4">
+                        <div class="bg-purple-950/80 rounded-xl border border-purple-700 p-4 flex flex-col h-full shadow-lg">
                             <h4 class="text-center font-bold text-white mb-3 bg-purple-900 py-1 rounded shadow-inner">${c}</h4>
-                            <div class="flex justify-between items-center mb-2 pb-2 border-b border-purple-800/50">
-                                <div class="flex items-center gap-2">
-                                    <span class="text-2xl drop-shadow">🤴</span>
-                                    <div>
-                                        <div class="text-[10px] text-purple-300 uppercase font-bold tracking-wider">Kalaprathiba</div>
-                                        <div class="text-sm font-bold text-amber-400 truncate w-24 sm:w-32">${topB ? topB.name : 'TBA...'}</div>
+                            
+                            <div class="flex-1 mb-3 pb-3 border-b border-purple-800/50">
+                                <div class="flex justify-between items-start">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-2xl drop-shadow">🤴</span>
+                                        <div>
+                                            <div class="text-[10px] text-purple-300 uppercase font-bold tracking-wider">Kalaprathiba</div>
+                                            <div class="text-sm font-bold text-amber-400 truncate w-24 sm:w-32">${topB ? topB.name : 'TBA...'}</div>
+                                        </div>
                                     </div>
+                                    <div class="text-xl font-black text-white num-font">${topB ? topB.pts : '-'}</div>
                                 </div>
-                                <div class="text-xl font-black text-white num-font">${topB ? topB.pts : '-'}</div>
+                                ${renderKalaDetails(topB)}
                             </div>
-                            <div class="flex justify-between items-center">
-                                <div class="flex items-center gap-2">
-                                    <span class="text-2xl drop-shadow">👸</span>
-                                    <div>
-                                        <div class="text-[10px] text-purple-300 uppercase font-bold tracking-wider">Kalathilakam</div>
-                                        <div class="text-sm font-bold text-pink-400 truncate w-24 sm:w-32">${topG ? topG.name : 'TBA...'}</div>
+
+                            <div class="flex-1">
+                                <div class="flex justify-between items-start">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-2xl drop-shadow">👸</span>
+                                        <div>
+                                            <div class="text-[10px] text-purple-300 uppercase font-bold tracking-wider">Kalathilakam</div>
+                                            <div class="text-sm font-bold text-pink-400 truncate w-24 sm:w-32">${topG ? topG.name : 'TBA...'}</div>
+                                        </div>
                                     </div>
+                                    <div class="text-xl font-black text-white num-font">${topG ? topG.pts : '-'}</div>
                                 </div>
-                                <div class="text-xl font-black text-white num-font">${topG ? topG.pts : '-'}</div>
+                                ${renderKalaDetails(topG)}
                             </div>
                         </div>
                     `;
@@ -1005,7 +1659,6 @@
 
                     ${kalaprathibaHtml}
 
-                    <!-- Category Wise Summary -->
                     <div class="glass-card p-6 rounded-2xl border-t border-purple-800 mb-8">
                         <h3 class="font-bold text-white text-lg mb-4">Candidates Category Breakdown</h3>
                         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
@@ -1077,6 +1730,29 @@
                                 </div>
                                 <button type="submit" id="addCandBtn" class="w-full bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-black font-bold py-3 rounded-xl transition shadow-lg mt-2 text-sm">സേവ് ചെയ്യുക</button>
                             </form>
+                            
+                            <hr class="my-5 border-purple-800/80">
+                            
+                            <div class="space-y-2">
+                                <p class="text-xs text-purple-300 font-semibold text-center mb-1">Quick Sync Pre-Loaded Data:</p>
+                                <button onclick="importList('ALL')" class="w-full bg-amber-500/20 hover:bg-amber-500 hover:text-black text-amber-300 border border-amber-500/50 font-bold py-2 rounded-xl transition text-xs flex items-center justify-center gap-1">
+                                    ⚡ Sync All Pre-Loaded Data (505)
+                                </button>
+                                <div class="grid grid-cols-2 gap-1.5 mt-2">
+                                    <button onclick="importList('KW_BOYS')" class="w-full bg-purple-900/80 hover:bg-purple-800 text-amber-300 border border-purple-700 font-bold py-1.5 rounded-lg transition text-[10px]">
+                                        KW Boys (113)
+                                    </button>
+                                    <button onclick="importList('KW_GIRLS')" class="w-full bg-purple-900/80 hover:bg-purple-800 text-pink-300 border border-purple-700 font-bold py-1.5 rounded-lg transition text-[10px]">
+                                        KW Girls (136)
+                                    </button>
+                                    <button onclick="importList('KF_BOYS')" class="w-full bg-purple-900/80 hover:bg-purple-800 text-amber-300 border border-purple-700 font-bold py-1.5 rounded-lg transition text-[10px]">
+                                        KF Boys (116)
+                                    </button>
+                                    <button onclick="importList('KF_GIRLS')" class="w-full bg-purple-900/80 hover:bg-purple-800 text-pink-300 border border-purple-700 font-bold py-1.5 rounded-lg transition text-[10px]">
+                                        KF Girls (140)
+                                    </button>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="lg:col-span-2 glass-card p-4 sm:p-6 rounded-2xl flex flex-col h-[680px] border-t border-purple-800">
@@ -1110,14 +1786,25 @@
                                             <th class="p-3">ടീം & വിഭാഗം</th>
                                             <th class="p-3">Class</th>
                                             <th class="p-3">Category</th>
+                                            <th class="p-3 text-center">Points</th>
                                             <th class="p-3">Events</th>
                                             <th class="p-3 text-right">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-purple-900/50">
-                                        ${filteredCands.length === 0 ? `<tr><td colspan="7" class="text-center p-8 text-purple-300">കുട്ടികളെ കണ്ടെത്തിയില്ല.</td></tr>` : ''}
+                                        ${filteredCands.length === 0 ? `<tr><td colspan="8" class="text-center p-8 text-purple-300">കുട്ടികളെ കണ്ടെത്തിയില്ല.</td></tr>` : ''}
                                         ${[...filteredCands].sort((a,b)=>Number(a.regNo)-Number(b.regNo)).map(c => {
                                             const eventCount = c.assignedPrograms ? c.assignedPrograms.length : 0;
+                                            const cTotal = candTotalPts[c.id] || 0;
+                                            const cKala = candKalaData[c.id] ? candKalaData[c.id].total : 0;
+                                            
+                                            let ptsBadge = cTotal > 0 
+                                                ? `<div class="bg-emerald-900/40 text-emerald-400 px-2 py-1 rounded-lg border border-emerald-700/50 text-center shadow-inner min-w-[3.5rem] inline-block">
+                                                     <div class="text-sm font-black num-font leading-none">${cTotal}</div>
+                                                     <div class="text-[8px] uppercase font-bold tracking-widest mt-1 ${cKala > 0 ? 'text-amber-400' : 'text-emerald-600/80'}">${cKala > 0 ? `⭐ ${cKala}` : 'PTS'}</div>
+                                                   </div>`
+                                                : `<span class="text-slate-600 font-black">-</span>`;
+
                                             return `
                                             <tr class="hover:bg-purple-900/30 transition">
                                                 <td class="p-3 font-mono font-bold text-amber-400 num-font text-sm">#${c.regNo}</td>
@@ -1128,6 +1815,7 @@
                                                 </td>
                                                 <td class="p-3 text-purple-200 font-semibold">${c.classDiv || '-'}</td>
                                                 <td class="p-3"><span class="bg-purple-950 text-purple-200 border border-purple-700 px-2 py-0.5 rounded text-[10px] font-bold uppercase">${c.cat}</span></td>
+                                                <td class="p-3 text-center">${ptsBadge}</td>
                                                 <td class="p-3">
                                                     <button onclick="openAssign('${c.id}')" class="bg-amber-500/20 text-amber-300 hover:bg-amber-600 hover:text-black border border-amber-500/50 px-2.5 py-1 rounded-lg text-xs font-bold transition">
                                                         ${eventCount > 0 ? `${eventCount} Events` : '+ Add'}
@@ -1158,45 +1846,19 @@
                             <div class="flex items-center gap-3">
                                 <h3 class="font-bold text-amber-400 text-sm sm:text-base">പുതിയ മത്സരം ചേർക്കുക</h3>
                                 <button id="repairBtn" onclick="window.repairDatabase()" class="bg-red-600/90 hover:bg-red-500 text-white text-[10px] sm:text-xs font-bold px-3 py-1 rounded transition shadow border border-red-500 flex items-center gap-1">
-                                    🛠️ Repair Database
+                                    🛠️ Repair Missing Names & Settings
                                 </button>
                             </div>
                             <input type="text" id="searchProgInput" placeholder="Search Programs..." value="${state.searchProgQuery}" oninput="window.updateProgSearch(this.value)" class="bg-black/80 border border-purple-800 text-xs text-white rounded-lg px-3 py-2 outline-none focus:border-amber-500 w-full sm:w-64">
                         </div>
-                        <form onsubmit="addNewProgram(event)" class="flex flex-col md:flex-row flex-wrap gap-4 items-end">
-                            <div class="w-full md:w-20">
-                                <label class="block text-[10px] font-bold text-purple-300 mb-1 uppercase">Prog No</label>
-                                <input type="text" id="pNo" class="w-full bg-black/80 border border-purple-800 rounded-lg px-3 py-2.5 text-white outline-none focus:border-amber-500 text-sm font-mono" placeholder="No.">
-                            </div>
-                            <div class="w-full md:flex-1 min-w-[150px]">
-                                <label class="block text-[10px] font-bold text-purple-300 mb-1 uppercase">മത്സരത്തിന്റെ പേര് (Name)</label>
-                                <input type="text" id="pName" required class="w-full bg-black/80 border border-purple-800 rounded-lg px-4 py-2.5 text-white outline-none focus:border-amber-500 text-sm">
-                            </div>
-                            <div class="w-full md:w-auto">
-                                <label class="block text-[10px] font-bold text-purple-300 mb-1 uppercase">വിഭാഗം</label>
-                                <select id="pCat" class="w-full bg-black/80 border border-purple-800 rounded-lg px-4 py-2.5 text-white outline-none text-sm">
-                                    ${programCats.map(c => `<option value="${c}">${c}</option>`).join('')}
-                                </select>
-                            </div>
-                            <div class="w-full md:w-auto">
-                                <label class="block text-[10px] font-bold text-purple-300 mb-1 uppercase">തരം</label>
-                                <select id="pType" class="w-full bg-black/80 border border-purple-800 rounded-lg px-4 py-2.5 text-white outline-none text-sm">
-                                    <option value="Stage">Stage</option><option value="Non-Stage">Non-Stage</option>
-                                </select>
-                            </div>
-                            <div class="w-full md:w-auto">
-                                <label class="block text-[10px] font-bold text-purple-300 mb-1 uppercase">Points</label>
-                                <select id="pPts" class="w-full bg-black/80 border border-purple-800 rounded-lg px-4 py-2.5 text-white outline-none text-sm">
-                                    <option value="5,3,1">5, 3, 1</option><option value="10,7,5">10, 7, 5</option><option value="15,10,5">15, 10, 5</option>
-                                </select>
-                            </div>
-                            <div class="w-full md:w-auto">
-                                <label class="block text-[10px] font-bold text-purple-300 mb-1 uppercase">Kalaprathiba</label>
-                                <select id="pKala" class="w-full bg-black/80 border border-purple-800 rounded-lg px-4 py-2.5 text-white outline-none text-sm">
-                                    <option value="true">Yes (Counts)</option><option value="false">No (Team Only)</option>
-                                </select>
-                            </div>
-                            <button type="submit" id="addProgBtn" class="w-full md:w-auto bg-amber-600 hover:bg-amber-500 text-white font-bold px-5 py-2.5 rounded-lg transition shadow-lg text-sm">+ ചേർക്കുക</button>
+                        <form onsubmit="addNewProgram(event)" class="flex flex-wrap gap-4 items-end">
+                            <div class="w-20"><label class="block text-[10px] font-bold text-purple-300 mb-1 uppercase">No</label><input type="text" id="pNo" class="w-full bg-black/80 border border-purple-800 rounded-lg px-3 py-2 text-white outline-none focus:border-amber-500 text-sm font-mono"></div>
+                            <div class="flex-1 min-w-[150px]"><label class="block text-[10px] font-bold text-purple-300 mb-1 uppercase">Name</label><input type="text" id="pName" required class="w-full bg-black/80 border border-purple-800 rounded-lg px-4 py-2 text-white outline-none focus:border-amber-500 text-sm"></div>
+                            <div><label class="block text-[10px] font-bold text-purple-300 mb-1 uppercase">Category</label><select id="pCat" class="w-full bg-black/80 border border-purple-800 rounded-lg px-4 py-2 text-white outline-none text-sm">${programCats.map(c => `<option value="${c}">${c}</option>`).join('')}</select></div>
+                            <div><label class="block text-[10px] font-bold text-purple-300 mb-1 uppercase">Type</label><select id="pType" class="w-full bg-black/80 border border-purple-800 rounded-lg px-4 py-2 text-white outline-none text-sm"><option value="Stage">Stage</option><option value="Non-Stage">Non-Stage</option></select></div>
+                            <div><label class="block text-[10px] font-bold text-green-300 mb-1 uppercase">Points</label><select id="pPoints" class="w-full bg-black/80 border border-purple-800 rounded-lg px-2 py-2 text-green-300 font-bold outline-none text-sm"><option value="5,3,1">5, 3, 1</option><option value="10,7,5">10, 7, 5</option><option value="15,10,5">15, 10, 5</option></select></div>
+                            <div><label class="block text-[10px] font-bold text-yellow-300 mb-1 uppercase">Kalaprathiba</label><select id="pKalaprathiba" class="w-full bg-black/80 border border-purple-800 rounded-lg px-2 py-2 text-yellow-300 font-bold outline-none text-sm"><option value="true">Yes</option><option value="false">No</option></select></div>
+                            <button type="submit" id="addProgBtn" class="bg-amber-600 hover:bg-amber-500 text-white font-bold px-5 py-2 rounded-lg transition shadow-lg text-sm">+ Add</button>
                         </form>
                     </div>`;
 
@@ -1226,6 +1888,10 @@
                             else if(p.name.toLowerCase().includes('girls')) pGender = 'GIRLS';
                         }
                         const isGrp = window.isGroupProgram(p.name, p.isGroup);
+
+                        let isKala = true;
+                        if(p.hasOwnProperty('isKalaprathiba')) isKala = p.isKalaprathiba;
+                        else isKala = (!isGrp && !['107', '208', '154', '259'].includes(String(p.progNo).trim()));
                         
                         mainContent += `
                             <li class="bg-purple-950/80 p-3 rounded-xl border border-purple-800 flex flex-col group">
@@ -1237,10 +1903,8 @@
                                     </div>
                                 </div>
                                 <div class="flex flex-wrap gap-1 mt-1 mb-2">
-                                    <span class="text-[9px] text-yellow-300 bg-black/80 px-2 py-0.5 rounded border border-purple-800 font-bold uppercase">PTS: ${p.pointScheme || '5,3,1'}</span>
-                                    <span class="text-[9px] ${p.kalaprathiba !== false ? 'text-emerald-400' : 'text-red-400'} bg-black/80 px-2 py-0.5 rounded border border-purple-800 font-bold uppercase">
-                                        ${p.kalaprathiba !== false ? '⭐ KALAPRATHIBA' : '🚫 TEAM ONLY'}
-                                    </span>
+                                    <span class="text-[9px] text-green-400 bg-black/80 px-2 py-0.5 rounded border border-purple-800 font-bold uppercase">Pts: ${p.pointScheme || '5,3,1'}</span>
+                                    <span class="text-[9px] ${isKala ? 'text-yellow-400' : 'text-slate-400'} bg-black/80 px-2 py-0.5 rounded border border-purple-800 font-bold uppercase">${isKala ? '⭐ Kalaprathiba' : '🚫 Team Only'}</span>
                                 </div>
                                 <div class="flex flex-wrap gap-1 mt-1 mb-2">
                                     <span class="text-[9px] ${p.type==='Stage'?'text-amber-400':'text-teal-300'} bg-black/80 px-2 py-0.5 rounded border border-purple-800 font-bold uppercase">${p.type}</span>
@@ -1294,7 +1958,10 @@
                                 <form onsubmit="publishResult(event)">
                                     <select id="rProg" onchange="populateResultDropdowns()" class="w-full bg-black/80 border border-purple-800 rounded-lg px-3 py-2 sm:px-4 sm:py-3 text-white outline-none focus:border-amber-400 font-semibold mb-3 sm:mb-4 shadow-inner text-sm">
                                         <option value="">-- മത്സരം തിരഞ്ഞെടുക്കുക --</option>
-                                        ${[...state.programs].sort((a,b)=>Number(a.progNo||0)-Number(b.progNo||0)).map(p => `<option value="${p.id}">${p.progNo ? `#${p.progNo} - ` : ''}${p.name} (${p.cat})</option>`).join('')}
+                                        ${[...state.programs]
+                                            .filter(p => !state.results.find(r => r.progId === p.id)) // HIDE ALREADY PUBLISHED
+                                            .sort((a,b)=>Number(a.progNo||0)-Number(b.progNo||0))
+                                            .map(p => `<option value="${p.id}">${p.progNo ? `#${p.progNo} - ` : ''}${p.name} (${p.cat})</option>`).join('')}
                                     </select>
                                     <div id="rSelectors"></div>
                                 </form>
