@@ -361,7 +361,8 @@
             filterTeam: 'All',
             filterGender: 'All',
             filterCat: 'All',
-            filterResultGender: 'All'
+            filterResultGender: 'All',
+            sortBy: 'regNo'
         };
 
         window.state = state;
@@ -811,6 +812,7 @@
                 var candKalaPts = {};
                 var candTotalPts = {};
                 var candKalaPrograms = {};
+                var candAllPrograms = {};
                 
                 state.results.forEach(res => {
                     var prog = state.programs.find(p => p.id === res.progId);
@@ -844,6 +846,9 @@
                                 
                                 candTotalPts[c.id] = (candTotalPts[c.id] || 0) + pts;
                                 
+                                if(!candAllPrograms[c.id]) candAllPrograms[c.id] = [];
+                                candAllPrograms[c.id].push({ name: prog.name, no: prog.progNo, pts: pts, isKala: isKala });
+
                                 if (isKala) {
                                     candKalaPts[c.id] = (candKalaPts[c.id] || 0) + pts;
                                     if(!candKalaPrograms[c.id]) candKalaPrograms[c.id] = [];
@@ -1019,17 +1024,18 @@
                             <div class="lg:col-span-2 glass-card p-4 sm:p-6 rounded-2xl flex flex-col h-[680px] border-t border-purple-800">
                                 <div class="flex flex-col gap-3 mb-4">
                                     <div class="flex justify-between items-center">
-                                        <h3 class="font-bold text-white text-base">രജിസ്റ്റർ ചെയ്തവർ (${filteredCands.length})</h3>
-                                        <input type="text" id="searchInput" placeholder="Search name/chest/class..." value="${state.searchQuery}" oninput="window.updateSearch(this.value)" class="bg-black/80 border border-purple-800 text-xs text-white rounded-lg px-3 py-1.5 outline-none focus:border-amber-500 w-48">
-                                    </div>
-                                    <div class="grid grid-cols-3 gap-2">
-                                        <select onchange="window.state.filterTeam = this.value; window.render();" class="bg-black/80 border border-purple-800 text-xs text-amber-300 rounded-lg px-2 py-1.5 outline-none"><option value="All">All Teams</option>${TEAMS.map(t => `<option value="${t}" ${state.filterTeam===t?'selected':''}>${t}</option>`).join('')}</select>
-                                        <select onchange="window.state.filterGender = this.value; window.render();" class="bg-black/80 border border-purple-800 text-xs text-purple-200 rounded-lg px-2 py-1.5 outline-none"><option value="All">Boys & Girls</option>${DIVISIONS.map(g => `<option value="${g}" ${state.filterGender===g?'selected':''}>${g}</option>`).join('')}</select>
-                                        <select onchange="window.state.filterCat = this.value; window.render();" class="bg-black/80 border border-purple-800 text-xs text-yellow-200 rounded-lg px-2 py-1.5 outline-none"><option value="All">All Categories</option>${CATEGORIES.map(c => `<option value="${c}" ${state.filterCat===c?'selected':''}>${c}</option>`).join('')}</select>
-                                    </div>
+                                    <h3 class="font-bold text-white text-base">രജിസ്റ്റർ ചെയ്തവർ (${filteredCands.length})</h3>
+                                    <input type="text" id="searchInput" placeholder="Search name/chest/class..." value="${state.searchQuery}" oninput="window.updateSearch(this.value)" class="bg-black/80 border border-purple-800 text-xs text-white rounded-lg px-3 py-1.5 outline-none focus:border-amber-500 w-48">
                                 </div>
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                                    <select onchange="window.state.filterTeam = this.value; window.render();" class="bg-black/80 border border-purple-800 text-xs text-amber-300 rounded-lg px-2 py-1.5 outline-none"><option value="All">All Teams</option>${TEAMS.map(t => `<option value="${t}" ${state.filterTeam===t?'selected':''}>${t}</option>`).join('')}</select>
+                                    <select onchange="window.state.filterGender = this.value; window.render();" class="bg-black/80 border border-purple-800 text-xs text-purple-200 rounded-lg px-2 py-1.5 outline-none"><option value="All">Boys & Girls</option>${DIVISIONS.map(g => `<option value="${g}" ${state.filterGender===g?'selected':''}>${g}</option>`).join('')}</select>
+                                    <select onchange="window.state.filterCat = this.value; window.render();" class="bg-black/80 border border-purple-800 text-xs text-yellow-200 rounded-lg px-2 py-1.5 outline-none"><option value="All">All Categories</option>${CATEGORIES.map(c => `<option value="${c}" ${state.filterCat===c?'selected':''}>${c}</option>`).join('')}</select>
+                                    <select onchange="window.state.sortBy = this.value; window.render();" class="bg-black/80 border border-purple-800 text-xs text-emerald-300 font-bold rounded-lg px-2 py-1.5 outline-none"><option value="regNo" ${state.sortBy!=='points'?'selected':''}>Sort: Chest No</option><option value="points" ${state.sortBy==='points'?'selected':''}>Sort: Highest Points</option></select>
+                                </div>
+                            </div>
 
-                                <div class="overflow-x-auto overflow-y-auto flex-1 custom-scrollbar border border-purple-800/80 rounded-xl bg-black/40">
+                            <div class="overflow-x-auto overflow-y-auto flex-1 custom-scrollbar border border-purple-800/80 rounded-xl bg-black/40">
                                     <table class="w-full text-left text-xs sm:text-sm whitespace-nowrap">
                                         <thead class="bg-purple-950 text-amber-300 text-[10px] sm:text-xs uppercase sticky top-0 z-10 shadow border-b border-purple-800">
                                             <tr>
@@ -1039,15 +1045,32 @@
                                         </thead>
                                         <tbody class="divide-y divide-purple-900/50">
                                             ${filteredCands.length === 0 ? `<tr><td colspan="7" class="text-center p-8 text-purple-300">കുട്ടികളെ കണ്ടെത്തിയില്ല.</td></tr>` : ''}
-                                            ${[...filteredCands].sort((a,b)=>Number(a.regNo)-Number(b.regNo)).map(c => {
+                                            ${[...filteredCands].sort((a,b) => {
+                                                if (state.sortBy === 'points') {
+                                                    const ptsA = candTotalPts[a.id] || 0;
+                                                    const ptsB = candTotalPts[b.id] || 0;
+                                                    if (ptsB !== ptsA) return ptsB - ptsA;
+                                                }
+                                                return Number(a.regNo) - Number(b.regNo);
+                                            }).map(c => {
                                                 const eventCount = c.assignedPrograms ? c.assignedPrograms.length : 0;
                                                 const cTotal = candTotalPts[c.id] || 0;
                                                 const cKala = candKalaPts[c.id] || 0;
+                                                const earned = candAllPrograms[c.id] || [];
                                                 
+                                                let earnedHtml = earned.length > 0 
+                                                    ? `<div class="text-[9px] text-purple-300 mt-2 space-y-1 max-w-[160px] whitespace-normal text-left">` + 
+                                                      earned.map(p => `<div class="leading-tight"><span class="text-amber-400 font-bold">+${p.pts}</span> <span class="opacity-80">${p.no ? `#${p.no}` : ''} ${p.name} ${p.isKala ? '⭐' : ''}</span></div>`).join('') +
+                                                      `</div>`
+                                                    : '';
+
                                                 let ptsBadge = cTotal > 0 
-                                                    ? `<div class="bg-emerald-900/40 text-emerald-400 px-2 py-1 rounded-lg border border-emerald-700/50 text-center shadow-inner min-w-[3.5rem] mx-auto">
-                                                         <div class="text-sm font-black num-font leading-none">${cTotal}</div>
-                                                         <div class="text-[8px] uppercase font-bold tracking-widest mt-1 ${cKala > 0 ? 'text-amber-400' : 'text-emerald-600/80'}">${cKala > 0 ? `⭐ ${cKala}` : 'PTS'}</div>
+                                                    ? `<div class="flex flex-col items-center">
+                                                         <div class="bg-emerald-900/40 text-emerald-400 px-3 py-1.5 rounded-lg border border-emerald-700/50 text-center shadow-inner min-w-[4rem] mx-auto">
+                                                           <div class="text-base font-black num-font leading-none">${cTotal}</div>
+                                                           <div class="text-[9px] uppercase font-bold tracking-widest mt-1 ${cKala > 0 ? 'text-amber-400' : 'text-emerald-600/80'}">${cKala > 0 ? `⭐ ${cKala}` : 'PTS'}</div>
+                                                         </div>
+                                                         ${earnedHtml}
                                                        </div>`
                                                     : `<div class="text-slate-600 font-black text-center">-</div>`;
 
