@@ -1142,20 +1142,20 @@
                             const enrolledCount = state.candidates.filter(c => c.assignedPrograms && c.assignedPrograms.includes(p.id)).length;
                             
                             let pGender = p.gender || 'ALL';
-                            if (pGender === 'ALL') {
-                                if(p.name.toLowerCase().includes('boys')) pGender = 'BOYS';
-                                else if(p.name.toLowerCase().includes('girls')) pGender = 'GIRLS';
-                            }
-                            const isGrp = window.isGroupProgram(p.name, p.isGroup);
+                        if (pGender === 'ALL') {
+                            if(p.name.toLowerCase().includes('boys')) pGender = 'BOYS';
+                            else if(p.name.toLowerCase().includes('girls')) pGender = 'GIRLS';
+                        }
+                        const isGrp = window.isGroupProgram(p.name, p.isGroup);
 
-                            // Safe Kalaprathiba Check Display
-                            let isKala = true;
-                            if(p.hasOwnProperty('isKalaprathiba')) isKala = p.isKalaprathiba;
-                            else isKala = (!isGrp && !['107', '208', '154', '259'].includes(String(p.progNo).trim()));
-                            
-                            mainContent += `
-                                <li class="bg-purple-950/80 p-3 rounded-xl border border-purple-800 flex flex-col group">
-                                    <div class="flex justify-between items-start mb-2">
+                        // Safe Kalaprathiba Check Display
+                        let isKala = true;
+                        if(p.hasOwnProperty('kalaprathiba')) isKala = p.kalaprathiba;
+                        else isKala = (!isGrp && !['107', '208', '154', '259'].includes(String(p.progNo).trim()));
+                        
+                        mainContent += `
+                            <li class="bg-purple-950/80 p-3 rounded-xl border border-purple-800 flex flex-col group">
+                                <div class="flex justify-between items-start mb-2">
                                         <span class="block text-white font-bold text-sm leading-tight">${p.progNo ? `<span class="text-amber-500 font-mono mr-1">#${p.progNo}</span>` : ''}${p.name}</span>
                                         <div class="flex gap-1.5 opacity-60 group-hover:opacity-100 transition">
                                             <button onclick="window.openEditProg('${p.id}')" class="text-[10px] text-amber-400 hover:text-amber-300 bg-black/50 px-2 py-1 rounded border border-purple-700 transition">Edit</button>
