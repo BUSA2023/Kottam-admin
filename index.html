@@ -3,182 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ലദൽ മദീന 2K26 - Admin Portal</title>
+    <title>Urava Season 4 - Admin Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@400;600;700;800&family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
     <style>
-        body { font-family: 'Anek Malayalam', sans-serif; background-color: #2e1065; color: #f8fafc; overflow-x: hidden; }
+        body { font-family: 'Anek Malayalam', sans-serif; background-color: #0f172a; color: #f8fafc; overflow-x: hidden; }
         .num-font { font-family: 'Outfit', sans-serif; }
-        .tab-active { border-bottom: 3px solid #fbbf24; color: #fbbf24; }
-        .tab-inactive { border-bottom: 3px solid transparent; color: #ddd6fe; }
+        .tab-active { border-bottom: 3px solid #38bdf8; color: #38bdf8; }
+        .tab-inactive { border-bottom: 3px solid transparent; color: #94a3b8; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #1e0048; }
-        ::-webkit-scrollbar-thumb { background: #5b21b6; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #7c3aed; }
-        .glass-card { background: rgba(15, 3, 25, 0.65); backdrop-filter: blur(16px); border: 1px solid rgba(251, 191, 36, 0.2); }
+        ::-webkit-scrollbar-track { background: #020617; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+        .glass-card { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(16px); border: 1px solid rgba(56, 189, 248, 0.15); }
         .custom-scrollbar::-webkit-scrollbar { width: 5px; }
-        select { appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fbbf24' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 0.9em; padding-right: 2.2rem !important; }
-        select option { background-color: #1e0048; color: #f8fafc; }
-        select optgroup { background-color: #3b0764; color: #fbbf24; font-style: normal; font-weight: bold; }
+        select { appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2338bdf8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 0.9em; padding-right: 2.2rem !important; }
+        select option { background-color: #0f172a; color: #f8fafc; }
+        
+        /* Print Styles for 3x2 Inch ID Cards */
+        @media print {
+            body * { visibility: hidden; }
+            #print-area, #print-area * { visibility: visible; }
+            #print-area { position: absolute; left: 0; top: 0; width: 100%; display: flex; flex-wrap: wrap; justify-content: flex-start; gap: 0; margin: 0; padding: 0; }
+            .id-card { 
+                width: 3in; 
+                height: 2in; 
+                background: white !important; 
+                color: black !important; 
+                border: 1px dashed #ccc; 
+                padding: 0.15in; 
+                box-sizing: border-box; 
+                page-break-inside: avoid;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                overflow: hidden;
+            }
+            .id-header { text-align: center; border-bottom: 1px solid black; padding-bottom: 2px; margin-bottom: 4px; }
+            .id-title { font-size: 10pt; font-weight: 900; margin: 0; font-family: 'Outfit', sans-serif; text-transform: uppercase; }
+            .id-sub { font-size: 6pt; margin: 0; font-weight: bold; }
+            .id-body { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; text-align: center; }
+            .id-name { font-size: 11pt; font-weight: bold; margin: 0; line-height: 1.1; }
+            .id-chest { font-size: 14pt; font-weight: 900; font-family: 'Outfit', sans-serif; margin: 2px 0; }
+            .id-team { font-size: 7pt; font-weight: bold; background: #eee !important; padding: 2px 4px; border-radius: 4px; display: inline-block; margin: 0 auto; }
+            .id-footer { font-size: 6pt; border-top: 1px solid #ccc; padding-top: 2px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        }
     </style>
 </head>
-<body class="bg-gradient-to-br from-purple-950 via-slate-950 to-indigo-950 min-h-screen">
+<body class="bg-gradient-to-br from-slate-900 via-gray-900 to-zinc-900 min-h-screen">
 
     <div id="toast" class="fixed top-5 right-5 z-[100] transform translate-y-[-200%] transition-transform duration-300 px-6 py-3 rounded-xl shadow-2xl font-semibold flex items-center space-x-3 text-sm">
         <span id="toastIcon"></span><span id="toastMsg"></span>
     </div>
 
+    <!-- Print Area -->
+    <div id="print-area"></div>
+
+    <!-- Edit Candidate Modal -->
     <div id="editCandModal" style="display: none;" class="fixed inset-0 bg-black/90 z-[300] items-center justify-center p-4 backdrop-blur-sm">
-        <div class="glass-card p-6 rounded-2xl max-w-md w-full shadow-2xl border border-amber-500/30">
-            <h3 class="text-lg font-bold text-amber-400 mb-4 border-b border-purple-800 pb-2">Edit Candidate</h3>
+        <div class="glass-card p-6 rounded-2xl max-w-sm w-full shadow-2xl border border-sky-500/30">
+            <h3 class="text-lg font-bold text-sky-400 mb-4 border-b border-slate-700 pb-2">Edit Candidate</h3>
             <form id="editCandForm" onsubmit="saveEditCand(event)" class="space-y-3">
                 <input type="hidden" id="editCandId">
                 <div>
-                    <label class="block text-[10px] font-bold text-purple-300 uppercase mb-1">Name</label>
-                    <input type="text" id="editCandName" required class="w-full bg-black/80 border border-purple-800 rounded-lg px-3 py-2 text-white outline-none focus:border-amber-500 text-sm">
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Name</label>
+                    <input type="text" id="editCandName" required class="w-full bg-black/80 border border-slate-700 rounded-lg px-3 py-2 text-white outline-none focus:border-sky-500 text-sm">
                 </div>
-                <div class="grid grid-cols-2 gap-2">
-                    <div>
-                        <label class="block text-[10px] font-bold text-purple-300 uppercase mb-1">Chest No</label>
-                        <input type="text" id="editCandRegNo" required class="w-full bg-black/80 border border-purple-800 rounded-lg px-3 py-2 text-white outline-none focus:border-amber-500 text-sm font-mono">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-purple-300 uppercase mb-1">Class & Div</label>
-                        <input type="text" id="editCandClassDiv" class="w-full bg-black/80 border border-purple-800 rounded-lg px-3 py-2 text-white outline-none focus:border-amber-500 text-sm">
-                    </div>
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Chest No</label>
+                    <input type="text" id="editCandRegNo" required class="w-full bg-black/80 border border-slate-700 rounded-lg px-3 py-2 text-white outline-none focus:border-sky-500 text-sm font-mono">
                 </div>
                 <div class="flex gap-3 justify-end pt-4">
-                    <button type="button" onclick="document.getElementById('editCandModal').style.display='none'" class="px-4 py-2 bg-purple-950 text-white rounded-lg text-sm border border-purple-700">Cancel</button>
+                    <button type="button" onclick="document.getElementById('editCandModal').style.display='none'" class="px-4 py-2 bg-slate-800 text-white rounded-lg text-sm border border-slate-600">Cancel</button>
                     <button type="submit" id="saveEditCandBtn" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-sm font-bold shadow-lg">Update</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <div id="editProgModal" style="display: none;" class="fixed inset-0 bg-black/90 z-[300] items-center justify-center p-4 backdrop-blur-sm">
-        <div class="glass-card p-6 rounded-2xl max-w-md w-full shadow-2xl border border-amber-500/30 overflow-y-auto max-h-[90vh] custom-scrollbar">
-            <h3 class="text-lg font-bold text-amber-400 mb-4 border-b border-purple-800 pb-2">Edit Program Settings</h3>
-            <form id="editProgForm" onsubmit="saveEditProg(event)" class="space-y-3">
-                <input type="hidden" id="editProgId">
-                <div class="grid grid-cols-3 gap-2">
-                    <div class="col-span-1">
-                        <label class="block text-[10px] font-bold text-purple-300 uppercase mb-1">Prog No</label>
-                        <input type="text" id="editProgNo" class="w-full bg-black/80 border border-purple-800 rounded-lg px-3 py-2 text-white outline-none focus:border-amber-500 text-sm font-mono">
-                    </div>
-                    <div class="col-span-2">
-                        <label class="block text-[10px] font-bold text-purple-300 uppercase mb-1">Name</label>
-                        <input type="text" id="editProgName" required class="w-full bg-black/80 border border-purple-800 rounded-lg px-3 py-2 text-white outline-none focus:border-amber-500 text-sm">
-                    </div>
-                </div>
-                
-                <div class="grid grid-cols-2 gap-2 mt-2">
-                    <div>
-                        <label class="block text-[10px] font-bold text-purple-300 uppercase mb-1">Points Scheme</label>
-                        <select id="editProgPts" class="w-full bg-black/80 border border-purple-800 rounded-lg px-3 py-2 text-white outline-none focus:border-green-400 text-sm">
-                            <option value="5,3,1">5, 3, 1 (Default)</option>
-                            <option value="10,7,5">10, 7, 5 (Medium)</option>
-                            <option value="15,10,5">15, 10, 5 (High)</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-yellow-300 uppercase mb-1">Kalaprathiba</label>
-                        <select id="editProgKala" class="w-full bg-black/80 border border-purple-800 rounded-lg px-3 py-2 text-white outline-none focus:border-yellow-400 text-sm">
-                            <option value="true">Yes (Counts)</option>
-                            <option value="false">No (Team Only)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-2 mt-2">
-                    <div>
-                        <label class="block text-[10px] font-bold text-purple-300 uppercase mb-1">Category</label>
-                        <select id="editProgCat" class="w-full bg-black/80 border border-purple-800 rounded-lg px-3 py-2 text-white outline-none text-sm">
-                            <option value="Kiddies">Kiddies</option>
-                            <option value="Sub Junior">Sub Junior</option>
-                            <option value="Junior">Junior</option>
-                            <option value="Senior">Senior</option>
-                            <option value="Super Senior">Super Senior</option>
-                            <option value="General">General</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-purple-300 uppercase mb-1">Type</label>
-                        <select id="editProgType" class="w-full bg-black/80 border border-purple-800 rounded-lg px-3 py-2 text-white outline-none text-sm">
-                            <option value="Stage">Stage</option>
-                            <option value="Non-Stage">Non-Stage</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 gap-2 mt-2">
-                    <div>
-                        <label class="block text-[10px] font-bold text-purple-300 uppercase mb-1">Gender</label>
-                        <select id="editProgGender" class="w-full bg-black/80 border border-purple-800 rounded-lg px-3 py-2 text-white outline-none text-sm">
-                            <option value="ALL">Boys & Girls</option>
-                            <option value="BOYS">Boys Only</option>
-                            <option value="GIRLS">Girls Only</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-purple-300 uppercase mb-1">Format</label>
-                        <select id="editProgFormat" class="w-full bg-black/80 border border-purple-800 rounded-lg px-3 py-2 text-white outline-none text-sm">
-                            <option value="false">Individual</option>
-                            <option value="true">Group</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="flex gap-3 justify-end pt-4 border-t border-purple-800/50 mt-4">
-                    <button type="button" onclick="document.getElementById('editProgModal').style.display='none'" class="px-4 py-2 bg-purple-950 text-white rounded-lg text-sm border border-purple-700">Cancel</button>
-                    <button type="submit" id="saveEditProgBtn" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-sm font-bold shadow-lg">Save Settings</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
+    <!-- Assign Programs Modal -->
     <div id="assignModal" style="display: none;" class="fixed inset-0 bg-black/90 z-[200] items-center justify-center p-4 backdrop-blur-sm">
-        <div class="glass-card p-6 rounded-2xl max-w-md w-full shadow-2xl flex flex-col max-h-[85vh]">
-            <h3 class="text-lg font-bold text-white mb-1" id="assignTitle">മത്സരങ്ങൾ ചേർക്കുക</h3>
-            <p class="text-xs text-amber-400 mb-4 font-bold tracking-widest uppercase" id="assignSubtitle"></p>
-            <div class="bg-purple-950/60 border border-purple-800 rounded-xl p-4 flex-1 overflow-y-auto mb-4 custom-scrollbar">
+        <div class="glass-card p-6 rounded-2xl max-w-lg w-full shadow-2xl flex flex-col max-h-[90vh]">
+            <h3 class="text-lg font-bold text-white mb-1" id="assignTitle">Assign Programs</h3>
+            <p class="text-xs text-sky-400 mb-2 font-bold tracking-widest uppercase" id="assignSubtitle"></p>
+            
+            <div id="limitsInfo" class="bg-slate-800/80 p-3 rounded-lg border border-slate-700 flex justify-around mb-4 text-xs font-bold shadow-inner">
+                <div class="text-center"><span class="text-slate-400 block uppercase text-[9px]">Stage Used</span><span id="limitStage" class="text-sky-300 text-lg">0/0</span></div>
+                <div class="text-center"><span class="text-slate-400 block uppercase text-[9px]">Non-Stage Used</span><span id="limitNonStage" class="text-emerald-300 text-lg">0/0</span></div>
+                <div class="text-center"><span class="text-slate-400 block uppercase text-[9px]">General Used</span><span id="limitGeneral" class="text-purple-300 text-lg">0</span></div>
+            </div>
+
+            <div class="bg-slate-900/60 border border-slate-700 rounded-xl p-4 flex-1 overflow-y-auto mb-4 custom-scrollbar">
                 <div id="assignCheckboxes" class="space-y-3"></div>
             </div>
             <div class="flex gap-3 justify-end pt-2">
-                <button onclick="closeAssign()" class="px-4 py-2 bg-purple-950 hover:bg-purple-900 text-white rounded-lg text-sm font-semibold transition border border-purple-700">റദ്ദാക്കുക</button>
-                <button id="saveAssignBtn" onclick="saveAssign()" class="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-sm font-semibold transition shadow-lg">സേവ് ചെയ്യുക</button>
+                <button onclick="closeAssign()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-sm font-semibold transition border border-slate-600">Cancel</button>
+                <button id="saveAssignBtn" onclick="saveAssign()" class="px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white rounded-lg text-sm font-semibold transition shadow-lg">Save Selection</button>
             </div>
         </div>
     </div>
 
-    <div id="enrolledModal" style="display: none;" class="fixed inset-0 bg-black/90 z-[200] items-center justify-center p-4 backdrop-blur-sm">
-        <div class="glass-card p-6 rounded-2xl max-w-md w-full shadow-2xl flex flex-col max-h-[85vh]">
-            <div class="flex justify-between items-center mb-1">
-                <h3 class="text-lg font-bold text-white" id="enrolledTitle">രജിസ്റ്റർ ചെയ്തവർ</h3>
-                <button onclick="closeEnrolled()" class="text-purple-300 hover:text-white bg-purple-950 hover:bg-purple-900 rounded-full w-8 h-8 flex items-center justify-center transition">✕</button>
-            </div>
-            <p class="text-xs text-amber-300 mb-4 font-bold tracking-widest uppercase" id="enrolledSubtitle"></p>
-            <div class="bg-purple-950/60 border border-purple-800 rounded-xl p-4 flex-1 overflow-y-auto custom-scrollbar">
-                <div id="enrolledList" class="space-y-2"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Pre-loaded with Login form to prevent blank screen issue entirely -->
     <div id="app" class="min-h-screen flex flex-col">
-        <div class="flex-1 flex flex-col items-center justify-center p-4 min-h-screen" id="login-container">
-            <div class="glass-card max-w-sm w-full rounded-[2rem] p-8 shadow-2xl text-center">
+        <div class="flex-1 flex flex-col items-center justify-center p-4 min-h-screen relative" id="login-container">
+            <div class="absolute inset-0 z-0 opacity-20 flex items-center justify-center pointer-events-none">
+                <!-- Watermark / Background element -->
+                <img src="https://raw.githubusercontent.com/BUSA2023/Kottam-admin/main/LOGO%204-01.png" alt="Background Element" class="w-full max-w-md object-contain mix-blend-screen">
+            </div>
+            <div class="glass-card max-w-sm w-full rounded-[2rem] p-8 shadow-2xl text-center relative z-10 border border-slate-700 bg-slate-900/90">
                 <div class="flex flex-col items-center justify-center mb-6">
-                    <span class="text-xs text-amber-400 font-extrabold tracking-widest uppercase mb-1">LADAL MADEENA 2K26</span>
-                    <h2 class="text-2xl font-black text-purple-200 tracking-tight">ADMIN PORTAL</h2>
-                    <div class="flex gap-2 mt-2 justify-center">
-                        <span class="text-[10px] bg-purple-900/80 text-amber-300 px-2.5 py-0.5 rounded-full font-bold border border-purple-600">KHAIBAR</span>
-                        <span class="text-[10px] bg-purple-900/80 text-purple-300 px-2.5 py-0.5 rounded-full font-bold border border-purple-600">KHANDAQ</span>
+                    <!-- Main Requested Logo for Login Screen -->
+                    <img src="https://raw.githubusercontent.com/BUSA2023/Kottam-admin/main/20261008_191200.png" alt="Urava Logo Main" class="w-32 h-auto mb-4 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] rounded-2xl">
+                    <span class="text-[10px] text-sky-400 font-extrabold tracking-widest uppercase mb-1">Aawaaze Funoon Season 04</span>
+                    <h2 class="text-xl font-black text-slate-200 tracking-tight">FEST MANAGER</h2>
+                    <div class="flex gap-2 mt-3 justify-center">
+                        <span class="text-[10px] bg-sky-900/80 text-sky-200 px-3 py-1 rounded-full font-bold border border-sky-700 shadow">Al-Masūdi</span>
+                        <span class="text-[10px] bg-emerald-900/80 text-emerald-200 px-3 py-1 rounded-full font-bold border border-emerald-700 shadow">Al-Qazwini</span>
                     </div>
                 </div>
-                <p class="text-purple-300 text-xs mb-6">Enter password to manage fest data</p>
-                <form onsubmit="event.preventDefault(); if(window.handleLogin) window.handleLogin(event); else alert('Loading system... Please try again in a moment.');" class="space-y-4">
-                    <input type="password" id="loginPass" required class="w-full bg-black/80 border border-purple-800 rounded-xl px-4 py-3 text-white outline-none focus:border-amber-500 text-center tracking-widest" placeholder="Password">
-                    <button type="submit" class="w-full bg-gradient-to-r from-purple-600 to-amber-600 hover:from-purple-500 hover:to-amber-500 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-purple-950/50">ലോഗിൻ</button>
+                <form onsubmit="event.preventDefault(); if(window.handleLogin) window.handleLogin(event); else alert('System initializing... Please wait.');" class="space-y-4">
+                    <input type="password" id="loginPass" required class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white outline-none focus:border-sky-500 text-center tracking-widest transition" placeholder="Enter Admin PIN">
+                    <button type="submit" class="w-full bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-sky-900/50">Secure Login</button>
                 </form>
             </div>
         </div>
@@ -186,168 +132,38 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, addDoc, deleteDoc, doc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, addDoc, deleteDoc, doc, setDoc, updateDoc, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+        // Updated Firebase Config for pullani-6a39b
         const firebaseConfig = {
-            apiKey: "AIzaSyCo3S007XNUl1bAfgAlMR1vJyDQBNFf6MI",
-            authDomain: "kottam-eee89.firebaseapp.com",
-            projectId: "kottam-eee89",
-            storageBucket: "kottam-eee89.firebasestorage.app",
-            messagingSenderId: "558082092753",
-            appId: "1:558082092753:web:c0a69f647998061a3adff0"
+            apiKey: "AIzaSyCIbvk4teIJ6AlfaXbFgDMgCWpnekNwmx8",
+            authDomain: "pullani-6a39b.firebaseapp.com",
+            projectId: "pullani-6a39b",
+            storageBucket: "pullani-6a39b.firebasestorage.app",
+            messagingSenderId: "617480764841",
+            appId: "1:617480764841:web:c22959689a7003a31498b8",
+            measurementId: "G-DX50SRTWJS"
         };
         
         const appInit = initializeApp(firebaseConfig);
         const auth = getAuth(appInit);
         const db = getFirestore(appInit);
 
-        const TEAMS = ['KHAIBAR WARRIORS', 'KHANDAQ FIGHTERS'];
-        const DIVISIONS = ['BOYS', 'GIRLS'];
-        const CATEGORIES = ['Kiddies', 'Sub Junior', 'Junior', 'Senior', 'Super Senior'];
-        
+        // Strict Paths definition based on system rules
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'urava-s4-fest';
+        const getCol = (name) => collection(db, 'artifacts', appId, 'public', 'data', name);
+        const getDocRef = (name, id) => doc(db, 'artifacts', appId, 'public', 'data', name, id);
+
+        // Constants - Removed Gender/Class concepts entirely
+        const TEAMS = ['Al-Masūdi', 'Al-Qazwini'];
+        const CANDIDATE_CATEGORIES = ['Junior', 'Senior']; 
+        const PROGRAM_CATEGORIES = ['Junior', 'Senior', 'General'];
         const ADMIN_PASSWORD = "admin";
 
-        const KIDDIES_PROGRAMS = [
-            { no: "01", name: "Fathiha Recitation (Girls)", cat: "Kiddies", type: "Stage", cands: ["514", "711", "515", "712"] },
-            { no: "02", name: "Story Telling (Girls)", cat: "Kiddies", type: "Stage", cands: ["703", "504", "711", "503"] },
-            { no: "03", name: "Song (Girls)", cat: "Kiddies", type: "Stage", cands: ["706", "503", "711", "515", "712", "516", "714", "517", "716"] },
-            { no: "04", name: "Group Song (Girls)", cat: "Kiddies", type: "Stage", cands: ["701", "707", "706", "709", "710", "512", "515", "516", "517", "505", "702", "704", "703", "705", "708", "513", "514", "518", "519", "711", "713", "714", "715", "712", "502", "507", "509", "506", "501", "716", "718", "503", "504", "508", "510", "511"] },
-            { no: "05", name: "Colouring (Girls)", cat: "Kiddies", type: "Non-Stage", cands: ["704", "505", "705", "507", "708", "510", "712", "513", "713", "519", "509", "515", "516", "517"] },
-            { no: "51", name: "Fathiha Recitation (Boys)", cat: "Kiddies", type: "Stage", cands: ["313", "111", "316", "117", "317", "118"] },
-            { no: "52", name: "Story Telling (Boys)", cat: "Kiddies", type: "Stage", cands: ["315", "105", "316", "112", "319", "118"] },
-            { no: "53", name: "Madh Song (Boys)", cat: "Kiddies", type: "Stage", cands: ["103", "314", "108", "318", "116", "319"] },
-            { no: "54", name: "Group Song (Boys)", cat: "Kiddies", type: "Stage", cands: ["303", "309", "311", "101", "102", "104", "304", "305", "306", "105", "108", "109", "301", "307", "310", "312", "113", "114", "121", "313", "314", "319", "112", "118", "119", "320", "321", "322", "115", "117"] },
-            { no: "55", name: "Colouring (Boys)", cat: "Kiddies", type: "Non-Stage", cands: ["112", "303", "117", "309", "118", "315", "119", "316", "121", "319"] }
-        ];
-
-        const SUBJUNIOR_PROGRAMS = [
-            { no: "101", name: "Qira'th (Girls)", cat: "Sub Junior", type: "Stage", cands: ["721", "533", "738", "535"] },
-            { no: "102", name: "Hifz (Girls)", cat: "Sub Junior", type: "Stage", cands: ["523", "719", "533", "721"] },
-            { no: "103", name: "Song Malayalam (Girls)", cat: "Sub Junior", type: "Stage", cands: ["719", "527", "730", "536", "745", "537", "746", "539"] },
-            { no: "104", name: "Song Arabic (Girls)", cat: "Sub Junior", type: "Stage", cands: ["522", "737", "538", "738"] },
-            { no: "105", name: "Group Song Malayalam (Girls)", cat: "Sub Junior", type: "Stage", cands: ["534", "535", "544", "731", "733", "734", "735", "520", "523", "524", "540", "732", "742", "744", "532", "533", "538", "543", "730", "741", "743", "747", "521", "522", "527", "528", "719", "721", "722", "726", "729", "526", "529", "530", "542", "720", "724", "723", "727"] },
-            { no: "106", name: "Story Telling (Girls)", cat: "Sub Junior", type: "Stage", cands: ["727", "521", "537"] },
-            { no: "107", name: "Conversation Malayalam (Girls)", cat: "Sub Junior", type: "Stage", cands: ["721", "725", "526", "528", "732", "742", "529", "539"] },
-            { no: "109", name: "Hand writing Arabic Mlm (Girls)", cat: "Sub Junior", type: "Non-Stage", cands: ["533", "723", "540", "734", "543", "735"] },
-            { no: "110", name: "Pencil drawing (Girls)", cat: "Sub Junior", type: "Non-Stage", cands: ["735", "529", "739", "535", "742", "543"] },
-            { no: "111", name: "Memory Test (Girls)", cat: "Sub Junior", type: "Non-Stage", cands: ["523", "721", "529", "738", "533", "744"] },
-            { no: "112", name: "Colouring (Girls)", cat: "Sub Junior", type: "Non-Stage", cands: ["723", "525", "726", "530", "739", "531", "743", "535", "746", "543", "522", "526"] },
-            { no: "151", name: "Qirath (Boys)", cat: "Sub Junior", type: "Stage", cands: ["332", "132", "344", "143", "346", "145"] },
-            { no: "152", name: "Hifz (Boys)", cat: "Sub Junior", type: "Stage", cands: ["340", "135", "344", "142", "346", "147"] },
-            { no: "153", name: "Madh Song (Boys)", cat: "Sub Junior", type: "Stage", cands: ["137", "328", "138", "338", "139", "344", "140", "345", "143", "346"] },
-            { no: "154", name: "Conversation Mlm (Boys)", cat: "Sub Junior", type: "Stage", cands: ["328", "348", "137", "146", "341", "346", "127", "135", "326", "331"] },
-            { no: "155", name: "Group Song (Boys)", cat: "Sub Junior", type: "Stage", cands: ["124", "128", "129", "324", "327", "331", "130", "131", "133", "329", "332", "333", "136", "138", "147", "334", "337", "339", "139", "141", "142", "338", "340", "345"] },
-            { no: "156", name: "Song Arb (Boys)", cat: "Sub Junior", type: "Stage", cands: ["325", "136", "335", "147", "338", "148"] },
-            { no: "157", name: "Speech Mlm (Boys)", cat: "Sub Junior", type: "Stage", cands: ["127", "323", "142", "329"] },
-            { no: "158", name: "Story Telling (Boys)", cat: "Sub Junior", type: "Stage", cands: ["341", "134", "347", "139"] },
-            { no: "159", name: "Handwriting Malayalam (Boys)", cat: "Sub Junior", type: "Non-Stage", cands: ["337", "135", "341", "143", "346", "145"] },
-            { no: "160", name: "Memory Test (Boys)", cat: "Sub Junior", type: "Non-Stage", cands: ["133", "341", "135", "345", "142", "346"] },
-            { no: "161", name: "Pencil Drawing (Boys)", cat: "Sub Junior", type: "Non-Stage", cands: ["132", "345", "135", "334"] }
-        ];
-
-        const JUNIOR_PROGRAMS = [
-            { no: "201", name: "Qira'th (Girls)", cat: "Junior", type: "Stage", cands: ["553", "755", "555", "757", "556", "769", "569", "773"] },
-            { no: "202", name: "Hifz (Girls)", cat: "Junior", type: "Stage", cands: ["755", "568", "767", "573"] },
-            { no: "203", name: "Song Malayalam (Girls)", cat: "Junior", type: "Stage", cands: ["557", "748", "565", "759", "571", "767", "572", "772"] },
-            { no: "204", name: "Song Arabic (Girls)", cat: "Junior", type: "Stage", cands: ["767", "557", "768", "570"] },
-            { no: "205", name: "Group Song Malayalam (Girls)", cat: "Junior", type: "Stage", cands: ["569", "560", "566", "573", "764", "766", "767", "768", "773", "564", "565", "568", "567", "754", "757", "758", "761", "545", "546", "547", "550", "554", "749", "750", "751", "760", "561", "562", "563", "558", "559", "752", "753", "755", "756"] },
-            { no: "206", name: "Group Song Arabic (Girls)", cat: "Junior", type: "Stage", cands: ["548", "549", "555", "556", "557", "762", "765", "769", "770", "771"] },
-            { no: "207", name: "Story Telling (Girls)", cat: "Junior", type: "Stage", cands: ["752", "572", "772", "569"] },
-            { no: "208", name: "Conversation Malayalam (Girls)", cat: "Junior", type: "Stage", cands: ["549", "553", "755", "760", "566", "573", "770", "772", "556", "557"] },
-            { no: "209", name: "Speech Malayalam (Girls)", cat: "Junior", type: "Stage", cands: ["755", "569"] },
-            { no: "210", name: "Handwriting Arabic (Girls)", cat: "Junior", type: "Non-Stage", cands: ["769", "548", "771", "555", "773", "556", "552"] },
-            { no: "211", name: "Handwriting Arabic Mlm (Girls)", cat: "Junior", type: "Non-Stage", cands: ["551", "752", "558", "756", "566", "771"] },
-            { no: "212", name: "Memory Test (Girls)", cat: "Junior", type: "Non-Stage", cands: ["757", "573", "771", "556", "773", "569"] },
-            { no: "213", name: "Pencil Drawing (Girls)", cat: "Junior", type: "Non-Stage", cands: ["548", "751", "561", "764", "569", "766", "552", "559", "560"] },
-            { no: "214", name: "Kurunnukal Test (Girls)", cat: "Junior", type: "Non-Stage", cands: ["769", "561", "773", "562"] },
-            { no: "215", name: "Speech English (Girls)", cat: "Junior", type: "Stage", cands: ["573", "757"] },
-            { no: "251", name: "Qirath (Boys)", cat: "Junior", type: "Stage", cands: ["163", "362", "170", "368", "171", "373"] },
-            { no: "252", name: "Hifz (Boys)", cat: "Junior", type: "Stage", cands: ["156", "359", "157", "362", "368"] },
-            { no: "253", name: "Speech Malayalam (Boys)", cat: "Junior", type: "Stage", cands: ["156", "353", "165", "354", "174", "371"] },
-            { no: "254", name: "Song Urdu (Boys)", cat: "Junior", type: "Stage", cands: ["350", "162", "363", "165"] },
-            { no: "255", name: "Song Arb (Boys)", cat: "Junior", type: "Stage", cands: ["164", "358", "171", "362", "175", "369"] },
-            { no: "256", name: "Islamic Song (Boys)", cat: "Junior", type: "Stage", cands: ["355", "173", "366", "175", "367"] },
-            { no: "257", name: "Islamic Group Song (Boys)", cat: "Junior", type: "Stage", cands: ["158", "160", "161", "350", "357", "361", "168", "169", "212", "351", "360", "364", "170", "171", "172", "362", "370", "372"] },
-            { no: "259", name: "Conversation Mlm (Boys)", cat: "Junior", type: "Stage", cands: ["357", "359", "156", "163", "369", "373", "171", "172"] },
-            { no: "260", name: "Bank (Boys)", cat: "Junior", type: "Stage", cands: ["163", "353", "170", "370"] },
-            { no: "262", name: "Handwriting Arabic (Boys)", cat: "Junior", type: "Non-Stage", cands: ["357", "164", "367", "168", "371", "170"] },
-            { no: "263", name: "Handwriting Arabic Mlm (Boys)", cat: "Junior", type: "Non-Stage", cands: ["150", "362", "169", "367", "174", "371"] },
-            { no: "264", name: "Drawing - Water Colour (Boys)", cat: "Junior", type: "Non-Stage", cands: ["351", "155", "367", "174"] },
-            { no: "265", name: "Kurunnukal Test (Boys)", cat: "Junior", type: "Non-Stage", cands: ["362", "150", "368", "152", "170", "212"] },
-            { no: "266", name: "Memory Test (Boys)", cat: "Junior", type: "Non-Stage", cands: ["361", "166", "362", "171", "371", "173"] }
-        ];
-
-        const SENIOR_PROGRAMS = [
-            { no: "301", name: "Song Malayalam (Girls)", cat: "Senior", type: "Stage", cands: ["776", "575", "782", "577", "789", "579", "801", "587"] },
-            { no: "302", name: "Song Arabic (Girls)", cat: "Senior", type: "Stage", cands: ["578", "787", "590", "789"] },
-            { no: "303", name: "Group Song Malayalam (Girls)", cat: "Senior", type: "Stage", cands: ["777", "780", "782", "788", "580", "581", "582", "583", "584", "790", "793", "794", "795", "575", "576", "577", "578", "579", "779", "781", "783", "786", "789", "586", "587", "593", "596", "598"] },
-            { no: "304", name: "Group Song Arabic (Girls)", cat: "Senior", type: "Stage", cands: ["588", "594", "595", "597", "600", "777", "778", "780", "782", "788", "585", "591", "599", "601", "775", "787", "799", "800"] },
-            { no: "309", name: "Arabic Calligraphy (Girls)", cat: "Senior", type: "Non-Stage", cands: ["784", "590", "801", "597"] },
-            { no: "310", name: "Nano Literature (Girls)", cat: "Senior", type: "Non-Stage", cands: ["600", "791", "592", "798"] },
-            { no: "311", name: "Kudumbam Test (Girls)", cat: "Senior", type: "Non-Stage", cands: ["797", "583", "785", "585", "796", "590"] },
-            { no: "312", name: "General Quiz (Girls)", cat: "Senior", type: "Stage", cands: ["589", "777", "591", "787", "592", "788", "593", "789", "597", "798", "600", "801"] },
-            { no: "313", name: "Essay Writing Malayalam (Girls)", cat: "Senior", type: "Non-Stage", cands: ["781", "587", "800", "591"] },
-            { no: "314", name: "Poem Writing Malayalam (Girls)", cat: "Senior", type: "Non-Stage", cands: ["574", "791", "585", "798"] },
-            { no: "315", name: "Story Writing Malayalam (Girls)", cat: "Senior", type: "Non-Stage", cands: ["775", "589", "785", "592"] },
-            { no: "316", name: "Essay Writing English (Girls)", cat: "Senior", type: "Non-Stage", cands: ["589", "789", "592", "801"] },
-            { no: "351", name: "Qirath (Boys)", cat: "Senior", type: "Stage", cands: ["381", "178", "394", "196"] },
-            { no: "352", name: "Hifz (Boys)", cat: "Senior", type: "Stage", cands: ["179", "378", "396"] },
-            { no: "353", name: "Bank (Boys)", cat: "Senior", type: "Stage", cands: ["377", "184", "396", "185"] },
-            { no: "354", name: "Islamic Song Arb (Boys)", cat: "Senior", type: "Stage", cands: ["181", "382", "394"] },
-            { no: "355", name: "Speech Malayalam (Boys)", cat: "Senior", type: "Stage", cands: ["398", "185"] },
-            { no: "356", name: "Speech Eng (Boys)", cat: "Senior", type: "Stage", cands: ["184", "392"] },
-            { no: "357", name: "Speech Urdu (Boys)", cat: "Senior", type: "Stage", cands: ["377", "191"] },
-            { no: "358", name: "Mappilappatt (Boys)", cat: "Senior", type: "Stage", cands: ["182", "394", "396"] },
-            { no: "359", name: "Song Urdu (Boys)", cat: "Senior", type: "Stage", cands: ["376", "180", "380", "196"] },
-            { no: "360", name: "Mash Up (Boys)", cat: "Senior", type: "Stage", cands: ["177", "180", "183", "394", "395", "396", "187", "189", "192", "383", "389", "391", "393"] },
-            { no: "361", name: "Arabic Calligraphy (Boys)", cat: "Senior", type: "Non-Stage", cands: ["376", "188", "398"] },
-            { no: "363", name: "Story Writing Mlm (Boys)", cat: "Senior", type: "Non-Stage", cands: ["378", "190", "398", "196"] },
-            { no: "364", name: "Poem Writing Mlm (Boys)", cat: "Senior", type: "Non-Stage", cands: ["378", "190", "392", "196"] },
-            { no: "365", name: "Quiz (Boys)", cat: "Senior", type: "Stage", cands: ["194", "385", "195", "393"] }
-        ];
-
-        const SUPERSENIOR_PROGRAMS = [
-            { no: "401", name: "Song Malayalam (Girls)", cat: "Super Senior", type: "Stage", cands: ["604", "818", "612", "831", "618"] },
-            { no: "402", name: "Song Arabic (Girls)", cat: "Super Senior", type: "Stage", cands: ["609", "824", "627"] },
-            { no: "403", name: "Group Song (Girls)", cat: "Super Senior", type: "Stage", cands: ["618", "617", "619", "620", "621", "827", "828", "824", "821", "605", "606", "609", "610", "611", "803", "804", "807", "810", "812", "602", "603", "604", "608", "613", "813", "814", "815", "817", "818", "614", "615", "616", "623", "625", "808", "809", "811", "805", "626", "627", "628", "629", "830", "831", "832", "841"] },
-            { no: "408", name: "Arabic Calligraphy (Girls)", cat: "Super Senior", type: "Non-Stage", cands: ["802", "635", "806"] },
-            { no: "409", name: "Nano Literature (Girls)", cat: "Super Senior", type: "Non-Stage", cands: ["626", "817", "630", "818"] },
-            { no: "410", name: "Kudumbam Test (Girls)", cat: "Super Senior", type: "Non-Stage", cands: ["813", "604", "814", "607"] },
-            { no: "411", name: "General Quiz (Girls)", cat: "Super Senior", type: "Stage", cands: ["626", "630", "634", "635", "636", "813", "814", "815", "817", "818"] },
-            { no: "412", name: "Essay Writing Malayalam (Girls)", cat: "Super Senior", type: "Non-Stage", cands: ["818", "624", "834", "612"] },
-            { no: "413", name: "Poem Writing English (Girls)", cat: "Super Senior", type: "Non-Stage", cands: ["606", "831", "616", "837"] },
-            { no: "414", name: "Story Writing English (Girls)", cat: "Super Senior", type: "Non-Stage", cands: ["626", "831", "606", "837"] },
-            { no: "451", name: "Qirath (Boys)", cat: "Super Senior", type: "Stage", cands: ["404", "203", "410", "204"] },
-            { no: "452", name: "Hifz (Boys)", cat: "Super Senior", type: "Stage", cands: ["203", "404", "204", "410"] },
-            { no: "453", name: "Speech Arb (Boys)", cat: "Super Senior", type: "Stage", cands: ["405", "211", "416"] },
-            { no: "454", name: "Speech Mlm (Boys)", cat: "Super Senior", type: "Stage", cands: ["404", "205", "416"] },
-            { no: "455", name: "Islamic Song Arb (Boys)", cat: "Super Senior", type: "Stage", cands: ["197", "414", "210", "416"] },
-            { no: "456", name: "Speech & Song (Boys)", cat: "Super Senior", type: "Stage", cands: ["404", "200", "416", "211"] },
-            { no: "457", name: "Mappilappatt (Boys)", cat: "Super Senior", type: "Stage", cands: ["203", "410", "204", "413"] },
-            { no: "458", name: "Mash Up (Boys)", cat: "Super Senior", type: "Stage", cands: ["410", "412", "413", "197", "200", "204", "399", "402", "403", "203", "211", "213"] },
-            { no: "460", name: "Story Writing Mlm (Boys)", cat: "Super Senior", type: "Non-Stage", cands: ["412", "199", "413", "203", "208"] },
-            { no: "461", name: "Poem Writing Mlm (Boys)", cat: "Super Senior", type: "Non-Stage", cands: ["209", "401", "211", "416"] },
-            { no: "462", name: "Essay Mlm (Boys)", cat: "Super Senior", type: "Non-Stage", cands: ["412", "201", "416", "211"] },
-            { no: "463", name: "Padappayatt Arabic (Boys)", cat: "Super Senior", type: "Non-Stage", cands: ["206", "416"] }
-        ];
-
-        const GENERAL_PROGRAMS = [
-            { no: "501", name: "Burda & Qawwali (Girls)", cat: "General", type: "Stage", cands: ["837", "834", "838", "835", "831", "818", "841", "618", "609", "630", "633", "629", "632", "631"] },
-            { no: "502", name: "Muhyudheen Mala (Girls)", cat: "General", type: "Stage", cands: ["627", "635", "628", "636", "621", "804", "810", "815", "803", "598", "591", "586", "590", "600", "787", "782", "776", "779", "780"] },
-            { no: "504", name: "Newspaper Making (Girls)", cat: "General", type: "Non-Stage", cands: ["834", "835", "838", "839", "840", "841", "831", "635", "630", "626", "624", "628", "631", "629"] },
-            { no: "505", name: "Collage (Girls)", cat: "General", type: "Non-Stage", cands: ["630", "635", "626", "636", "632", "818", "817", "841", "831", "838"] },
-            { no: "551", name: "Burdha (Boys)", cat: "General", type: "Stage", cands: ["416", "410", "384", "413", "394", "211", "204", "203", "200", "213"] },
-            { no: "552", name: "Moulid Recitation (Boys)", cat: "General", type: "Stage", cands: ["197", "182", "194", "174", "195", "416", "410", "413", "404", "385"] },
-            { no: "553", name: "Arabic Group Song (Boys)", cat: "General", type: "Stage", cands: ["416", "410", "413", "396", "397", "204", "200", "211", "203", "197"] }
-        ];
-
+        // State
         let isAuthStatus = false;
-        try {
-            isAuthStatus = sessionStorage.getItem('admin_auth') === 'true';
-        } catch(e) {
-            console.warn('Session storage restricted due to sandbox. Bypassing check...', e);
-        }
+        try { isAuthStatus = sessionStorage.getItem('admin_auth') === 'true'; } catch(e) {}
 
         let state = {
             isAuthenticated: isAuthStatus,
@@ -355,16 +171,9 @@
             candidates: [], 
             programs: [], 
             results: [],
-            searchQuery: '',
-            searchProgQuery: '',
-            searchResQuery: '',
-            filterTeam: 'All',
-            filterGender: 'All',
-            filterCat: 'All',
-            filterResultGender: 'All',
-            sortBy: 'regNo'
+            searchQuery: '', searchProgQuery: '', searchResQuery: '',
+            filterTeam: 'All', filterCat: 'All', filterResultCat: 'All'
         };
-
         window.state = state;
 
         window.updateSearch = (val) => { state.searchQuery = val; window.render(); const s = document.getElementById('searchInput'); if(s) {s.focus(); s.setSelectionRange(s.value.length, s.value.length);} };
@@ -374,8 +183,8 @@
         window.fireConfetti = () => {
             var duration = 3 * 1000; var end = Date.now() + duration;
             (function frame() {
-                confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#fbbf24', '#c084fc', '#f59e0b', '#a855f7'] });
-                confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#fbbf24', '#c084fc', '#f59e0b', '#a855f7'] });
+                confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#38bdf8', '#34d399', '#f8fafc', '#818cf8'] });
+                confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#38bdf8', '#34d399', '#f8fafc', '#818cf8'] });
                 if (Date.now() < end) { requestAnimationFrame(frame); }
             }());
         };
@@ -384,31 +193,38 @@
             const toast = document.getElementById('toast'); 
             document.getElementById('toastMsg').innerText = msg;
             document.getElementById('toastIcon').innerText = type === 'error' ? '⚠️' : '✨';
-            toast.className = `fixed top-5 right-5 z-[100] transform transition-transform duration-300 px-6 py-3 rounded-xl shadow-2xl font-semibold flex items-center space-x-3 text-sm translate-y-0 ${type === 'error' ? 'bg-purple-950/90 border border-red-500/50 text-red-200' : 'bg-purple-950/90 border border-amber-500/50 text-amber-200'}`;
-            setTimeout(() => { toast.classList.add('translate-y-[-200%]'); toast.classList.remove('translate-y-0'); }, 5000); 
+            toast.className = `fixed top-5 right-5 z-[100] transform transition-transform duration-300 px-6 py-3 rounded-xl shadow-2xl font-semibold flex items-center space-x-3 text-sm translate-y-0 ${type === 'error' ? 'bg-slate-900/95 border border-red-500/50 text-red-200' : 'bg-slate-900/95 border border-sky-500/50 text-sky-200'}`;
+            setTimeout(() => { toast.classList.add('translate-y-[-200%]'); toast.classList.remove('translate-y-0'); }, 4000); 
         };
 
         const initDB = async () => {
-            try { await signInAnonymously(auth); } catch (e) { window.showAlert("DB Auth Error: Check Firebase config.", "error"); }
+            try { 
+                // Using custom Firebase project, so we must use Anonymous Auth.
+                // You MUST enable "Anonymous" in Firebase Console -> Authentication -> Sign-in methods
+                await signInAnonymously(auth); 
+            } catch (e) { 
+                console.error("Auth Error:", e);
+                window.showAlert("DB Auth Error: Please enable 'Anonymous' Sign-in in Firebase.", "error"); 
+            }
         };
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                onSnapshot(doc(db, 'settings', 'config'), (snap) => {
+                onSnapshot(getDocRef('settings', 'config'), (snap) => {
                     if (snap.exists()) { state.programs = snap.data().programs || []; } 
-                    else { setDoc(doc(db, 'settings', 'config'), { programs: [] }).catch(e=>{}); }
+                    else { setDoc(getDocRef('settings', 'config'), { programs: [] }).catch(e=>{}); }
                     if(state.isAuthenticated) window.render();
-                });
+                }, (err) => console.error(err));
 
-                onSnapshot(collection(db, 'candidates'), (snap) => {
+                onSnapshot(getCol('candidates'), (snap) => {
                     state.candidates = snap.docs.map(d => ({ id: d.id, assignedPrograms: [], ...d.data() }));
                     if(state.isAuthenticated) window.render();
-                });
+                }, (err) => console.error(err));
 
-                onSnapshot(collection(db, 'results'), (snap) => {
+                onSnapshot(getCol('results'), (snap) => {
                     state.results = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                     if(state.isAuthenticated) window.render();
-                });
+                }, (err) => console.error(err));
             }
         });
         
@@ -416,120 +232,81 @@
 
         window.handleLogin = (e) => {
             e.preventDefault();
-            const pass = document.getElementById('loginPass').value;
-            if (pass === ADMIN_PASSWORD) {
-                state.isAuthenticated = true;
-                try { sessionStorage.setItem('admin_auth', 'true'); } catch(e){}
-                window.showAlert("ലോഗിൻ വിജയകരം!");
-                window.render(); 
-            } else { window.showAlert("തെറ്റായ പാസ്സ്‌വേർഡ്!", "error"); }
+            if (document.getElementById('loginPass').value === ADMIN_PASSWORD) {
+                state.isAuthenticated = true; try { sessionStorage.setItem('admin_auth', 'true'); } catch(e){}
+                window.showAlert("Login Successful!"); window.render(); 
+            } else { window.showAlert("Incorrect PIN!", "error"); }
         };
 
         window.handleLogout = () => { state.isAuthenticated = false; try { sessionStorage.removeItem('admin_auth'); } catch(e){} window.render(); };
         window.switchTab = (tab) => { state.tab = tab; window.render(); };
 
-        window.isGroupProgram = (name, forceIsGroup) => {
-            if (forceIsGroup !== undefined) return forceIsGroup === "true" || forceIsGroup === true;
-            if (!name) return false;
-            const n = name.toLowerCase();
-            return n.includes('group') || n.includes('burda') || n.includes('burdha') || n.includes('qawwali') || n.includes('mala') || n.includes('mash up') || n.includes('moulid') || n.includes('padappayatt') || n.includes('newspaper') || n.includes('collage');
+        const generateProgramNo = () => {
+            const count = state.programs.length + 1;
+            return 'BDF' + String(count).padStart(4, '0');
         };
 
+        const generateChestNo = (category) => {
+            const catCands = state.candidates.filter(c => c.cat === category);
+            let prefix = category === 'Junior' ? 'J' : 'S';
+            let max = 100;
+            catCands.forEach(c => {
+                const num = parseInt(c.regNo.replace(/\D/g, ''));
+                if (!isNaN(num) && num > max) max = num;
+            });
+            return prefix + (max + 1);
+        };
+
+        // Programs CRUD
         window.addNewProgram = async (e) => {
             e.preventDefault(); 
-            const progNo = document.getElementById('pNo').value;
             const name = document.getElementById('pName').value; 
             const cat = document.getElementById('pCat').value; 
             const type = document.getElementById('pType').value; 
-            const pointScheme = document.getElementById('pPoints').value;
+            const pointScheme = document.getElementById('pPoints').value; 
             const kalaprathiba = document.getElementById('pKalaprathiba').value === "true";
+            const progNo = generateProgramNo();
             
             const newProg = { id: 'p' + Date.now(), progNo, name, cat, type, pointScheme, kalaprathiba, timestamp: Date.now() }; 
             const updatedProgs = [...state.programs, newProg]; 
             
-            const btn = document.getElementById('addProgBtn'); btn.disabled = true; btn.innerText = 'Saving...';
-            try { await updateDoc(doc(db, 'settings', 'config'), { programs: updatedProgs }); window.showAlert("മത്സരം ചേർത്തു!"); e.target.reset(); } 
-            catch(err) { window.showAlert("Error: " + err.message, "error"); }
-            finally { btn.disabled = false; btn.innerText = '+ Add'; }
+            const btn = document.getElementById('addProgBtn'); btn.disabled = true; btn.innerText = 'Wait...';
+            try { 
+                await updateDoc(getDocRef('settings', 'config'), { programs: updatedProgs }); 
+                window.showAlert(`Program Added (${progNo})`); e.target.reset(); 
+            } catch(err) { window.showAlert("Error: " + err.message, "error"); }
+            finally { btn.disabled = false; btn.innerText = '+ Add Program'; }
         };
 
         window.deleteProgram = async (id) => {
-            if(confirm("ഈ മത്സരം പൂർണ്ണമായി ഡിലീറ്റ് ചെയ്യണോ?")) {
+            if(confirm("Delete this program? This cannot be undone.")) {
                 const updatedProgs = state.programs.filter(p => p.id !== id); 
-                try { await updateDoc(doc(db, 'settings', 'config'), { programs: updatedProgs }); window.showAlert("ഡിലീറ്റ് ചെയ്തു!"); } 
-                catch(e) { window.showAlert("പരാജയപ്പെട്ടു.", "error"); }
+                try { await updateDoc(getDocRef('settings', 'config'), { programs: updatedProgs }); window.showAlert("Deleted!"); } 
+                catch(e) { window.showAlert("Failed.", "error"); }
             }
         };
 
-        window.openEditProg = (id) => {
-            const p = state.programs.find(x => x.id === id); if(!p) return;
-            document.getElementById('editProgId').value = p.id;
-            document.getElementById('editProgNo').value = p.progNo || '';
-            document.getElementById('editProgName').value = p.name;
-            document.getElementById('editProgCat').value = p.cat;
-            document.getElementById('editProgType').value = p.type;
-            
-            let pGender = p.gender || 'ALL';
-            if (pGender === 'ALL') {
-                if(p.name.toLowerCase().includes('boys')) pGender = 'BOYS';
-                else if(p.name.toLowerCase().includes('girls')) pGender = 'GIRLS';
-            }
-            document.getElementById('editProgGender').value = pGender;
-            document.getElementById('editProgFormat').value = (window.isGroupProgram(p.name, p.isGroup) ? "true" : "false");
-            
-            document.getElementById('editProgPts').value = p.pointScheme || '5,3,1';
-            document.getElementById('editProgKala').value = p.kalaprathiba !== false ? "true" : "false";
-            
-            document.getElementById('editProgModal').style.display = 'flex';
-        };
-
-        window.saveEditProg = async (e) => {
-            e.preventDefault();
-            const id = document.getElementById('editProgId').value;
-            const btn = document.getElementById('saveEditProgBtn'); btn.innerText = 'Saving...'; btn.disabled = true;
-            try {
-                let updated = state.programs.map(p => p.id === id ? { 
-                    ...p, 
-                    progNo: document.getElementById('editProgNo').value, 
-                    name: document.getElementById('editProgName').value,
-                    cat: document.getElementById('editProgCat').value,
-                    type: document.getElementById('editProgType').value,
-                    gender: document.getElementById('editProgGender').value,
-                    isGroup: document.getElementById('editProgFormat').value === "true",
-                    pointScheme: document.getElementById('editProgPts').value,
-                    kalaprathiba: document.getElementById('editProgKala').value === "true"
-                } : p);
-                await updateDoc(doc(db, 'settings', 'config'), { programs: updated });
-                window.showAlert("Program updated!"); document.getElementById('editProgModal').style.display = 'none';
-            } catch(err) { window.showAlert("Error: " + err.message, "error"); }
-            finally { btn.innerText = 'Save Settings'; btn.disabled = false; }
-        };
-
+        // Candidates CRUD - Removed Class and Gender fields
         window.addCandidate = async (e) => {
             e.preventDefault(); 
             const name = document.getElementById('cName').value; 
             const cat = document.getElementById('cCat').value; 
             const team = document.getElementById('cTeam').value;
-            const gender = document.getElementById('cGender').value;
-            const classDiv = document.getElementById('cClassDiv').value || '-'; 
-            let regNo = document.getElementById('cRegNo').value; 
+            const regNo = generateChestNo(cat);
             
-            if(!regNo) {
-                const catCount = state.candidates.filter(c => c.cat === cat).length; 
-                regNo = 'K' + (101 + catCount); 
-            }
             const btn = document.getElementById('addCandBtn'); btn.innerText = "Saving..."; btn.disabled = true; 
             try { 
-                await addDoc(collection(db, 'candidates'), { name, regNo: String(regNo), classDiv, cat, team, gender, assignedPrograms: [], timestamp: Date.now() }); 
-                window.showAlert(`കുട്ടിയെ ചേർത്തു! (Chest No: ${regNo})`); e.target.reset(); 
-                document.getElementById('cCat').value = cat; document.getElementById('cTeam').value = team; document.getElementById('cGender').value = gender;
+                await addDoc(getCol('candidates'), { name, regNo: String(regNo), cat, team, assignedPrograms: [], timestamp: Date.now() }); 
+                window.showAlert(`Added! Chest No: ${regNo}`); 
+                e.target.reset(); 
+                document.getElementById('cCat').value = cat; document.getElementById('cTeam').value = team;
             } catch (err) { window.showAlert("Error: " + err.message, "error"); } 
-            finally { btn.innerText = "സേവ് ചെയ്യുക"; btn.disabled = false; } 
+            finally { btn.innerText = "Save Candidate"; btn.disabled = false; } 
         };
 
         window.deleteCandidate = async (id) => {
-            if(confirm("ഈ കുട്ടിയെ ഡിലീറ്റ് ചെയ്യണോ?")) {
-                try { await deleteDoc(doc(db, 'candidates', id)); window.showAlert("ഡിലീറ്റ് ചെയ്തു."); } catch(e) { window.showAlert("പരാജയപ്പെട്ടു.", "error"); }
+            if(confirm("Delete this candidate?")) {
+                try { await deleteDoc(getDocRef('candidates', id)); window.showAlert("Deleted."); } catch(e) { window.showAlert("Failed.", "error"); }
             }
         };
 
@@ -538,7 +315,6 @@
             document.getElementById('editCandId').value = c.id;
             document.getElementById('editCandName').value = c.name;
             document.getElementById('editCandRegNo').value = c.regNo;
-            document.getElementById('editCandClassDiv').value = c.classDiv || '';
             document.getElementById('editCandModal').style.display = 'flex';
         };
 
@@ -547,28 +323,93 @@
             const id = document.getElementById('editCandId').value;
             const btn = document.getElementById('saveEditCandBtn'); btn.innerText = 'Saving...'; btn.disabled = true;
             try {
-                await updateDoc(doc(db, 'candidates', id), { name: document.getElementById('editCandName').value, regNo: document.getElementById('editCandRegNo').value, classDiv: document.getElementById('editCandClassDiv').value });
+                await updateDoc(getDocRef('candidates', id), { name: document.getElementById('editCandName').value, regNo: document.getElementById('editCandRegNo').value });
                 window.showAlert("Candidate updated!"); document.getElementById('editCandModal').style.display = 'none';
-            } catch(err) { window.showAlert("Error: " + err.message, "error"); }
+            } catch(err) { window.showAlert("Error.", "error"); }
             finally { btn.innerText = 'Update'; btn.disabled = false; }
         };
 
         let currentAssignCandidateId = null;
+        
+        window.getCategoryLimits = (cat) => {
+            if (cat === 'Junior') return { stage: 5, nonStage: 4 };
+            if (cat === 'Senior') return { stage: 5, nonStage: 5 };
+            return { stage: 99, nonStage: 99 };
+        };
+
+        window.calculateUsage = (assignedArray) => {
+            let usage = { stage: 0, nonStage: 0, general: 0 };
+            assignedArray.forEach(pId => {
+                const prog = state.programs.find(p => p.id === pId);
+                if (prog) {
+                    if (prog.cat === 'General' || prog.type === 'General') {
+                        usage.general++;
+                    } else {
+                        if (prog.type === 'Stage') usage.stage++;
+                        if (prog.type === 'Non-Stage') usage.nonStage++;
+                    }
+                }
+            });
+            return usage;
+        };
+
         window.openAssign = (candId) => {
-            const candidate = state.candidates.find(c => c.id === candId); if (!candidate) return; currentAssignCandidateId = candId;
-            document.getElementById('assignTitle').innerText = `മത്സരങ്ങൾ ചേർക്കുക`; 
-            document.getElementById('assignSubtitle').innerText = `${candidate.name} (#${candidate.regNo}) • ${candidate.team || ''} (${candidate.gender || ''})`;
-            const eligibleProgs = state.programs.filter(p => p.cat === candidate.cat || p.cat === 'General'); const assigned = candidate.assignedPrograms || [];
+            const candidate = state.candidates.find(c => c.id === candId); if (!candidate) return; 
+            currentAssignCandidateId = candId;
+            
+            document.getElementById('assignTitle').innerText = `Assign Programs to ${candidate.name}`; 
+            document.getElementById('assignSubtitle').innerText = `#${candidate.regNo} • ${candidate.team} • ${candidate.cat}`;
+            
+            const eligibleProgs = state.programs.filter(p => p.cat === candidate.cat || p.cat === 'General'); 
+            const assigned = candidate.assignedPrograms || [];
+            
+            renderAssignCheckboxes(candidate.cat, eligibleProgs, assigned);
+            document.getElementById('assignModal').style.display = 'flex';
+        };
+
+        const renderAssignCheckboxes = (cat, eligibleProgs, assigned) => {
+            const limits = window.getCategoryLimits(cat);
+            const usage = window.calculateUsage(assigned);
+            
+            const sElem = document.getElementById('limitStage');
+            sElem.innerText = `${usage.stage}/${limits.stage}`;
+            sElem.className = usage.stage >= limits.stage ? "text-red-400 text-lg font-black" : "text-sky-300 text-lg";
+
+            const nsElem = document.getElementById('limitNonStage');
+            nsElem.innerText = `${usage.nonStage}/${limits.nonStage}`;
+            nsElem.className = usage.nonStage >= limits.nonStage ? "text-red-400 text-lg font-black" : "text-emerald-300 text-lg";
+
+            document.getElementById('limitGeneral').innerText = usage.general;
+
             let html = '';
-            if(eligibleProgs.length === 0) html = '<p class="text-purple-300 text-sm">ഈ വിഭാഗത്തിൽ മത്സരങ്ങൾ ചേർത്തിട്ടില്ല.</p>';
             eligibleProgs.forEach(p => {
-                const isChecked = assigned.includes(p.id) ? 'checked' : '';
-                html += `<label class="flex items-center justify-between p-3 bg-purple-900/50 border border-purple-700/60 rounded-lg cursor-pointer hover:bg-purple-800 transition">
-                    <div><span class="text-white text-sm font-semibold block">${p.progNo ? `<span class="text-amber-500 mr-1">#${p.progNo}</span>` : ''}${p.name}</span><span class="text-[10px] text-amber-300 uppercase">${p.cat} • ${p.type}</span></div>
-                    <input type="checkbox" value="${p.id}" class="prog-checkbox w-5 h-5 accent-amber-500 rounded" ${isChecked}>
+                const isChecked = assigned.includes(p.id);
+                
+                let isDisabled = false;
+                if (!isChecked && p.cat !== 'General' && p.type !== 'General') {
+                    if (p.type === 'Stage' && usage.stage >= limits.stage) isDisabled = true;
+                    if (p.type === 'Non-Stage' && usage.nonStage >= limits.nonStage) isDisabled = true;
+                }
+
+                html += `<label class="flex items-center justify-between p-3 bg-slate-800/50 border border-slate-700 rounded-lg cursor-pointer hover:bg-slate-700/50 transition ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}">
+                    <div>
+                        <span class="text-white text-sm font-semibold block ${isDisabled ? 'line-through text-slate-500' : ''}">
+                            <span class="text-sky-400 mr-1">#${p.progNo}</span>${p.name}
+                        </span>
+                        <span class="text-[10px] ${(p.cat==='General' || p.type==='General') ? 'text-purple-400' : 'text-slate-400'} uppercase font-bold tracking-wider">${p.cat} • ${p.type}</span>
+                    </div>
+                    <input type="checkbox" value="${p.id}" onchange="window.handleCheckboxChange(this)" class="prog-checkbox w-5 h-5 accent-sky-500 rounded" ${isChecked ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}>
                 </label>`;
             });
-            document.getElementById('assignCheckboxes').innerHTML = html; document.getElementById('assignModal').style.display = 'flex';
+            document.getElementById('assignCheckboxes').innerHTML = html;
+        };
+
+        window.handleCheckboxChange = (cb) => {
+            const candidate = state.candidates.find(c => c.id === currentAssignCandidateId);
+            const eligibleProgs = state.programs.filter(p => p.cat === candidate.cat || p.cat === 'General');
+            const checkboxes = document.querySelectorAll('.prog-checkbox');
+            const selectedProgs = Array.from(checkboxes).filter(chk => chk.checked).map(chk => chk.value);
+            renderAssignCheckboxes(candidate.cat, eligibleProgs, selectedProgs);
         };
 
         window.closeAssign = () => { document.getElementById('assignModal').style.display = 'none'; currentAssignCandidateId = null; };
@@ -577,69 +418,47 @@
             if (!currentAssignCandidateId) return;
             const checkboxes = document.querySelectorAll('.prog-checkbox');
             const selectedProgs = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
-            const btn = document.getElementById('saveAssignBtn'); btn.innerText = 'Saving...'; btn.disabled = true;
-            try { await updateDoc(doc(db, 'candidates', currentAssignCandidateId), { assignedPrograms: selectedProgs }); window.showAlert("സേവ് ചെയ്തു!"); closeAssign(); } 
-            catch (e) { window.showAlert("Error: " + e.message, "error"); } finally { btn.innerText = 'സേവ് ചെയ്യുക'; btn.disabled = false; }
-        };
-
-        window.openEnrolled = (progId) => {
-            const prog = state.programs.find(p => p.id === progId); if(!prog) return;
-            document.getElementById('enrolledTitle').innerText = `${prog.progNo ? `#${prog.progNo} ` : ''}${prog.name}`; 
-            document.getElementById('enrolledSubtitle').innerText = `രജിസ്റ്റർ ചെയ്ത കുട്ടികൾ`;
-            let enrolled = state.candidates.filter(c => c.assignedPrograms && c.assignedPrograms.includes(progId));
-            let html = '';
-            if(enrolled.length === 0) { html = `<p class="text-center text-purple-300 text-sm py-4">ആരും രജിസ്റ്റർ ചെയ്തിട്ടില്ല.</p>`; } 
-            else { 
-                enrolled.forEach(c => { 
-                    html += `<div class="bg-purple-900/60 border border-purple-700/60 p-3 rounded-lg flex justify-between items-center mb-2">
-                        <div><p class="text-white font-bold text-sm">${c.name} <span class="text-xs text-purple-300 font-normal">(#${c.regNo} - Class: ${c.classDiv||'-'})</span></p><p class="text-[10px] text-amber-300 font-semibold">${c.team || ''} • ${c.gender || ''}</p></div>
-                        <span class="text-[10px] text-amber-400 font-bold uppercase bg-purple-950 px-2 py-1 rounded border border-purple-800">${c.cat}</span>
-                    </div>`; 
-                }); 
-            }
-            document.getElementById('enrolledList').innerHTML = html; document.getElementById('enrolledModal').style.display = 'flex';
-        };
-        window.closeEnrolled = () => { document.getElementById('enrolledModal').style.display = 'none'; };
-
-        window.repairDatabase = async () => {
-            if(!confirm("This will scan all existing programs and perfectly attach their default Point Schemes and Kalaprathiba settings based on their program number. Continue?")) return;
             
-            const btn = document.getElementById('repairBtn');
-            if(btn) { btn.innerText = "Scanning & Upgrading..."; btn.disabled = true; }
+            const btn = document.getElementById('saveAssignBtn'); btn.innerText = 'Saving...'; btn.disabled = true;
+            try { 
+                await updateDoc(getDocRef('candidates', currentAssignCandidateId), { assignedPrograms: selectedProgs }); 
+                window.showAlert("Saved!"); closeAssign(); 
+            } catch (e) { window.showAlert("Error saving", "error"); } 
+            finally { btn.innerText = 'Save Selection'; btn.disabled = false; }
+        };
 
-            try {
-                let allHardcoded = [...KIDDIES_PROGRAMS, ...SUBJUNIOR_PROGRAMS, ...JUNIOR_PROGRAMS, ...SENIOR_PROGRAMS, ...SUPERSENIOR_PROGRAMS, ...GENERAL_PROGRAMS];
-                let updatedProgs = [...state.programs];
-                let upgradedCount = 0;
+        window.publishResult = async (e) => {
+            e.preventDefault();
+            const progId = document.getElementById('rProg').value;
+            if(!progId) return;
+            const prog = state.programs.find(p => p.id === progId);
+            
+            const getSelected = (id) => Array.from(document.getElementById(id).selectedOptions).map(o => o.value).filter(v => v !== "");
+            const first = getSelected('rFirst'); const second = getSelected('rSecond'); const third = getSelected('rThird');
+            
+            if (first.length === 0 && second.length === 0 && third.length === 0) { return window.showAlert("Select at least one winner!", "error"); }
+            
+            let ptsArr = (prog.pointScheme || "10,5,3").split(',').map(Number);
+            
+            const btn = document.getElementById('publishBtn'); btn.innerText = "Publishing..."; btn.disabled = true;
+            try { 
+                await setDoc(getDocRef('results', progId), { 
+                    progId, first, second, third, 
+                    pts1: ptsArr[0], pts2: ptsArr[1], pts3: ptsArr[2],
+                    timestamp: Date.now() 
+                }); 
+                window.showAlert("Result Published!"); 
+                document.getElementById('rProg').value = ""; document.getElementById('rSelectors').innerHTML = ""; 
+                window.fireConfetti();
+            } 
+            catch(err) { window.showAlert("Failed: " + err.message, "error"); }
+            finally { btn.innerText = "Publish Result"; btn.disabled = false; }
+        };
 
-                allHardcoded.forEach(kp => {
-                    let existing = updatedProgs.find(p => String(p.progNo).trim() === String(kp.no).trim());
-                    let pNo = String(kp.no).trim();
-                    let isGrp = window.isGroupProgram(existing ? existing.name : kp.name, existing ? existing.isGroup : undefined);
-                    
-                    let pts = '5,3,1';
-                    if (['551', '552', '553', '501', '502'].includes(pNo)) pts = '15,10,5';
-                    else if (['54', '155', '257', '458', '04', '105', '205', '206', '303', '304', '403', '360'].includes(pNo)) pts = '10,7,5';
-                    
-                    let kala = true;
-                    if (isGrp || ['107', '208', '154', '259'].includes(pNo)) kala = false;
-
-                    if(existing) {
-                        existing.pointScheme = pts;
-                        existing.kalaprathiba = kala;
-                        if (!existing.name || existing.name !== kp.name) existing.name = kp.name;
-                        upgradedCount++;
-                    } else {
-                        const newId = 'p' + Date.now() + Math.floor(Math.random()*1000) + kp.no;
-                        updatedProgs.push({ id: newId, progNo: kp.no, name: kp.name, cat: kp.cat, type: kp.type, pointScheme: pts, kalaprathiba: kala, timestamp: Date.now() });
-                        upgradedCount++;
-                    }
-                });
-
-                await updateDoc(doc(db, 'settings', 'config'), { programs: updatedProgs });
-                window.showAlert(`Successfully upgraded ${upgradedCount} programs with full settings!`);
-            } catch(e) { window.showAlert("Error: " + e.message, "error"); } 
-            finally { if(btn) { btn.innerText = "🛠️ Repair Missing Names & Settings"; btn.disabled = false; } window.render(); }
+        window.deleteResult = async (resId) => {
+            if(confirm("Delete this result?")) {
+                try { await deleteDoc(getDocRef('results', resId)); window.showAlert("Deleted."); } catch(e) { window.showAlert("Failed.", "error"); }
+            }
         };
 
         window.populateResultDropdowns = () => {
@@ -648,115 +467,139 @@
             const container = document.getElementById('rSelectors');
             if (!prog) { container.innerHTML = ''; return; }
 
-            let eligibleCands = state.candidates.filter(c => prog.cat === 'General' ? true : c.cat === prog.cat);
+            let eligible = state.candidates.filter(c => prog.cat === 'General' ? true : c.cat === prog.cat);
+            const assigned = eligible.filter(c => c.assignedPrograms && c.assignedPrograms.includes(progId));
             
-            let pGender = prog.gender || 'ALL';
-            if (pGender === 'ALL') {
-                if (prog.name.toLowerCase().includes('boys')) pGender = 'BOYS';
-                else if (prog.name.toLowerCase().includes('girls')) pGender = 'GIRLS';
+            let html = '<option value="" disabled>-- Select Candidate --</option>';
+            if(assigned.length > 0) {
+                html += '<optgroup label="Enrolled in this program">';
+                assigned.forEach(c => html += `<option value="${c.id}">#${c.regNo} - ${c.name} (${c.team})</option>`);
+                html += '</optgroup>';
             }
-            if (pGender === 'BOYS') eligibleCands = eligibleCands.filter(c => c.gender === 'BOYS');
-            if (pGender === 'GIRLS') eligibleCands = eligibleCands.filter(c => c.gender === 'GIRLS');
+            html += '<optgroup label="Other Candidates">';
+            eligible.filter(c => !assigned.includes(c)).forEach(c => html += `<option value="${c.id}">#${c.regNo} - ${c.name} (${c.team})</option>`);
+            html += '</optgroup>';
 
-            const assignedCands = eligibleCands.filter(c => c.assignedPrograms && c.assignedPrograms.includes(progId));
-            
-            let optionsHtml = '<option value="" disabled>-- തിരഞ്ഞെടുക്കുക --</option>';
-            if(assignedCands.length > 0) {
-                optionsHtml += '<optgroup label="ഈ മത്സരത്തിലുള്ളവർ">';
-                assignedCands.forEach(c => optionsHtml += `<option value="${c.id}">#${c.regNo} - ${c.name} (${c.team||''} ${c.gender||''})</option>`);
-                optionsHtml += '</optgroup>';
-            }
-            optionsHtml += '<optgroup label="മറ്റു കുട്ടികൾ">';
-            eligibleCands.filter(c => !assignedCands.includes(c)).forEach(c => optionsHtml += `<option value="${c.id}">#${c.regNo} - ${c.name} (${c.team||''} ${c.gender||''})</option>`);
-            optionsHtml += '</optgroup>';
-
-            let ptsStr = prog.pointScheme || "5,3,1";
-            let ptsArr = ptsStr.split(',').map(Number);
-            let p1 = ptsArr[0], p2 = ptsArr[1], p3 = ptsArr[2];
+            let ptsArr = (prog.pointScheme || "10,5,3").split(',').map(Number);
 
             container.innerHTML = `
-                <div class="space-y-4 p-4 bg-black/50 rounded-xl border border-purple-800 mt-4">
-                    <div><label class="block text-xs font-bold text-yellow-400 mb-1">ഒന്നാം സ്ഥാനം (${p1} Pts) - <span class="text-purple-300 font-normal">Ctrl/Cmd അമർത്തി മൾട്ടി-സെലക്ട് ചെയ്യാം</span></label><select id="rFirst" onchange="window.updateResultLocks()" multiple size="4" class="w-full bg-purple-950 border border-purple-800 rounded-lg px-3 py-2 text-white outline-none focus:border-yellow-400 custom-scrollbar">${optionsHtml}</select></div>
-                    <div><label class="block text-xs font-bold text-slate-300 mb-1">രണ്ടാം സ്ഥാനം (${p2} Pts)</label><select id="rSecond" onchange="window.updateResultLocks()" multiple size="4" class="w-full bg-purple-950 border border-purple-800 rounded-lg px-3 py-2 text-white outline-none focus:border-slate-400 custom-scrollbar">${optionsHtml}</select></div>
-                    <div><label class="block text-xs font-bold text-amber-500 mb-1">മൂന്നാം സ്ഥാനം (${p3} Pts)</label><select id="rThird" onchange="window.updateResultLocks()" multiple size="4" class="w-full bg-purple-950 border border-purple-800 rounded-lg px-3 py-2 text-white outline-none focus:border-amber-500 custom-scrollbar">${optionsHtml}</select></div>
+                <div class="space-y-4 p-4 bg-slate-900/50 rounded-xl border border-slate-700 mt-4">
+                    <div><label class="block text-xs font-bold text-yellow-400 mb-1">1st Place (${ptsArr[0]} Pts)</label><select id="rFirst" multiple size="3" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-white outline-none focus:border-yellow-400">${html}</select></div>
+                    <div><label class="block text-xs font-bold text-slate-300 mb-1">2nd Place (${ptsArr[1]} Pts)</label><select id="rSecond" multiple size="3" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-white outline-none focus:border-slate-400">${html}</select></div>
+                    <div><label class="block text-xs font-bold text-amber-600 mb-1">3rd Place (${ptsArr[2]} Pts)</label><select id="rThird" multiple size="3" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-white outline-none focus:border-amber-600">${html}</select></div>
                 </div>
-                <button type="submit" id="publishBtn" class="w-full mt-4 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-black font-bold py-3 rounded-xl transition shadow-lg">റിസൾട്ട് പബ്ലിഷ് ചെയ്യുക</button>
+                <button type="submit" id="publishBtn" class="w-full mt-4 bg-gradient-to-r from-sky-500 to-indigo-500 text-white font-bold py-3 rounded-xl transition shadow-lg hover:from-sky-400 hover:to-indigo-400">Publish Result</button>
             `;
-            window.updateResultLocks();
         };
 
-        window.updateResultLocks = () => {
-            const first = Array.from(document.getElementById('rFirst').selectedOptions).map(o => o.value);
-            const second = Array.from(document.getElementById('rSecond').selectedOptions).map(o => o.value);
-            const third = Array.from(document.getElementById('rThird').selectedOptions).map(o => o.value);
+        window.exportData = () => {
+            const data = { programs: state.programs, candidates: state.candidates, results: state.results, exportDate: new Date().toISOString() };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a"); a.href = url; a.download = `FestData_Backup_${Date.now()}.json`;
+            document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+            window.showAlert("Database Exported!");
+        };
 
-            ['rFirst', 'rSecond', 'rThird'].forEach(id => {
-                const select = document.getElementById(id);
-                Array.from(select.options).forEach(opt => {
-                    if (opt.value === "") return;
-                    let isDisabled = false;
-                    if (id !== 'rFirst' && first.includes(opt.value)) isDisabled = true;
-                    if (id !== 'rSecond' && second.includes(opt.value)) isDisabled = true;
-                    if (id !== 'rThird' && third.includes(opt.value)) isDisabled = true;
-                    
-                    if (isDisabled && !opt.selected) { opt.disabled = true; opt.style.textDecoration = "line-through"; opt.style.color = "#6b7280"; } 
-                    else { opt.disabled = false; opt.style.textDecoration = "none"; opt.style.color = "#f8fafc"; }
-                });
+        window.exportCSV = () => {
+            // Removed Gender and Class from CSV
+            let csv = "Chest No,Name,Category,Team,Assigned Programs\n";
+            state.candidates.forEach(c => {
+                const pNames = (c.assignedPrograms || []).map(pid => {
+                    const p = state.programs.find(x => x.id === pid);
+                    return p ? `${p.progNo}-${p.name}` : '';
+                }).join('; ');
+                csv += `"${c.regNo}","${c.name}","${c.cat}","${c.team}","${pNames}"\n`;
             });
+            const blob = new Blob([csv], { type: "text/csv" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a"); a.href = url; a.download = `Candidates_${Date.now()}.csv`;
+            document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+            window.showAlert("CSV Exported!");
         };
 
-        window.publishResult = async (e) => {
-            e.preventDefault();
-            const progId = document.getElementById('rProg').value;
-            const prog = state.programs.find(p => p.id === progId);
-            const getSelected = (id) => Array.from(document.getElementById(id).selectedOptions).map(o => o.value).filter(v => v !== "");
-            const first = getSelected('rFirst'); const second = getSelected('rSecond'); const third = getSelected('rThird');
-            
-            if (first.length === 0 && second.length === 0 && third.length === 0) { return window.showAlert("ഏതെങ്കിലും ഒരു സ്ഥാനം നിർബന്ധമാണ്!", "error"); }
-            
-            let ptsStr = prog.pointScheme || "5,3,1";
-            let ptsArr = ptsStr.split(',').map(Number);
-            let pts1 = ptsArr[0], pts2 = ptsArr[1], pts3 = ptsArr[2];
-
-            const btn = document.getElementById('publishBtn'); btn.innerText = "Publishing..."; btn.disabled = true;
-            try { 
-                await setDoc(doc(db, 'results', progId), { 
-                    progId, first, second, third, pts1, pts2, pts3,
-                    isGroup: window.isGroupProgram(prog.name, prog.isGroup), 
-                    pointScheme: ptsStr, timestamp: Date.now() 
-                }); 
-                window.showAlert("റിസൾട്ട് പ്രസിദ്ധീകരിച്ചു!"); 
-                document.getElementById('rProg').value = ""; document.getElementById('rSelectors').innerHTML = ""; 
-                window.fireConfetti();
-            } 
-            catch(err) { window.showAlert("പരാജയപ്പെട്ടു: " + err.message, "error"); }
-            finally { btn.innerText = "റിസൾട്ട് പബ്ലിഷ് ചെയ്യുക"; btn.disabled = false; }
+        window.triggerImport = () => document.getElementById('importFile').click();
+        window.handleImport = async (e) => {
+            const file = e.target.files[0]; if(!file) return;
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if(!data.programs || !data.candidates || !data.results) throw new Error("Invalid format");
+                    
+                    if(!confirm("WARNING: This will merge the imported data into the current database. Continue?")) return;
+                    window.showAlert("Importing...", "success");
+                    
+                    await updateDoc(getDocRef('settings', 'config'), { programs: data.programs });
+                    
+                    for(const c of data.candidates) { await setDoc(getDocRef('candidates', c.id), c); }
+                    for(const r of data.results) { await setDoc(getDocRef('results', r.id), r); }
+                    window.showAlert("Import Complete!"); e.target.value = '';
+                } catch(err) { window.showAlert("Import Failed: " + err.message, "error"); }
+            };
+            reader.readAsText(file);
         };
 
-        window.deleteResult = async (resId) => {
-            if(confirm("ഈ റിസൾട്ട് ഡിലീറ്റ് ചെയ്യണോ?")) {
-                try { await deleteDoc(doc(db, 'results', resId)); window.showAlert("റിസൾട്ട് ഡിലീറ്റ് ചെയ്തു."); } 
-                catch(e) { window.showAlert("പരാജയപ്പെട്ടു.", "error"); }
+        window.wipeDatabase = async () => {
+            const pwd = prompt("DANGER: Type 'DELETE ALL' to wipe the entire database completely.");
+            if(pwd === "DELETE ALL") {
+                try {
+                    await updateDoc(getDocRef('settings', 'config'), { programs: [] });
+                    for(const c of state.candidates) await deleteDoc(getDocRef('candidates', c.id));
+                    for(const r of state.results) await deleteDoc(getDocRef('results', r.id));
+                    window.showAlert("Database Wiped Clean.");
+                } catch(err) { window.showAlert("Error: " + err.message, "error"); }
+            } else if (pwd !== null) {
+                window.showAlert("Incorrect confirmation text. Aborted.", "error");
             }
+        };
+
+        window.printIDCards = (candId = null) => {
+            const printArea = document.getElementById('print-area');
+            let candidatesToPrint = candId ? [state.candidates.find(c => c.id === candId)] : state.candidates;
+            
+            if (candidatesToPrint.length === 0 || !candidatesToPrint[0]) return window.showAlert("No candidates to print.", "error");
+
+            let html = '';
+            candidatesToPrint.forEach(c => {
+                const assigned = (c.assignedPrograms || []).map(pid => {
+                    const p = state.programs.find(x => x.id === pid);
+                    return p ? `${p.progNo} ${p.name}` : '';
+                }).filter(Boolean);
+                
+                const progList = assigned.length > 0 ? assigned.join(' • ') : 'No programs assigned';
+
+                html += `
+                <div class="id-card">
+                    <div class="id-header">
+                        <h1 class="id-title">Aawaaze Funoon S4</h1>
+                        <p class="id-sub">Urava Fest</p>
+                    </div>
+                    <div class="id-body">
+                        <div class="id-chest">${c.regNo}</div>
+                        <h2 class="id-name">${c.name}</h2>
+                        <div class="id-team">${c.team} - ${c.cat}</div>
+                    </div>
+                    <div class="id-footer">${progList}</div>
+                </div>`;
+            });
+            
+            printArea.innerHTML = html;
+            
+            setTimeout(() => {
+                window.print();
+                printArea.innerHTML = ''; 
+            }, 500);
         };
 
         const getNamesBadgeHtml = (ids, borderClass, textClass, icon, pts) => { 
             const arr = Array.isArray(ids) ? ids : (ids ? [ids] : []); 
             if (arr.length === 0) return ''; 
-            return arr.map((id, index) => { 
+            return arr.map((id) => { 
                 const c = state.candidates.find(x => x.id === id); 
-                return `<div class="flex justify-between items-center bg-purple-950/80 p-2.5 rounded-lg border ${borderClass} mb-1.5">
-                    <div class="flex items-center gap-2">
-                        <span class="text-xl">${icon}</span> 
-                        <div>
-                            <p class="${textClass} font-bold text-sm truncate">${c?.name || '-'}</p>
-                            <span class="text-[10px] text-purple-300 font-semibold">${c?.team || ''} (${c?.gender || ''}) • Class: ${c?.classDiv || '-'}</span>
-                        </div>
-                    </div> 
-                    <div class="flex items-center gap-2">
-                        ${pts ? `<span class="text-[10px] font-bold bg-white/10 text-white px-2 py-0.5 rounded shadow-sm">+${pts} Pts</span>` : ''}
-                        <span class="text-[11px] font-bold text-amber-300 bg-black/80 px-2.5 py-1 rounded-md border border-purple-800 flex-shrink-0 num-font">#${c?.regNo || '-'}</span>
-                    </div>
+                return `<div class="flex justify-between items-center bg-slate-900 p-2 rounded-lg border ${borderClass} mb-1.5">
+                    <div class="flex items-center gap-2"><span>${icon}</span> <div><p class="${textClass} font-bold text-sm leading-tight">${c?.name || '-'}</p><span class="text-[10px] text-slate-400">${c?.team || ''}</span></div></div>
+                    <span class="text-[10px] font-bold text-sky-300 bg-black px-2 py-1 rounded">#${c?.regNo || '-'}</span>
                 </div>`; 
             }).join(''); 
         };
@@ -764,225 +607,107 @@
         window.render = function() {
             try {
                 const app = document.getElementById('app'); 
-
-                if (!state.isAuthenticated) {
-                    app.innerHTML = `
-                    <div class="flex-1 flex flex-col items-center justify-center p-4 min-h-screen" id="login-container">
-                        <div class="glass-card max-w-sm w-full rounded-[2rem] p-8 shadow-2xl text-center">
-                            <div class="flex flex-col items-center justify-center mb-6">
-                                <span class="text-xs text-amber-400 font-extrabold tracking-widest uppercase mb-1">LADAL MADEENA 2K26</span>
-                                <h2 class="text-2xl font-black text-purple-200 tracking-tight">ADMIN PORTAL</h2>
-                                <div class="flex gap-2 mt-2 justify-center">
-                                    <span class="text-[10px] bg-purple-900/80 text-amber-300 px-2.5 py-0.5 rounded-full font-bold border border-purple-600">KHAIBAR</span>
-                                    <span class="text-[10px] bg-purple-900/80 text-purple-300 px-2.5 py-0.5 rounded-full font-bold border border-purple-600">KHANDAQ</span>
-                                </div>
-                            </div>
-                            <p class="text-purple-300 text-xs mb-6">Enter password to manage fest data</p>
-                            <form onsubmit="event.preventDefault(); window.handleLogin(event);" class="space-y-4">
-                                <input type="password" id="loginPass" required class="w-full bg-black/80 border border-purple-800 rounded-xl px-4 py-3 text-white outline-none focus:border-amber-500 text-center tracking-widest" placeholder="Password">
-                                <button type="submit" class="w-full bg-gradient-to-r from-purple-600 to-amber-600 hover:from-purple-500 hover:to-amber-500 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-purple-950/50">ലോഗിൻ</button>
-                            </form>
-                        </div>
-                    </div>`;
-                    return;
-                }
+                if (!state.isAuthenticated) return; 
 
                 let navHtml = `
-                <nav class="flex overflow-x-auto border-b border-purple-800/80 bg-purple-950/90 backdrop-blur-md px-2 sm:px-4 scrollbar-hide sticky top-0 z-40 shadow-lg">
-                    <button onclick="window.switchTab('dashboard')" class="px-5 py-3.5 font-bold text-[13px] sm:text-sm whitespace-nowrap transition-colors ${state.tab==='dashboard'?'tab-active':'tab-inactive'}">ഡാഷ്‌ബോർഡ്</button>
-                    <button onclick="window.switchTab('candidates')" class="px-5 py-4 font-bold text-[13px] sm:text-sm whitespace-nowrap transition-colors ${state.tab==='candidates'?'tab-active':'tab-inactive'}">കുട്ടികൾ (${state.candidates.length})</button>
-                    <button onclick="window.switchTab('programs')" class="px-5 py-4 font-bold text-[13px] sm:text-sm whitespace-nowrap transition-colors ${state.tab==='programs'?'tab-active':'tab-inactive'}">മത്സരങ്ങൾ (${state.programs.length})</button>
-                    <button onclick="window.switchTab('results')" class="px-5 py-4 font-bold text-[13px] sm:text-sm whitespace-nowrap transition-colors ${state.tab==='results'?'tab-active':'tab-inactive'}">റിസൾട്ടുകൾ (${state.results.length})</button>
+                <nav class="flex overflow-x-auto border-b border-slate-700/80 bg-slate-900/90 backdrop-blur-md px-2 sm:px-6 sticky top-0 z-40 shadow-xl">
+                    <button onclick="window.switchTab('dashboard')" class="px-5 py-4 font-bold text-sm whitespace-nowrap transition-colors ${state.tab==='dashboard'?'tab-active':'tab-inactive'}">Dashboard</button>
+                    <button onclick="window.switchTab('candidates')" class="px-5 py-4 font-bold text-sm whitespace-nowrap transition-colors ${state.tab==='candidates'?'tab-active':'tab-inactive'}">Candidates</button>
+                    <button onclick="window.switchTab('programs')" class="px-5 py-4 font-bold text-sm whitespace-nowrap transition-colors ${state.tab==='programs'?'tab-active':'tab-inactive'}">Programs</button>
+                    <button onclick="window.switchTab('results')" class="px-5 py-4 font-bold text-sm whitespace-nowrap transition-colors ${state.tab==='results'?'tab-active':'tab-inactive'}">Results</button>
+                    <button onclick="window.switchTab('settings')" class="px-5 py-4 font-bold text-sm whitespace-nowrap transition-colors ${state.tab==='settings'?'tab-active':'tab-inactive'}">⚙️ Settings</button>
                 </nav>`;
                 
                 let mainContent = '';
 
-                // GLOBAL STATS & POINTS CALCULATION
-                const kwBoys = state.candidates.filter(c => c.team === 'KHAIBAR WARRIORS' && c.gender === 'BOYS').length;
-                const kwGirls = state.candidates.filter(c => c.team === 'KHAIBAR WARRIORS' && c.gender === 'GIRLS').length;
-                const kfBoys = state.candidates.filter(c => c.team === 'KHANDAQ FIGHTERS' && c.gender === 'BOYS').length;
-                const kfGirls = state.candidates.filter(c => c.team === 'KHANDAQ FIGHTERS' && c.gender === 'GIRLS').length;
+                // Points Calculation Logic - Gender removed, using teams only
+                var stats = { 'Al-Masūdi': { total:0 }, 'Al-Qazwini': { total:0 } };
+                var catStats = { 'Junior': { 'Al-Masūdi': 0, 'Al-Qazwini': 0 }, 'Senior': { 'Al-Masūdi': 0, 'Al-Qazwini': 0 } };
+                var candTotalPts = {}; var candKalaPts = {};
 
-                var stats = { teamA: { total:0, boys:0, girls:0 }, teamB: { total:0, boys:0, girls:0 } };
-                var catStats = {
-                    'Kiddies': { teamA: 0, teamB: 0 }, 'Sub Junior': { teamA: 0, teamB: 0 }, 'Junior': { teamA: 0, teamB: 0 },
-                    'Senior': { teamA: 0, teamB: 0 }, 'Super Senior': { teamA: 0, teamB: 0 }, 'General': { teamA: 0, teamB: 0 }
-                };
-
-                var candKalaPts = {};
-                var candTotalPts = {};
-                var candKalaPrograms = {};
-                var candAllPrograms = {};
-                
                 state.results.forEach(res => {
                     var prog = state.programs.find(p => p.id === res.progId);
                     if (!prog) return;
-
-                    var isGrp = window.isGroupProgram(prog.name, prog.isGroup);
-                    var pNo = String(prog.progNo).trim();
                     var pCat = prog.cat || 'General';
-                    
-                    var ptsArr = (prog.pointScheme || '5,3,1').split(',').map(Number);
-                    var fPts = ptsArr[0], sPts = ptsArr[1], tPts = ptsArr[2];
-                    if (res.pts1) fPts = res.pts1; if (res.pts2) sPts = res.pts2; if (res.pts3) tPts = res.pts3;
-
-                    var isKala = prog.kalaprathiba;
-                    if (isKala === undefined) {
-                        isKala = !(isGrp || ['107', '208', '154', '259'].includes(pNo));
-                    }
+                    var isKala = prog.kalaprathiba !== false; 
 
                     var addPts = function(ids, pts) {
                         var arr = Array.isArray(ids) ? ids : (ids ? [ids] : []);
                         arr.forEach(id => {
                             var c = state.candidates.find(x => x.id === id); 
                             if(c) { 
-                                var tKey = c.team === 'KHAIBAR WARRIORS' ? 'teamA' : (c.team === 'KHANDAQ FIGHTERS' ? 'teamB' : null);
-                                if(tKey) {
-                                    stats[tKey].total += pts; 
-                                    if(c.gender === 'BOYS') stats[tKey].boys += pts;
-                                    if(c.gender === 'GIRLS') stats[tKey].girls += pts;
-                                    if(catStats[pCat]) catStats[pCat][tKey] += pts;
-                                }
+                                if(stats[c.team]) stats[c.team].total += pts;
+                                if(catStats[c.cat] && catStats[c.cat][c.team] !== undefined) catStats[c.cat][c.team] += pts;
                                 
                                 candTotalPts[c.id] = (candTotalPts[c.id] || 0) + pts;
-                                
-                                if(!candAllPrograms[c.id]) candAllPrograms[c.id] = [];
-                                candAllPrograms[c.id].push({ name: prog.name, no: prog.progNo, pts: pts, isKala: isKala });
-
-                                if (isKala) {
-                                    candKalaPts[c.id] = (candKalaPts[c.id] || 0) + pts;
-                                    if(!candKalaPrograms[c.id]) candKalaPrograms[c.id] = [];
-                                    candKalaPrograms[c.id].push({ name: prog.name, no: prog.progNo, pts: pts });
-                                }
+                                if (isKala) candKalaPts[c.id] = (candKalaPts[c.id] || 0) + pts;
                             }
                         });
                     };
-                    addPts(res.first, fPts); addPts(res.second, sPts); addPts(res.third, tPts);
+                    addPts(res.first, res.pts1); addPts(res.second, res.pts2); addPts(res.third, res.pts3);
                 });
 
                 if (state.tab === 'dashboard') {
-                    
-                    let catScoreHtml = `<div class="glass-card p-6 rounded-2xl border-t border-purple-500 mb-8">
-                        <h3 class="font-bold text-white text-lg mb-4 flex items-center gap-2">📊 Category-wise Team Scores</h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">`;
-                    
-                    ['Kiddies', 'Sub Junior', 'Junior', 'Senior', 'Super Senior', 'General'].forEach(cat => {
-                        let aPts = catStats[cat].teamA; let bPts = catStats[cat].teamB;
-                        let aClass = aPts >= bPts && aPts > 0 ? "text-amber-400 font-black shadow-inner bg-black/40 border-t border-amber-400/50" : "text-amber-400/50 font-semibold";
-                        let bClass = bPts >= aPts && bPts > 0 ? "text-indigo-400 font-black shadow-inner bg-black/40 border-t border-indigo-400/50" : "text-indigo-400/50 font-semibold";
-                        
-                        catScoreHtml += `
-                            <div class="bg-purple-950/80 rounded-xl border border-purple-700 p-3 flex flex-col justify-center">
-                                <h4 class="text-center font-bold text-white mb-2 text-sm">${cat}</h4>
-                                <div class="flex justify-between items-center bg-purple-900/50 rounded-lg p-1">
-                                    <div class="text-center w-1/2 border-r border-purple-800/50 ${aClass} p-2 rounded">
-                                        <div class="text-[10px] uppercase tracking-widest mb-1 opacity-80">Khaibar</div><div class="text-2xl num-font">${aPts}</div>
-                                    </div>
-                                    <div class="text-center w-1/2 ${bClass} p-2 rounded">
-                                        <div class="text-[10px] uppercase tracking-widest mb-1 opacity-80">Khandaq</div><div class="text-2xl num-font">${bPts}</div>
-                                    </div>
-                                </div>
-                            </div>`;
-                    });
-                    catScoreHtml += `</div></div>`;
-
-                    function getTopScorer(cat, gender) {
-                        let eligible = state.candidates.filter(c => c.cat === cat && c.gender === gender);
+                    // Removed gender filter
+                    const getTop = (cat) => {
                         let top = null; let max = 0;
-                        eligible.forEach(c => { if(candKalaPts[c.id] && candKalaPts[c.id] > max) { max = candKalaPts[c.id]; top = c; }});
+                        state.candidates.filter(c => c.cat === cat).forEach(c => {
+                            if(candKalaPts[c.id] && candKalaPts[c.id] > max) { max = candKalaPts[c.id]; top = c; }
+                        });
                         return top ? { ...top, pts: max } : null;
-                    }
-
-                    const renderKalaDetails = (top) => {
-                        if(!top) return '<div class="text-[10px] text-slate-500 italic mt-1 pb-1 text-center border-t border-purple-800/50 pt-2">No individual points yet</div>';
-                        return `<div class="mt-2 pt-2 border-t border-purple-800/50">
-                            <p class="text-[8px] text-purple-300 font-bold mb-1 uppercase tracking-widest text-center">Scoring Events:</p>
-                            <div class="max-h-24 overflow-y-auto custom-scrollbar space-y-1 pr-1">
-                                ${(candKalaPrograms[top.id] || []).map(p => `<div class="flex justify-between items-start text-[9px] leading-tight"><span class="text-purple-200 line-clamp-2 pr-1">${p.no ? `#${p.no} ` : ''}${p.name}</span><span class="text-amber-400 font-bold shrink-0">+${p.pts}</span></div>`).join('')}
-                            </div>
-                        </div>`;
                     };
 
-                    let kalaprathibaHtml = `
-                        <div class="glass-card p-4 sm:p-6 rounded-2xl border-t-2 border-yellow-500/80 mb-8">
-                            <h3 class="font-bold text-yellow-400 text-lg mb-4 flex items-center gap-2">👑 കലാപ്രതിഭ & കലാതിലകം (Top Scorers)</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    `;
-                    CATEGORIES.forEach(c => {
-                        if (c === 'General') return;
-                        var topB = getTopScorer(c, 'BOYS');
-                        var topG = getTopScorer(c, 'GIRLS');
-                        kalaprathibaHtml += `
-                            <div class="bg-purple-950/80 rounded-xl border border-purple-700 p-4 flex flex-col h-full shadow-lg">
-                                <h4 class="text-center font-bold text-white mb-3 bg-purple-900 py-1 rounded shadow-inner">${c}</h4>
-                                <div class="flex-1 mb-3 pb-3 border-b border-purple-800/50">
-                                    <div class="flex justify-between items-start">
-                                        <div class="flex items-center gap-2"><span class="text-2xl drop-shadow">🤴</span><div><div class="text-[10px] text-purple-300 uppercase font-bold tracking-wider">Kalaprathiba</div><div class="text-sm font-bold text-amber-400 truncate w-24 sm:w-32">${topB ? topB.name : 'TBA...'}</div></div></div>
-                                        <div class="text-xl font-black text-white num-font">${topB ? topB.pts : '-'}</div>
-                                    </div>
-                                    ${renderKalaDetails(topB)}
-                                </div>
-                                <div class="flex-1">
-                                    <div class="flex justify-between items-start">
-                                        <div class="flex items-center gap-2"><span class="text-2xl drop-shadow">👸</span><div><div class="text-[10px] text-purple-300 uppercase font-bold tracking-wider">Kalathilakam</div><div class="text-sm font-bold text-pink-400 truncate w-24 sm:w-32">${topG ? topG.name : 'TBA...'}</div></div></div>
-                                        <div class="text-xl font-black text-white num-font">${topG ? topG.pts : '-'}</div>
-                                    </div>
-                                    ${renderKalaDetails(topG)}
-                                </div>
-                            </div>
-                        `;
-                    });
-                    kalaprathibaHtml += `</div></div>`;
-
                     mainContent = `
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 mt-4">
-                            <div class="glass-card p-5 rounded-2xl border-t-2 border-yellow-500/50 flex flex-col justify-center text-center">
-                                <span class="text-3xl mb-2 text-yellow-400">👤</span><div class="text-3xl font-black num-font text-white">${state.candidates.length}</div><div class="text-xs text-purple-300 font-bold uppercase mt-1">Total Candidates</div>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 mt-4 relative">
+                            <div class="glass-card p-4 rounded-xl border-l-4 border-sky-500 flex flex-col justify-center text-center relative z-10">
+                                <div class="text-3xl font-black num-font">${state.candidates.length}</div><div class="text-[10px] text-slate-400 font-bold uppercase mt-1">Candidates</div>
                             </div>
-                            <div class="glass-card p-5 rounded-2xl border-t-2 border-purple-500/50 flex flex-col justify-center text-center">
-                                <span class="text-3xl mb-2 text-purple-400">📋</span><div class="text-3xl font-black num-font text-white">${state.programs.length}</div><div class="text-xs text-purple-300 font-bold uppercase mt-1">Total Programs</div>
+                            <div class="glass-card p-4 rounded-xl border-l-4 border-emerald-500 flex flex-col justify-center text-center relative z-10">
+                                <div class="text-3xl font-black num-font">${state.programs.length}</div><div class="text-[10px] text-slate-400 font-bold uppercase mt-1">Programs</div>
                             </div>
-                            <div class="glass-card p-5 rounded-2xl border-t-2 border-emerald-500/50 flex flex-col justify-center text-center">
-                                <span class="text-3xl mb-2 text-emerald-400">🏆</span><div class="text-3xl font-black num-font text-white">${state.results.length}</div><div class="text-xs text-purple-300 font-bold uppercase mt-1">Published Results</div>
+                            <div class="glass-card p-4 rounded-xl border-l-4 border-amber-500 flex flex-col justify-center text-center relative z-10">
+                                <div class="text-3xl font-black num-font">${state.results.length}</div><div class="text-[10px] text-slate-400 font-bold uppercase mt-1">Results Pub</div>
                             </div>
-                            <div class="col-span-2 md:col-span-1 glass-card p-5 rounded-2xl border-t-2 border-amber-500/50 flex flex-col justify-center text-center">
-                                <span class="text-3xl mb-2 text-amber-400">⚔️</span><div class="text-lg font-extrabold text-amber-300">2 TEAMS</div><div class="text-[10px] text-purple-300 uppercase mt-1 font-bold">Khaibar & Khandaq</div>
+                            
+                            <!-- Adding one of the illustration logos here as a decorative element -->
+                            <div class="hidden md:flex items-center justify-center relative z-10">
+                                <img src="https://raw.githubusercontent.com/BUSA2023/Kottam-admin/main/LOGO%205-01.png" class="h-24 object-contain mix-blend-screen opacity-80 drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]">
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                            <div class="glass-card p-6 rounded-2xl border-t-2 border-amber-500/80">
-                                <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
-                                    <div><h3 class="font-bold text-amber-400 text-lg">⚔️ KHAIBAR WARRIORS</h3><p class="text-[11px] text-purple-300 font-semibold">Total: ${kwBoys + kwGirls} Candidates</p></div>
-                                    <div class="text-4xl font-black num-font text-white">${stats.teamA.total}</div>
-                                </div>
-                                <div class="grid grid-cols-2 gap-3">
-                                    <div class="bg-purple-950/80 p-3 rounded-xl border border-purple-800 text-center"><span class="block text-xs font-bold text-purple-200">BOYS</span><span class="text-2xl font-black text-amber-400 num-font">${stats.teamA.boys}</span></div>
-                                    <div class="bg-purple-950/80 p-3 rounded-xl border border-purple-800 text-center"><span class="block text-xs font-bold text-purple-200">GIRLS</span><span class="text-2xl font-black text-pink-400 num-font">${stats.teamA.girls}</span></div>
+                            <div class="glass-card p-6 rounded-2xl border-t-2 border-sky-400 shadow-[0_0_20px_rgba(56,189,248,0.1)] relative z-10 overflow-hidden">
+                                <h3 class="font-bold text-sky-400 text-lg tracking-widest uppercase mb-1">Al-Masūdi</h3>
+                                <div class="text-5xl font-black num-font text-white mb-4">${stats['Al-Masūdi'].total} <span class="text-sm text-slate-400 font-normal">PTS</span></div>
+                                <div class="flex gap-4 text-xs font-bold text-slate-300 bg-slate-900/50 p-2 rounded-lg inline-flex border border-slate-700 relative z-10">
+                                    <span>Junior: <span class="text-sky-300 num-font text-sm">${catStats['Junior']['Al-Masūdi']}</span></span>
+                                    <span>Senior: <span class="text-sky-300 num-font text-sm">${catStats['Senior']['Al-Masūdi']}</span></span>
                                 </div>
                             </div>
-
-                            <div class="glass-card p-6 rounded-2xl border-t-2 border-purple-500/80">
-                                <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
-                                    <div><h3 class="font-bold text-purple-300 text-lg">🛡️ KHANDAQ FIGHTERS</h3><p class="text-[11px] text-purple-300 font-semibold">Total: ${kfBoys + kfGirls} Candidates</p></div>
-                                    <div class="text-4xl font-black num-font text-white">${stats.teamB.total}</div>
-                                </div>
-                                <div class="grid grid-cols-2 gap-3">
-                                    <div class="bg-purple-950/80 p-3 rounded-xl border border-purple-800 text-center"><span class="block text-xs font-bold text-purple-200">BOYS</span><span class="text-2xl font-black text-amber-400 num-font">${stats.teamB.boys}</span></div>
-                                    <div class="bg-purple-950/80 p-3 rounded-xl border border-purple-800 text-center"><span class="block text-xs font-bold text-purple-200">GIRLS</span><span class="text-2xl font-black text-pink-400 num-font">${stats.teamB.girls}</span></div>
+                            <div class="glass-card p-6 rounded-2xl border-t-2 border-emerald-400 shadow-[0_0_20px_rgba(52,211,153,0.1)] relative z-10 overflow-hidden">
+                                <h3 class="font-bold text-emerald-400 text-lg tracking-widest uppercase mb-1">Al-Qazwini</h3>
+                                <div class="text-5xl font-black num-font text-white mb-4">${stats['Al-Qazwini'].total} <span class="text-sm text-slate-400 font-normal">PTS</span></div>
+                                <div class="flex gap-4 text-xs font-bold text-slate-300 bg-slate-900/50 p-2 rounded-lg inline-flex border border-slate-700 relative z-10">
+                                    <span>Junior: <span class="text-emerald-300 num-font text-sm">${catStats['Junior']['Al-Qazwini']}</span></span>
+                                    <span>Senior: <span class="text-emerald-300 num-font text-sm">${catStats['Senior']['Al-Qazwini']}</span></span>
                                 </div>
                             </div>
                         </div>
 
-                        ${catScoreHtml}
-                        ${kalaprathibaHtml}
-
-                        <div class="glass-card p-6 rounded-2xl border-t border-purple-800 mb-8">
-                            <h3 class="font-bold text-white text-lg mb-4">Candidates Category Breakdown</h3>
-                            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
-                                ${CATEGORIES.map(cat => {
-                                    const count = state.candidates.filter(c=>c.cat===cat).length;
-                                    return `<div class="bg-purple-950/70 rounded-xl p-3 border border-purple-800/80 flex flex-col justify-between items-center text-center"><span class="text-xs text-purple-200 font-extrabold uppercase mb-2">${cat}</span><span class="bg-black/80 text-amber-400 font-black num-font px-3 py-1 rounded-lg text-lg border border-purple-900">${count}</span></div>`;
+                        <div class="glass-card p-5 rounded-2xl border border-slate-700">
+                            <h3 class="font-bold text-yellow-400 text-lg mb-4">👑 Top Scorers (Kalaprathiba)</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                ${CANDIDATE_CATEGORIES.map(c => {
+                                    const top = getTop(c);
+                                    return `
+                                    <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-600 flex justify-between items-center">
+                                        <div>
+                                            <div class="text-[10px] text-sky-300 font-bold uppercase mb-1">${c} Champion</div>
+                                            <div class="text-lg font-bold text-white">${top ? top.name : 'TBA...'}</div>
+                                            <div class="text-xs text-slate-400">${top ? top.team : '-'}</div>
+                                        </div>
+                                        <div class="text-3xl font-black text-amber-400 num-font">${top ? top.pts : '-'}</div>
+                                    </div>`;
                                 }).join('')}
                             </div>
                         </div>
@@ -990,194 +715,129 @@
                 }
 
                 if (state.tab === 'candidates') {
+                    // Removed gender/class filters
                     const searchQ = state.searchQuery.toLowerCase();
                     const filteredCands = state.candidates.filter(c => {
                         const matchTeam = state.filterTeam === 'All' || c.team === state.filterTeam;
-                        const matchGender = state.filterGender === 'All' || c.gender === state.filterGender;
                         const matchCat = state.filterCat === 'All' || c.cat === state.filterCat;
-                        const matchSearch = !searchQ || 
-                            (c.name && c.name.toLowerCase().includes(searchQ)) || 
-                            (c.regNo && String(c.regNo).toLowerCase().includes(searchQ)) ||
-                            (c.classDiv && c.classDiv.toLowerCase().includes(searchQ));
-                        return matchTeam && matchGender && matchCat && matchSearch;
-                    });
+                        const matchSearch = !searchQ || (c.name && c.name.toLowerCase().includes(searchQ)) || (c.regNo && String(c.regNo).toLowerCase().includes(searchQ));
+                        return matchTeam && matchCat && matchSearch;
+                    }).sort((a,b) => Number(a.regNo.replace(/\D/g, '')) - Number(b.regNo.replace(/\D/g, '')));
 
                     mainContent = `
-                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mt-4">
-                            <div class="lg:col-span-1 glass-card p-5 rounded-2xl h-fit border-t border-purple-800">
-                                <h3 class="font-bold text-amber-400 text-base mb-4 flex items-center gap-2"><span>➕</span> പുതിയ കുട്ടിയെ ചേർക്കുക</h3>
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-4">
+                            <div class="lg:col-span-1 glass-card p-5 rounded-2xl h-fit border-t border-sky-500">
+                                <h3 class="font-bold text-white text-base mb-4">Add Candidate</h3>
                                 <form onsubmit="window.addCandidate(event)" class="space-y-3">
-                                    <div><label class="block text-[10px] font-bold text-purple-300 uppercase mb-1">പേര് (Full Name)</label><input type="text" id="cName" required placeholder="Name" class="w-full bg-black/80 border border-purple-800 rounded-lg px-4 py-2 text-white outline-none focus:border-amber-500 text-sm"></div>
+                                    <div><label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Name</label><input type="text" id="cName" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white outline-none focus:border-sky-500 text-sm"></div>
                                     <div class="grid grid-cols-2 gap-2">
-                                        <div><label class="block text-[10px] font-bold text-purple-300 uppercase mb-1">ടീം (Team)</label><select id="cTeam" class="w-full bg-black/80 border border-purple-800 rounded-lg px-2.5 py-2 text-white outline-none focus:border-amber-500 text-xs">${TEAMS.map(t => `<option value="${t}">${t}</option>`).join('')}</select></div>
-                                        <div><label class="block text-[10px] font-bold text-purple-300 uppercase mb-1">വിഭാഗം (Gender)</label><select id="cGender" class="w-full bg-black/80 border border-purple-800 rounded-lg px-2.5 py-2 text-white outline-none focus:border-amber-500 text-xs">${DIVISIONS.map(g => `<option value="${g}">${g}</option>`).join('')}</select></div>
+                                        <div>
+                                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Category</label>
+                                            <select id="cCat" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-white outline-none text-xs">
+                                                ${CANDIDATE_CATEGORIES.map(c => `<option value="${c}">${c}</option>`).join('')}
+                                            </select>
+                                        </div>
+                                        <div><label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Team</label><select id="cTeam" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-white outline-none text-xs">${TEAMS.map(t => `<option value="${t}">${t}</option>`).join('')}</select></div>
                                     </div>
-                                    <div class="grid grid-cols-2 gap-2">
-                                        <div><label class="block text-[10px] font-bold text-purple-300 uppercase mb-1">ചെസ്റ്റ് നമ്പർ</label><input type="text" id="cRegNo" placeholder="e.g. 101, 701" class="w-full bg-black/80 border border-purple-800 rounded-lg px-3 py-2 text-white outline-none focus:border-amber-500 text-sm font-mono"></div>
-                                        <div><label class="block text-[10px] font-bold text-purple-300 uppercase mb-1">Class & Div</label><input type="text" id="cClassDiv" placeholder="e.g. 1A, 5A" class="w-full bg-black/80 border border-purple-800 rounded-lg px-3 py-2 text-white outline-none focus:border-amber-500 text-sm"></div>
-                                    </div>
-                                    <div><label class="block text-[10px] font-bold text-purple-300 uppercase mb-1">വിഭാഗം (Category)</label><select id="cCat" class="w-full bg-black/80 border border-purple-800 rounded-lg px-4 py-2 text-white outline-none focus:border-amber-500 text-sm">${CATEGORIES.map(c => `<option value="${c}">${c}</option>`).join('')}</select></div>
-                                    <button type="submit" id="addCandBtn" class="w-full bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-black font-bold py-3 rounded-xl transition shadow-lg mt-2 text-sm">സേവ് ചെയ്യുക</button>
+                                    <p class="text-[9px] text-sky-300/60 mt-1 italic">* Chest number auto-generated based on category.</p>
+                                    <button type="submit" id="addCandBtn" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-bold py-2.5 rounded-xl transition mt-2 text-sm">Save Candidate</button>
                                 </form>
                             </div>
 
-                            <div class="lg:col-span-2 glass-card p-4 sm:p-6 rounded-2xl flex flex-col h-[680px] border-t border-purple-800">
+                            <div class="lg:col-span-2 glass-card p-5 rounded-2xl flex flex-col h-[700px] border-t border-slate-700">
                                 <div class="flex flex-col gap-3 mb-4">
                                     <div class="flex justify-between items-center">
-                                    <h3 class="font-bold text-white text-base">രജിസ്റ്റർ ചെയ്തവർ (${filteredCands.length})</h3>
-                                    <input type="text" id="searchInput" placeholder="Search name/chest/class..." value="${state.searchQuery}" oninput="window.updateSearch(this.value)" class="bg-black/80 border border-purple-800 text-xs text-white rounded-lg px-3 py-1.5 outline-none focus:border-amber-500 w-48">
+                                        <h3 class="font-bold text-white">Registry (${filteredCands.length})</h3>
+                                        <div class="flex gap-2">
+                                            <button onclick="window.printIDCards()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1">🖨️ Print IDs</button>
+                                            <input type="text" id="searchInput" placeholder="Search..." value="${state.searchQuery}" oninput="window.updateSearch(this.value)" class="bg-slate-900 border border-slate-700 text-xs text-white rounded-lg px-3 py-1.5 outline-none focus:border-sky-500 w-32 sm:w-48">
+                                        </div>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <select onchange="window.state.filterTeam = this.value; window.render();" class="bg-slate-900 border border-slate-700 text-xs text-slate-300 rounded-lg px-2 py-1.5 outline-none flex-1"><option value="All">All Teams</option>${TEAMS.map(t => `<option value="${t}" ${state.filterTeam===t?'selected':''}>${t}</option>`).join('')}</select>
+                                        <select onchange="window.state.filterCat = this.value; window.render();" class="bg-slate-900 border border-slate-700 text-xs text-slate-300 rounded-lg px-2 py-1.5 outline-none flex-1"><option value="All">All Categories</option>${CANDIDATE_CATEGORIES.map(c => `<option value="${c}" ${state.filterCat===c?'selected':''}>${c}</option>`).join('')}</select>
+                                    </div>
                                 </div>
-                                <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
-                                    <select onchange="window.state.filterTeam = this.value; window.render();" class="bg-black/80 border border-purple-800 text-xs text-amber-300 rounded-lg px-2 py-1.5 outline-none"><option value="All">All Teams</option>${TEAMS.map(t => `<option value="${t}" ${state.filterTeam===t?'selected':''}>${t}</option>`).join('')}</select>
-                                    <select onchange="window.state.filterGender = this.value; window.render();" class="bg-black/80 border border-purple-800 text-xs text-purple-200 rounded-lg px-2 py-1.5 outline-none"><option value="All">Boys & Girls</option>${DIVISIONS.map(g => `<option value="${g}" ${state.filterGender===g?'selected':''}>${g}</option>`).join('')}</select>
-                                    <select onchange="window.state.filterCat = this.value; window.render();" class="bg-black/80 border border-purple-800 text-xs text-yellow-200 rounded-lg px-2 py-1.5 outline-none"><option value="All">All Categories</option>${CATEGORIES.map(c => `<option value="${c}" ${state.filterCat===c?'selected':''}>${c}</option>`).join('')}</select>
-                                    <select onchange="window.state.sortBy = this.value; window.render();" class="bg-black/80 border border-purple-800 text-xs text-emerald-300 font-bold rounded-lg px-2 py-1.5 outline-none"><option value="regNo" ${state.sortBy!=='points'?'selected':''}>Sort: Chest No</option><option value="points" ${state.sortBy==='points'?'selected':''}>Sort: Highest Points</option></select>
-                                </div>
-                            </div>
-
-                            <div class="overflow-x-auto overflow-y-auto flex-1 custom-scrollbar border border-purple-800/80 rounded-xl bg-black/40">
-                                    <table class="w-full text-left text-xs sm:text-sm whitespace-nowrap">
-                                        <thead class="bg-purple-950 text-amber-300 text-[10px] sm:text-xs uppercase sticky top-0 z-10 shadow border-b border-purple-800">
-                                            <tr>
-                                                <th class="p-3">Chest No</th><th class="p-3">പേര്</th><th class="p-3">ടീം & വിഭാഗം</th><th class="p-3">Class</th>
-                                                <th class="p-3 text-center">Points</th><th class="p-3">Events</th><th class="p-3 text-right">Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="divide-y divide-purple-900/50">
-                                            ${filteredCands.length === 0 ? `<tr><td colspan="7" class="text-center p-8 text-purple-300">കുട്ടികളെ കണ്ടെത്തിയില്ല.</td></tr>` : ''}
-                                            ${[...filteredCands].sort((a,b) => {
-                                                if (state.sortBy === 'points') {
-                                                    const ptsA = candTotalPts[a.id] || 0;
-                                                    const ptsB = candTotalPts[b.id] || 0;
-                                                    if (ptsB !== ptsA) return ptsB - ptsA;
-                                                }
-                                                return Number(a.regNo) - Number(b.regNo);
-                                            }).map(c => {
-                                                const eventCount = c.assignedPrograms ? c.assignedPrograms.length : 0;
-                                                const cTotal = candTotalPts[c.id] || 0;
-                                                const cKala = candKalaPts[c.id] || 0;
-                                                const earned = candAllPrograms[c.id] || [];
-                                                
-                                                let earnedHtml = earned.length > 0 
-                                                    ? `<div class="text-[9px] text-purple-300 mt-2 space-y-1 max-w-[160px] whitespace-normal text-left">` + 
-                                                      earned.map(p => `<div class="leading-tight"><span class="text-amber-400 font-bold">+${p.pts}</span> <span class="opacity-80">${p.no ? `#${p.no}` : ''} ${p.name} ${p.isKala ? '⭐' : ''}</span></div>`).join('') +
-                                                      `</div>`
-                                                    : '';
-
-                                                let ptsBadge = cTotal > 0 
-                                                    ? `<div class="flex flex-col items-center">
-                                                         <div class="bg-emerald-900/40 text-emerald-400 px-3 py-1.5 rounded-lg border border-emerald-700/50 text-center shadow-inner min-w-[4rem] mx-auto">
-                                                           <div class="text-base font-black num-font leading-none">${cTotal}</div>
-                                                           <div class="text-[9px] uppercase font-bold tracking-widest mt-1 ${cKala > 0 ? 'text-amber-400' : 'text-emerald-600/80'}">${cKala > 0 ? `⭐ ${cKala}` : 'PTS'}</div>
-                                                         </div>
-                                                         ${earnedHtml}
-                                                       </div>`
-                                                    : `<div class="text-slate-600 font-black text-center">-</div>`;
-
-                                                return `
-                                                <tr class="hover:bg-purple-900/30 transition">
-                                                    <td class="p-3 font-mono font-bold text-amber-400 num-font text-sm">#${c.regNo}</td>
-                                                    <td class="p-3"><div class="font-bold text-white">${c.name}</div></td>
-                                                    <td class="p-3">
-                                                        <span class="text-[10px] font-bold text-amber-300 bg-purple-950 px-2 py-0.5 rounded border border-purple-800">${c.team || '-'}</span>
-                                                        <span class="text-[9px] font-bold ${c.gender==='GIRLS'?'text-pink-300':'text-purple-300'} bg-black px-1.5 py-0.5 rounded ml-1">${c.gender || '-'}</span>
-                                                    </td>
-                                                    <td class="p-3 text-purple-200 font-semibold">${c.classDiv || '-'}</td>
-                                                    <td class="p-3 align-middle">${ptsBadge}</td>
-                                                    <td class="p-3"><button onclick="window.openAssign('${c.id}')" class="bg-amber-500/20 text-amber-300 hover:bg-amber-600 hover:text-black border border-amber-500/50 px-2.5 py-1 rounded-lg text-xs font-bold transition">${eventCount > 0 ? `${eventCount} Events` : '+ Add'}</button></td>
-                                                    <td class="p-3 text-right">
-                                                        <div class="flex justify-end gap-1.5"><button onclick="window.openEditCand('${c.id}')" class="text-amber-400 hover:bg-amber-600 hover:text-black border border-amber-500/30 px-2 py-1 rounded text-xs transition font-semibold">Edit</button><button onclick="window.deleteCandidate('${c.id}')" class="text-red-400 hover:bg-red-600 hover:text-white border border-red-500/30 px-2 py-1 rounded text-xs transition">Del</button></div>
-                                                    </td>
-                                                </tr>`
-                                            }).join('')}
-                                        </tbody>
-                                    </table>
+                                <div class="overflow-y-auto flex-1 custom-scrollbar pr-2">
+                                    <div class="grid grid-cols-1 gap-2">
+                                        ${filteredCands.map(c => {
+                                            const eCount = c.assignedPrograms ? c.assignedPrograms.length : 0;
+                                            return `
+                                            <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 hover:bg-slate-800 transition">
+                                                <div class="flex items-center gap-3">
+                                                    <div class="bg-slate-900 text-sky-400 font-black num-font px-2 py-1.5 rounded border border-slate-700 min-w-[3.5rem] text-center">${c.regNo}</div>
+                                                    <div>
+                                                        <div class="font-bold text-white text-sm">${c.name}</div>
+                                                        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">${c.team} • ${c.cat}</div>
+                                                    </div>
+                                                </div>
+                                                <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+                                                    <button onclick="window.openAssign('${c.id}')" class="bg-sky-900/40 text-sky-300 border border-sky-800 px-2 py-1 rounded text-xs font-bold hover:bg-sky-600 hover:text-white transition whitespace-nowrap">${eCount > 0 ? eCount + ' Assigned' : '+ Programs'}</button>
+                                                    <button onclick="window.printIDCards('${c.id}')" class="text-indigo-300 bg-slate-900 border border-slate-700 px-2 py-1 rounded text-xs hover:bg-indigo-600 hover:text-white transition">🖨️ ID</button>
+                                                    <button onclick="window.openEditCand('${c.id}')" class="text-slate-400 hover:text-white px-2 py-1 text-xs">Edit</button>
+                                                    <button onclick="window.deleteCandidate('${c.id}')" class="text-red-400 hover:text-white px-1 py-1 text-xs">✕</button>
+                                                </div>
+                                            </div>`;
+                                        }).join('')}
+                                    </div>
                                 </div>
                             </div>
                         </div>`;
                 }
 
                 if (state.tab === 'programs') {
-                    const programCats = [...CATEGORIES, 'General'];
                     const searchPQ = state.searchProgQuery.toLowerCase();
                     
-                    let addForm = `
-                        <div class="glass-card p-5 rounded-2xl mb-6 border-t border-amber-500/40 mt-4">
-                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
-                                <div class="flex items-center gap-3">
-                                    <h3 class="font-bold text-amber-400 text-sm sm:text-base">പുതിയ മത്സരം ചേർക്കുക</h3>
-                                    <button id="repairBtn" onclick="window.repairDatabase()" class="bg-red-600/90 hover:bg-red-500 text-white text-[10px] sm:text-xs font-bold px-3 py-1 rounded transition shadow border border-red-500 flex items-center gap-1">
-                                        🛠️ Repair Missing Names & Settings
-                                    </button>
-                                </div>
-                                <input type="text" id="searchProgInput" placeholder="Search Programs..." value="${state.searchProgQuery}" oninput="window.updateProgSearch(this.value)" class="bg-black/80 border border-purple-800 text-xs text-white rounded-lg px-3 py-2 outline-none focus:border-amber-500 w-full sm:w-64">
+                    mainContent = `
+                        <div class="glass-card p-5 rounded-2xl mb-6 border-t border-emerald-500/40 mt-4">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="font-bold text-emerald-400">Add Program</h3>
+                                <input type="text" id="searchProgInput" placeholder="Search..." value="${state.searchProgQuery}" oninput="window.updateProgSearch(this.value)" class="bg-slate-900 border border-slate-700 text-xs text-white rounded-lg px-3 py-1.5 outline-none focus:border-emerald-500 w-48">
                             </div>
-                            <form onsubmit="window.addNewProgram(event)" class="flex flex-wrap gap-4 items-end">
-                                <div class="w-20"><label class="block text-[10px] font-bold text-purple-300 mb-1 uppercase">No</label><input type="text" id="pNo" class="w-full bg-black/80 border border-purple-800 rounded-lg px-3 py-2 text-white outline-none focus:border-amber-500 text-sm font-mono"></div>
-                                <div class="flex-1 min-w-[150px]"><label class="block text-[10px] font-bold text-purple-300 mb-1 uppercase">Name</label><input type="text" id="pName" required class="w-full bg-black/80 border border-purple-800 rounded-lg px-4 py-2 text-white outline-none focus:border-amber-500 text-sm"></div>
-                                <div><label class="block text-[10px] font-bold text-purple-300 mb-1 uppercase">Category</label><select id="pCat" class="w-full bg-black/80 border border-purple-800 rounded-lg px-4 py-2 text-white outline-none text-sm">${programCats.map(c => `<option value="${c}">${c}</option>`).join('')}</select></div>
-                                <div><label class="block text-[10px] font-bold text-purple-300 mb-1 uppercase">Type</label><select id="pType" class="w-full bg-black/80 border border-purple-800 rounded-lg px-4 py-2 text-white outline-none text-sm"><option value="Stage">Stage</option><option value="Non-Stage">Non-Stage</option></select></div>
-                                <div><label class="block text-[10px] font-bold text-green-300 mb-1 uppercase">Points</label><select id="pPoints" class="w-full bg-black/80 border border-purple-800 rounded-lg px-2 py-2 text-green-300 font-bold outline-none text-sm"><option value="5,3,1">5, 3, 1</option><option value="10,7,5">10, 7, 5</option><option value="15,10,5">15, 10, 5</option></select></div>
-                                <div><label class="block text-[10px] font-bold text-yellow-300 mb-1 uppercase">Kalaprathiba</label><select id="pKalaprathiba" class="w-full bg-black/80 border border-purple-800 rounded-lg px-2 py-2 text-yellow-300 font-bold outline-none text-sm"><option value="true">Yes</option><option value="false">No</option></select></div>
-                                <button type="submit" id="addProgBtn" class="bg-amber-600 hover:bg-amber-500 text-white font-bold px-5 py-2 rounded-lg transition shadow-lg text-sm">+ Add</button>
+                            <form onsubmit="window.addNewProgram(event)" class="flex flex-wrap gap-3 items-end">
+                                <div class="flex-1 min-w-[150px]"><label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">Name</label><input type="text" id="pName" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white outline-none focus:border-emerald-500 text-sm"></div>
+                                <div><label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">Cat</label><select id="pCat" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-white outline-none text-sm">${PROGRAM_CATEGORIES.map(c => `<option value="${c}">${c}</option>`).join('')}</select></div>
+                                <div>
+                                    <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">Type</label>
+                                    <select id="pType" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-white outline-none text-sm">
+                                        <option value="Stage">Stage</option>
+                                        <option value="Non-Stage">Non-Stage</option>
+                                        <option value="General">General</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">Pts</label>
+                                    <select id="pPoints" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-emerald-300 font-bold outline-none text-sm">
+                                        <option value="10,5,3">10,5,3 (Individual)</option>
+                                        <option value="15,8,5">15,8,5 (Group)</option>
+                                    </select>
+                                </div>
+                                <div><label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">Kala?</label><select id="pKalaprathiba" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-yellow-300 font-bold outline-none text-sm"><option value="true">Yes</option><option value="false">No</option></select></div>
+                                <button type="submit" id="addProgBtn" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-lg transition text-sm">+ Add</button>
                             </form>
-                        </div>`;
-
-                    mainContent += addForm + `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">`;
-                    
-                    programCats.forEach(cat => {
-                        const catProgs = state.programs.filter(p => {
-                            if(p.cat !== cat) return false;
-                            if(searchPQ) return (p.name && p.name.toLowerCase().includes(searchPQ)) || (p.progNo && String(p.progNo).toLowerCase().includes(searchPQ));
-                            return true;
-                        }).sort((a,b)=> Number(a.progNo || 0) - Number(b.progNo || 0));
+                        </div>
                         
-                        if(catProgs.length === 0) return; 
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">`;
                         
-                        mainContent += `<div class="glass-card p-4 sm:p-5 rounded-2xl h-fit border-t border-purple-800">
-                            <h3 class="font-bold text-base mb-3 text-amber-300 border-b border-purple-800 pb-2">${cat}</h3>
-                            <ul class="space-y-2">`;
-                        
-                        catProgs.forEach(p => {
-                            const enrolledCount = state.candidates.filter(c => c.assignedPrograms && c.assignedPrograms.includes(p.id)).length;
-                            
-                            let pGender = p.gender || 'ALL';
-                        if (pGender === 'ALL') {
-                            if(p.name.toLowerCase().includes('boys')) pGender = 'BOYS';
-                            else if(p.name.toLowerCase().includes('girls')) pGender = 'GIRLS';
-                        }
-                        const isGrp = window.isGroupProgram(p.name, p.isGroup);
-
-                        // Safe Kalaprathiba Check Display
-                        let isKala = true;
-                        if(p.hasOwnProperty('kalaprathiba')) isKala = p.kalaprathiba;
-                        else isKala = (!isGrp && !['107', '208', '154', '259'].includes(String(p.progNo).trim()));
+                    PROGRAM_CATEGORIES.forEach(cat => {
+                        const progs = state.programs.filter(p => p.cat === cat && (!searchPQ || p.name.toLowerCase().includes(searchPQ) || p.progNo.toLowerCase().includes(searchPQ)));
+                        if(progs.length === 0) return;
                         
                         mainContent += `
-                            <li class="bg-purple-950/80 p-3 rounded-xl border border-purple-800 flex flex-col group">
-                                <div class="flex justify-between items-start mb-2">
-                                        <span class="block text-white font-bold text-sm leading-tight">${p.progNo ? `<span class="text-amber-500 font-mono mr-1">#${p.progNo}</span>` : ''}${p.name}</span>
-                                        <div class="flex gap-1.5 opacity-60 group-hover:opacity-100 transition">
-                                            <button onclick="window.openEditProg('${p.id}')" class="text-[10px] text-amber-400 hover:text-amber-300 bg-black/50 px-2 py-1 rounded border border-purple-700 transition">Edit</button>
-                                            <button onclick="window.deleteProgram('${p.id}')" class="text-[10px] text-red-400 hover:text-red-300 bg-black/50 px-2 py-1 rounded border border-purple-700 transition">Del</button>
+                            <div class="glass-card p-4 rounded-2xl h-fit border-t border-slate-700">
+                                <h4 class="font-bold text-sm mb-3 text-slate-300 border-b border-slate-700 pb-2">${cat} Programs</h4>
+                                <div class="space-y-2">
+                                    ${progs.map(p => `
+                                        <div class="bg-slate-800/60 p-3 rounded-lg border border-slate-700 flex justify-between items-start group">
+                                            <div>
+                                                <div class="text-white text-sm font-semibold leading-tight"><span class="text-sky-400 font-mono text-xs mr-1">#${p.progNo}</span>${p.name}</div>
+                                                <div class="text-[9px] font-bold text-slate-400 uppercase mt-1 tracking-wider">${p.type} • ${p.pointScheme} • ${p.kalaprathiba ? '⭐' : '🚫'}</div>
+                                            </div>
+                                            <button onclick="window.deleteProgram('${p.id}')" class="text-red-400 text-xs opacity-0 group-hover:opacity-100 transition">✕</button>
                                         </div>
-                                    </div>
-                                    <div class="flex flex-wrap gap-1 mt-1 mb-2">
-                                        <span class="text-[9px] text-green-400 bg-black/80 px-2 py-0.5 rounded border border-purple-800 font-bold uppercase">Pts: ${p.pointScheme || '5,3,1'}</span>
-                                        <span class="text-[9px] ${isKala ? 'text-yellow-400' : 'text-slate-400'} bg-black/80 px-2 py-0.5 rounded border border-purple-800 font-bold uppercase">${isKala ? '⭐ Kalaprathiba' : '🚫 Team Only'}</span>
-                                    </div>
-                                    <div class="flex flex-wrap gap-1 mt-1 mb-2">
-                                        <span class="text-[9px] ${p.type==='Stage'?'text-amber-400':'text-teal-300'} bg-black/80 px-2 py-0.5 rounded border border-purple-800 font-bold uppercase">${p.type}</span>
-                                        <span class="text-[9px] ${isGrp?'text-pink-400':'text-blue-300'} bg-black/80 px-2 py-0.5 rounded border border-purple-800 font-bold uppercase">${isGrp?'Group':'Individual'}</span>
-                                        <span class="text-[9px] text-white bg-black/80 px-2 py-0.5 rounded border border-purple-800 font-bold uppercase">${pGender}</span>
-                                    </div>
-                                    <div class="flex justify-between items-center border-t border-purple-800/50 pt-2">
-                                        <span class="text-[10px] text-purple-300"></span>
-                                        <button onclick="window.openEnrolled('${p.id}')" class="text-[10px] text-amber-300 bg-purple-900 hover:bg-amber-600 hover:text-black px-2.5 py-1 rounded font-bold border border-purple-700 transition">👤 ${enrolledCount} Enrolled</button>
-                                    </div>
-                                </li>`;
-                        });
-                        mainContent += `</ul></div>`;
+                                    `).join('')}
+                                </div>
+                            </div>`;
                     });
                     mainContent += `</div>`;
                 }
@@ -1187,81 +847,49 @@
                     const sortedResults = [...state.results]
                         .filter(res => {
                             const prog = state.programs.find(p => p.id === res.progId);
-                            if(!prog) return true; // Keep orphaned results so they can be deleted
-                            
-                            let passSearch = true;
-                            if (searchRQ) {
-                                passSearch = (prog.name && prog.name.toLowerCase().includes(searchRQ)) || 
-                                             (prog.progNo && String(prog.progNo).toLowerCase().includes(searchRQ));
-                            }
-                            
-                            if(!state.filterResultGender || state.filterResultGender === 'All') return passSearch;
-                            
-                            let pGender = prog.gender || 'ALL';
-                            if (pGender === 'ALL') {
-                                if (prog.name.toLowerCase().includes('boys')) pGender = 'BOYS';
-                                else if (prog.name.toLowerCase().includes('girls')) pGender = 'GIRLS';
-                            }
-                            
-                            if (state.filterResultGender === 'BOYS') return passSearch && (pGender === 'BOYS' || pGender === 'ALL');
-                            if (state.filterResultGender === 'GIRLS') return passSearch && (pGender === 'GIRLS');
-                            
-                            return passSearch;
-                        })
-                        .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-                    
+                            if(!prog) return true;
+                            if (searchRQ && !prog.name.toLowerCase().includes(searchRQ) && !prog.progNo.toLowerCase().includes(searchRQ)) return false;
+                            if (state.filterResultCat !== 'All' && prog.cat !== state.filterResultCat) return false;
+                            return true;
+                        }).sort((a, b) => b.timestamp - a.timestamp);
+
                     mainContent = `
-                        <div class="flex flex-col lg:flex-row gap-4 sm:gap-6 mt-4">
-                            <div class="w-full lg:w-5/12 flex flex-col gap-4 sm:gap-6">
-                                <div class="glass-card p-4 sm:p-6 rounded-2xl border border-amber-500/40">
-                                    <h3 class="font-bold text-amber-400 mb-3 sm:mb-4 text-base sm:text-lg flex items-center gap-2"><span class="text-xl sm:text-2xl">🏆</span> റിസൾട്ട് നൽകുക</h3>
+                        <div class="flex flex-col lg:flex-row gap-6 mt-4">
+                            <div class="w-full lg:w-1/3">
+                                <div class="glass-card p-5 rounded-2xl border border-sky-500/30">
+                                    <h3 class="font-bold text-sky-400 mb-4">Publish Result</h3>
                                     <form onsubmit="window.publishResult(event)">
-                                        <select id="rProg" onchange="window.populateResultDropdowns()" class="w-full bg-black/80 border border-purple-800 rounded-lg px-3 py-2 sm:px-4 sm:py-3 text-white outline-none focus:border-amber-400 font-semibold mb-3 sm:mb-4 shadow-inner text-sm">
-                                            <option value="">-- മത്സരം തിരഞ്ഞെടുക്കുക --</option>
-                                            ${[...state.programs]
-                                                .filter(p => !state.results.find(r => r.progId === p.id)) // HIDE ALREADY PUBLISHED
-                                                .sort((a,b)=>Number(a.progNo||0)-Number(b.progNo||0))
-                                                .map(p => `<option value="${p.id}">${p.progNo ? `#${p.progNo} - ` : ''}${p.name} (${p.cat})</option>`).join('')}
+                                        <select id="rProg" onchange="window.populateResultDropdowns()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white outline-none focus:border-sky-400 text-sm mb-3">
+                                            <option value="">-- Select Program --</option>
+                                            ${[...state.programs].filter(p => !state.results.find(r => r.progId === p.id)).map(p => `<option value="${p.id}">#${p.progNo} - ${p.name} (${p.cat})</option>`).join('')}
                                         </select>
                                         <div id="rSelectors"></div>
                                     </form>
                                 </div>
                             </div>
                             
-                            <div class="w-full lg:w-7/12 glass-card p-3 sm:p-6 rounded-2xl flex flex-col h-[500px] sm:h-[700px] border-t border-purple-800">
-                                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-purple-800 pb-3 sm:pb-4 mb-3 sm:mb-4 px-2 sm:px-0 gap-3">
-                                    <h3 class="font-bold text-white text-base sm:text-xl">റിസൾട്ടുകൾ</h3>
-                                    <div class="flex items-center gap-2 w-full sm:w-auto">
-                                        <input type="text" id="searchResInput" placeholder="Search Program..." value="${state.searchResQuery}" oninput="window.updateResSearch(this.value)" class="bg-black/80 border border-purple-800 text-xs text-white rounded-lg px-3 py-1.5 outline-none focus:border-amber-500 flex-1 sm:w-40">
-                                        <select onchange="window.state.filterResultGender = this.value; window.render();" class="bg-black/80 border border-purple-800 text-xs text-purple-200 rounded-lg px-2 py-1.5 outline-none">
-                                            <option value="All">Boys & Girls</option>
-                                            <option value="BOYS" ${state.filterResultGender === 'BOYS' ? 'selected' : ''}>Boys Only</option>
-                                            <option value="GIRLS" ${state.filterResultGender === 'GIRLS' ? 'selected' : ''}>Girls Only</option>
+                            <div class="w-full lg:w-2/3 glass-card p-5 rounded-2xl flex flex-col h-[700px] border-t border-slate-700">
+                                <div class="flex justify-between items-center mb-4 border-b border-slate-700 pb-3">
+                                    <h3 class="font-bold text-white">Published Results</h3>
+                                    <div class="flex gap-2">
+                                        <input type="text" id="searchResInput" placeholder="Search..." value="${state.searchResQuery}" oninput="window.updateResSearch(this.value)" class="bg-slate-900 border border-slate-700 text-xs text-white rounded-lg px-3 py-1.5 outline-none w-32">
+                                        <select onchange="window.state.filterResultCat = this.value; window.render();" class="bg-slate-900 border border-slate-700 text-xs text-slate-300 rounded-lg px-2 py-1.5 outline-none">
+                                            <option value="All">All Cats</option>${PROGRAM_CATEGORIES.map(c => `<option value="${c}" ${state.filterResultCat===c?'selected':''}>${c}</option>`).join('')}
                                         </select>
-                                        <span class="bg-purple-950 text-amber-300 text-[10px] sm:text-xs px-3 py-1.5 rounded-lg font-bold border border-purple-800 shadow-inner">${sortedResults.length} Pub</span>
                                     </div>
                                 </div>
-                                <div class="space-y-3 sm:space-y-4 overflow-y-auto flex-1 pr-1 sm:pr-2 custom-scrollbar">
-                                    ${sortedResults.length === 0 ? `<div class="text-center p-6 sm:p-10 text-purple-300 text-sm">ആദ്യ റിസൾട്ടിനായി കാത്തിരിക്കുന്നു...</div>` : ''}
-                                    ${sortedResults.map((res, index) => {
-                                        const prog = state.programs.find(p => p.id === res.progId); 
-                                        const isNew = index === 0 && !state.searchResQuery; 
-                                        const cardClass = isNew ? "bg-purple-950/80 border-amber-500/50 shadow-[0_0_20px_rgba(245,158,11,0.15)]" : "bg-black/80 border-purple-800";
-                                        
-                                        const progDisplayStr = prog 
-                                            ? `${prog.progNo ? `<span class="text-amber-500">#${prog.progNo}</span> ` : ''}${prog.name} <span class="text-[8px] sm:text-[10px] text-amber-300 bg-purple-900 px-2 py-0.5 rounded ml-2 font-bold uppercase">${prog.cat}</span>`
-                                            : `<span class="text-red-400">⚠️ Program Missing/Deleted (Delete & Re-enter Result)</span>`;
-                                            
-                                        return `<div class="border p-3 sm:p-5 rounded-2xl relative overflow-hidden transition-all ${cardClass}">
-                                            ${isNew ? '<div class="absolute top-0 right-0 bg-amber-500 text-black text-[8px] sm:text-[9px] font-black uppercase px-2 sm:px-3 py-1 rounded-bl-lg tracking-widest animate-pulse shadow-md">Newest</div>' : ''}
-                                            <button onclick="window.deleteResult('${res.id}')" class="absolute top-2 right-2 sm:top-3 sm:right-4 ${isNew?'mt-5 sm:mt-4':''} text-red-400 hover:text-white bg-purple-950 hover:bg-red-600 border border-red-500/30 px-2 py-1 rounded text-[9px] sm:text-[10px] font-bold transition z-10">Delete</button>
-                                            <h4 class="font-bold text-white text-[14px] sm:text-lg mb-3 sm:mb-4 pr-10">
-                                                ${progDisplayStr}
-                                            </h4>
+                                <div class="overflow-y-auto flex-1 pr-2 space-y-3 custom-scrollbar">
+                                    ${sortedResults.length === 0 ? `<div class="text-center p-8 text-slate-500 text-sm">No results published yet.</div>` : ''}
+                                    ${sortedResults.map(res => {
+                                        const prog = state.programs.find(p => p.id === res.progId);
+                                        return `
+                                        <div class="bg-slate-800/50 border border-slate-700 p-4 rounded-xl relative">
+                                            <button onclick="window.deleteResult('${res.id}')" class="absolute top-3 right-3 text-red-400 hover:text-white bg-slate-900 px-2 py-1 rounded text-[10px] font-bold border border-red-500/30">Delete</button>
+                                            <h4 class="font-bold text-white text-base mb-3 pr-16">${prog ? `<span class="text-sky-400">#${prog.progNo}</span> ${prog.name} <span class="text-[9px] text-slate-400 uppercase ml-1">${prog.cat}</span>` : 'Unknown Program'}</h4>
                                             <div class="space-y-1.5">
-                                                ${getNamesBadgeHtml(res.first, 'border-yellow-500/50 bg-yellow-950/30', 'text-yellow-400', '🥇', res.pts1)}
-                                                ${getNamesBadgeHtml(res.second, 'border-slate-500/50 bg-slate-900/30', 'text-slate-200', '🥈', res.pts2)}
-                                                ${getNamesBadgeHtml(res.third, 'border-amber-700/50 bg-amber-950/30', 'text-amber-500', '🥉', res.pts3)}
+                                                ${getNamesBadgeHtml(res.first, 'border-yellow-500/30', 'text-yellow-400', '🥇')}
+                                                ${getNamesBadgeHtml(res.second, 'border-slate-400/30', 'text-slate-300', '🥈')}
+                                                ${getNamesBadgeHtml(res.third, 'border-amber-600/30', 'text-amber-500', '🥉')}
                                             </div>
                                         </div>`;
                                     }).join('')}
@@ -1270,16 +898,45 @@
                         </div>`;
                 }
 
-                app.innerHTML = `
-                    <header class="bg-purple-950/90 backdrop-blur-xl border-b border-purple-800/80 p-3 sm:p-4 px-4 sm:px-6 flex justify-between items-center sticky top-0 z-50">
-                        <div class="flex items-center gap-2 sm:gap-3">
-                            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-purple-600 flex items-center justify-center text-xl shadow-lg font-black text-black">⚔️</div>
-                            <div>
-                                <h1 class="text-white text-[15px] sm:text-xl tracking-tight leading-none mb-0.5 sm:mb-1 font-bold">LADAL MADEENA 2K26</h1>
-                                <p class="text-[9px] sm:text-[10px] text-amber-300 font-bold uppercase tracking-widest">Admin Portal • Khaibar & Khandaq</p>
+                if (state.tab === 'settings') {
+                    mainContent = `
+                        <div class="max-w-2xl mx-auto mt-8 space-y-6">
+                            <div class="glass-card p-6 rounded-2xl border border-slate-700">
+                                <h3 class="font-bold text-white text-lg mb-4 flex items-center gap-2">💾 Database Backup & Export</h3>
+                                <p class="text-sm text-slate-400 mb-6">Securely download your entire fest database as a JSON file, or export candidates to a CSV spreadsheet.</p>
+                                <div class="flex flex-wrap gap-4">
+                                    <button onclick="window.exportData()" class="bg-sky-600 hover:bg-sky-500 text-white px-5 py-3 rounded-xl font-bold shadow-lg transition">Download Full Backup (JSON)</button>
+                                    <button onclick="window.exportCSV()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-3 rounded-xl font-bold shadow-lg transition">Export Candidates (CSV)</button>
+                                </div>
+                            </div>
+
+                            <div class="glass-card p-6 rounded-2xl border border-slate-700">
+                                <h3 class="font-bold text-white text-lg mb-4 flex items-center gap-2">📥 Restore Database</h3>
+                                <p class="text-sm text-slate-400 mb-4">Restore a previously downloaded JSON backup file. This will overwrite current matching records.</p>
+                                <input type="file" id="importFile" accept=".json" class="hidden" onchange="window.handleImport(event)">
+                                <button onclick="window.triggerImport()" class="bg-slate-700 hover:bg-slate-600 text-white px-5 py-3 rounded-xl font-bold transition border border-slate-600">Select Backup File to Import</button>
+                            </div>
+
+                            <div class="glass-card p-6 rounded-2xl border border-red-500/30 bg-red-950/20">
+                                <h3 class="font-bold text-red-400 text-lg mb-2 flex items-center gap-2">⚠️ Danger Zone</h3>
+                                <p class="text-sm text-red-300/70 mb-4">Wipe all data completely to start a new fest. This cannot be undone without a backup.</p>
+                                <button onclick="window.wipeDatabase()" class="bg-red-600 hover:bg-red-500 text-white px-5 py-2.5 rounded-xl font-bold shadow-lg transition text-sm">Wipe Entire Database</button>
                             </div>
                         </div>
-                        <button onclick="window.handleLogout()" class="px-3 py-1.5 bg-purple-900/80 hover:bg-purple-800 text-purple-200 rounded-lg text-xs font-bold border border-purple-700 transition">Logout</button>
+                    `;
+                }
+
+                // Header HTML wrapping with custom small text logo
+                app.innerHTML = `
+                    <header class="bg-slate-900/95 backdrop-blur-xl border-b border-slate-800 p-3 px-4 sm:px-6 flex justify-between items-center z-50">
+                        <div class="flex items-center gap-3">
+                            <img src="https://raw.githubusercontent.com/BUSA2023/Kottam-admin/main/20261008_183322.png" alt="Logo" class="h-10 w-auto object-contain drop-shadow-md">
+                            <div>
+                                <h1 class="text-white text-base sm:text-xl tracking-tight leading-none mb-0.5 font-bold">Aawaaze Funoon</h1>
+                                <p class="text-[9px] text-sky-400 font-bold uppercase tracking-widest">Season 04 • Fest Manager</p>
+                            </div>
+                        </div>
+                        <button onclick="window.handleLogout()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-bold border border-slate-600 transition">Logout</button>
                     </header>
                     ${navHtml}
                     <main class="flex-1 p-3 sm:p-6 max-w-7xl w-full mx-auto pb-10">
@@ -1288,15 +945,11 @@
                 `;
             } catch(e) {
                 console.error("Rendering Error:", e);
-                document.getElementById('app').innerHTML = `<div class="p-10 text-white text-center bg-red-900 min-h-screen">
-                    <h1 class="text-2xl font-bold mb-4">Rendering Error Occurred.</h1>
-                    <p class="mb-4">Please contact support or clear browser cache.</p>
-                    <pre class="bg-black p-4 text-left text-xs overflow-auto text-red-300 border border-red-500">${e.stack || e.message}</pre>
-                </div>`;
+                document.getElementById('app').innerHTML = `<div class="p-10 text-white text-center bg-red-900 min-h-screen"><h1 class="text-xl font-bold">Error Rendering UI</h1><p>${e.message}</p></div>`;
             }
-        }
+        };
         
-        // Final command to ensure it always draws instantly.
+        // Ensure UI draws immediately
         window.render();
     </script>
 </body>
