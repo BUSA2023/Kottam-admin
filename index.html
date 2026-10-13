@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="ml">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Urava Season 4 - Admin Portal</title>
+    <title>Urava Season 04 - Fest Manager</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@400;600;700;800&family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
     <style>
-        body { font-family: 'Anek Malayalam', sans-serif; background-color: #0f172a; color: #f8fafc; overflow-x: hidden; }
+        body { font-family: 'Anek Malayalam', sans-serif; background-color: #020617; color: #f8fafc; overflow-x: hidden; }
         .num-font { font-family: 'Outfit', sans-serif; }
         .tab-active { border-bottom: 3px solid #38bdf8; color: #38bdf8; }
         .tab-inactive { border-bottom: 3px solid transparent; color: #94a3b8; }
@@ -22,62 +22,169 @@
         select { appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2338bdf8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 0.9em; padding-right: 2.2rem !important; }
         select option { background-color: #0f172a; color: #f8fafc; }
         
-        /* Print Styles for 3x2 Inch ID Cards */
         @media print {
             body * { visibility: hidden; }
             #print-area, #print-area * { visibility: visible; }
             #print-area { position: absolute; left: 0; top: 0; width: 100%; display: flex; flex-wrap: wrap; justify-content: flex-start; gap: 0; margin: 0; padding: 0; }
+            
+            /* 3x2 Inch ID Cards */
             .id-card { 
-                width: 3in; 
-                height: 2in; 
-                background: white !important; 
-                color: black !important; 
-                border: 1px dashed #ccc; 
-                padding: 0.15in; 
-                box-sizing: border-box; 
+                width: 3in; height: 2in; background: white !important; color: black !important; 
+                border: 2px solid #0ea5e9; padding: 0.1in; box-sizing: border-box; 
+                display: flex; flex-direction: column; justify-content: space-between; 
+                font-family: sans-serif; border-radius: 8px; margin: 0.1in;
                 page-break-inside: avoid;
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-                overflow: hidden;
             }
-            .id-header { text-align: center; border-bottom: 1px solid black; padding-bottom: 2px; margin-bottom: 4px; }
-            .id-title { font-size: 10pt; font-weight: 900; margin: 0; font-family: 'Outfit', sans-serif; text-transform: uppercase; }
+            .id-header { text-align: center; border-bottom: 2px solid #0ea5e9; padding-bottom: 2px; margin-bottom: 2px; }
+            .id-title { font-size: 10pt; font-weight: 900; margin: 0; color: #0284c7 !important; text-transform: uppercase; }
             .id-sub { font-size: 6pt; margin: 0; font-weight: bold; }
             .id-body { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; text-align: center; }
             .id-name { font-size: 11pt; font-weight: bold; margin: 0; line-height: 1.1; }
-            .id-chest { font-size: 14pt; font-weight: 900; font-family: 'Outfit', sans-serif; margin: 2px 0; }
-            .id-team { font-size: 7pt; font-weight: bold; background: #eee !important; padding: 2px 4px; border-radius: 4px; display: inline-block; margin: 0 auto; }
-            .id-footer { font-size: 6pt; border-top: 1px solid #ccc; padding-top: 2px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .id-chest { font-size: 16pt; font-weight: 900; margin: 2px 0; color: #0f172a !important; }
+            .id-team { font-size: 8pt; font-weight: bold; background: #e2e8f0 !important; padding: 2px 4px; border-radius: 4px; display: inline-block; margin: 0 auto; }
+            .id-footer { font-size: 6pt; border-top: 1px dashed #cbd5e1; padding-top: 2px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #475569 !important; }
+            
+            /* A4 Vertical Certificates */
+            .cert-page { 
+                width: 210mm; height: 297mm; page-break-after: always; position: relative; 
+                background: white !important; color: black !important; overflow: hidden; 
+                box-sizing: border-box; padding: 20mm; font-family: 'Anek Malayalam', sans-serif; 
+                display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; 
+            }
+            .cert-border { position: absolute; top: 12mm; bottom: 12mm; left: 12mm; right: 12mm; border: 5px double #0ea5e9; border-radius: 15px; z-index: -1; }
+            .cert-logo { max-width: 160px; margin-bottom: 20px; object-fit: contain; }
+            .cert-header { font-size: 32pt; font-weight: 900; color: #0284c7 !important; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px; font-family: 'Outfit', sans-serif; }
+            .cert-sub { font-size: 16pt; font-weight: bold; color: #334155 !important; margin-bottom: 40px; letter-spacing: 4px; text-transform: uppercase; }
+            .cert-text { font-size: 16pt; margin-bottom: 15px; color: #475569 !important; }
+            .cert-name { font-size: 30pt; font-weight: bold; color: #0f172a !important; margin-bottom: 15px; border-bottom: 2px solid #cbd5e1; padding-bottom: 5px; width: 80%; margin-left: auto; margin-right: auto; }
+            .cert-position { font-size: 24pt; font-weight: 900; color: #0284c7 !important; margin-top: 20px; margin-bottom: 10px; }
+            .cert-prog { font-size: 20pt; font-weight: bold; color: #1e293b !important; margin-bottom: 50px; }
+            .cert-signatures { display: flex; justify-content: space-between; width: 100%; margin-top: auto; padding-top: 50px; }
+            .cert-sig-block { text-align: center; border-top: 1px solid black; width: 200px; padding-top: 5px; font-weight: bold; font-size: 12pt; }
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-slate-900 via-gray-900 to-zinc-900 min-h-screen">
+<body class="bg-gradient-to-br from-slate-950 via-sky-950 to-slate-900 min-h-screen">
 
     <div id="toast" class="fixed top-5 right-5 z-[100] transform translate-y-[-200%] transition-transform duration-300 px-6 py-3 rounded-xl shadow-2xl font-semibold flex items-center space-x-3 text-sm">
         <span id="toastIcon"></span><span id="toastMsg"></span>
     </div>
 
-    <!-- Print Area -->
+    <!-- Custom Confirmation Modal -->
+    <div id="confirmModal" style="display: none;" class="fixed inset-0 bg-black/90 z-[400] items-center justify-center p-4 backdrop-blur-sm">
+        <div class="glass-card p-6 rounded-2xl max-w-sm w-full shadow-2xl border border-sky-500/30 text-center">
+            <h3 class="text-xl font-bold text-white mb-2" id="confirmTitle">Confirm</h3>
+            <p class="text-sm text-slate-300 mb-6" id="confirmMsg">Are you sure?</p>
+            <div class="flex gap-3 justify-center">
+                <button id="confirmCancelBtn" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-sm border border-slate-600 transition">Cancel</button>
+                <button id="confirmOkBtn" class="px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white rounded-lg text-sm font-bold shadow-lg transition">Confirm</button>
+            </div>
+        </div>
+    </div>
+
     <div id="print-area"></div>
 
     <!-- Edit Candidate Modal -->
     <div id="editCandModal" style="display: none;" class="fixed inset-0 bg-black/90 z-[300] items-center justify-center p-4 backdrop-blur-sm">
-        <div class="glass-card p-6 rounded-2xl max-w-sm w-full shadow-2xl border border-sky-500/30">
+        <div class="glass-card p-6 rounded-2xl max-w-md w-full shadow-2xl border border-sky-500/30">
             <h3 class="text-lg font-bold text-sky-400 mb-4 border-b border-slate-700 pb-2">Edit Candidate</h3>
-            <form id="editCandForm" onsubmit="saveEditCand(event)" class="space-y-3">
+            <form id="editCandForm" onsubmit="window.saveEditCand(event)" class="space-y-3">
                 <input type="hidden" id="editCandId">
                 <div>
                     <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Name</label>
-                    <input type="text" id="editCandName" required class="w-full bg-black/80 border border-slate-700 rounded-lg px-3 py-2 text-white outline-none focus:border-sky-500 text-sm">
+                    <input type="text" id="editCandName" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white outline-none focus:border-sky-500 text-sm">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Chest No</label>
+                        <input type="text" id="editCandRegNo" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white outline-none focus:border-sky-500 text-sm font-mono">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Category</label>
+                        <select id="editCandCat" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white outline-none text-sm">
+                            <option value="Junior">Junior</option>
+                            <option value="Senior">Senior</option>
+                        </select>
+                    </div>
                 </div>
                 <div>
-                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Chest No</label>
-                    <input type="text" id="editCandRegNo" required class="w-full bg-black/80 border border-slate-700 rounded-lg px-3 py-2 text-white outline-none focus:border-sky-500 text-sm font-mono">
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Team</label>
+                    <select id="editCandTeam" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white outline-none text-sm">
+                        <option value="Al-Masūdi">Al-Masūdi</option>
+                        <option value="Al-Qazwini">Al-Qazwini</option>
+                    </select>
                 </div>
-                <div class="flex gap-3 justify-end pt-4">
+                <div class="flex gap-3 justify-end pt-4 border-t border-slate-700/50 mt-4">
                     <button type="button" onclick="document.getElementById('editCandModal').style.display='none'" class="px-4 py-2 bg-slate-800 text-white rounded-lg text-sm border border-slate-600">Cancel</button>
-                    <button type="submit" id="saveEditCandBtn" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-sm font-bold shadow-lg">Update</button>
+                    <button type="submit" id="saveEditCandBtn" class="px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white rounded-lg text-sm font-bold shadow-lg">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Program Modal -->
+    <div id="editProgModal" style="display: none;" class="fixed inset-0 bg-black/90 z-[300] items-center justify-center p-4 backdrop-blur-sm">
+        <div class="glass-card p-6 rounded-2xl max-w-md w-full shadow-2xl border border-emerald-500/30 max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <h3 class="text-lg font-bold text-emerald-400 mb-4 border-b border-slate-700 pb-2">Edit Program Settings</h3>
+            <form id="editProgForm" onsubmit="window.saveEditProg(event)" class="space-y-3">
+                <input type="hidden" id="editProgId">
+                <div class="grid grid-cols-3 gap-2">
+                    <div class="col-span-1">
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Prog No</label>
+                        <input type="text" id="editProgNo" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white outline-none focus:border-emerald-500 text-sm font-mono">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Name</label>
+                        <input type="text" id="editProgName" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white outline-none focus:border-emerald-500 text-sm">
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-2 mt-2">
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Category</label>
+                        <select id="editProgCat" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white outline-none text-sm">
+                            <option value="Junior">Junior</option>
+                            <option value="Senior">Senior</option>
+                            <option value="General">General (Exempt)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Type</label>
+                        <select id="editProgType" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white outline-none text-sm">
+                            <option value="Stage">Stage</option>
+                            <option value="Non-Stage">Non-Stage</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 mt-2">
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Format</label>
+                        <select id="editProgFormat" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white outline-none text-sm text-pink-300 font-bold">
+                            <option value="Individual">Individual</option>
+                            <option value="Group">Group (Exempt from Limits/Kala)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Points Scheme</label>
+                        <select id="editProgPts" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white outline-none text-sm text-green-300 font-bold">
+                            <option value="10,5,3">10, 5, 3 (Individual)</option>
+                            <option value="15,8,5">15, 8, 5 (Group)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-slate-700/50">
+                    <label class="text-[12px] font-bold text-slate-200 flex items-center gap-2 cursor-pointer bg-slate-800/50 p-3 rounded-lg border border-slate-600">
+                        <input type="checkbox" id="editProgExempt" class="w-5 h-5 accent-emerald-500"> 
+                        Exclude from Participant Limits
+                    </label>
+                    <p class="text-[9px] text-slate-400 mt-1 italic pl-1">Check this to allow candidates to join this event even if their Stage/Non-Stage slots are full.</p>
+                </div>
+
+                <div class="flex gap-3 justify-end pt-4">
+                    <button type="button" onclick="document.getElementById('editProgModal').style.display='none'" class="px-4 py-2 bg-slate-800 text-white rounded-lg text-sm border border-slate-600">Cancel</button>
+                    <button type="submit" id="saveEditProgBtn" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-sm font-bold shadow-lg">Save Settings</button>
                 </div>
             </form>
         </div>
@@ -89,31 +196,30 @@
             <h3 class="text-lg font-bold text-white mb-1" id="assignTitle">Assign Programs</h3>
             <p class="text-xs text-sky-400 mb-2 font-bold tracking-widest uppercase" id="assignSubtitle"></p>
             
+            <!-- Dynamic Usage Limits Box -->
             <div id="limitsInfo" class="bg-slate-800/80 p-3 rounded-lg border border-slate-700 flex justify-around mb-4 text-xs font-bold shadow-inner">
                 <div class="text-center"><span class="text-slate-400 block uppercase text-[9px]">Stage Used</span><span id="limitStage" class="text-sky-300 text-lg">0/0</span></div>
                 <div class="text-center"><span class="text-slate-400 block uppercase text-[9px]">Non-Stage Used</span><span id="limitNonStage" class="text-emerald-300 text-lg">0/0</span></div>
-                <div class="text-center"><span class="text-slate-400 block uppercase text-[9px]">General Used</span><span id="limitGeneral" class="text-purple-300 text-lg">0</span></div>
             </div>
 
             <div class="bg-slate-900/60 border border-slate-700 rounded-xl p-4 flex-1 overflow-y-auto mb-4 custom-scrollbar">
                 <div id="assignCheckboxes" class="space-y-3"></div>
             </div>
             <div class="flex gap-3 justify-end pt-2">
-                <button onclick="closeAssign()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-sm font-semibold transition border border-slate-600">Cancel</button>
-                <button id="saveAssignBtn" onclick="saveAssign()" class="px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white rounded-lg text-sm font-semibold transition shadow-lg">Save Selection</button>
+                <button onclick="window.closeAssign()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-sm font-semibold transition border border-slate-600">Cancel</button>
+                <button id="saveAssignBtn" onclick="window.saveAssign()" class="px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white rounded-lg text-sm font-semibold transition shadow-lg">Save Selection</button>
             </div>
         </div>
     </div>
 
     <div id="app" class="min-h-screen flex flex-col">
+        <!-- Initial login container shown to prevent blank screen while loading -->
         <div class="flex-1 flex flex-col items-center justify-center p-4 min-h-screen relative" id="login-container">
             <div class="absolute inset-0 z-0 opacity-20 flex items-center justify-center pointer-events-none">
-                <!-- Watermark / Background element -->
                 <img src="https://raw.githubusercontent.com/BUSA2023/Kottam-admin/main/LOGO%204-01.png" alt="Background Element" class="w-full max-w-md object-contain mix-blend-screen">
             </div>
             <div class="glass-card max-w-sm w-full rounded-[2rem] p-8 shadow-2xl text-center relative z-10 border border-slate-700 bg-slate-900/90">
                 <div class="flex flex-col items-center justify-center mb-6">
-                    <!-- Main Requested Logo for Login Screen -->
                     <img src="https://raw.githubusercontent.com/BUSA2023/Kottam-admin/main/20261008_191200.png" alt="Urava Logo Main" class="w-32 h-auto mb-4 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] rounded-2xl">
                     <span class="text-[10px] text-sky-400 font-extrabold tracking-widest uppercase mb-1">Aawaaze Funoon Season 04</span>
                     <h2 class="text-xl font-black text-slate-200 tracking-tight">FEST MANAGER</h2>
@@ -122,7 +228,7 @@
                         <span class="text-[10px] bg-emerald-900/80 text-emerald-200 px-3 py-1 rounded-full font-bold border border-emerald-700 shadow">Al-Qazwini</span>
                     </div>
                 </div>
-                <form onsubmit="event.preventDefault(); if(window.handleLogin) window.handleLogin(event); else alert('System initializing... Please wait.');" class="space-y-4">
+                <form onsubmit="event.preventDefault(); if(window.handleLogin) window.handleLogin(event);" class="space-y-4">
                     <input type="password" id="loginPass" required class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white outline-none focus:border-sky-500 text-center tracking-widest transition" placeholder="Enter Admin PIN">
                     <button type="submit" class="w-full bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-sky-900/50">Secure Login</button>
                 </form>
@@ -132,10 +238,9 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, addDoc, deleteDoc, doc, setDoc, updateDoc, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, addDoc, deleteDoc, doc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Updated Firebase Config for pullani-6a39b
         const firebaseConfig = {
             apiKey: "AIzaSyCIbvk4teIJ6AlfaXbFgDMgCWpnekNwmx8",
             authDomain: "pullani-6a39b.firebaseapp.com",
@@ -150,18 +255,15 @@
         const auth = getAuth(appInit);
         const db = getFirestore(appInit);
 
-        // Strict Paths definition based on system rules
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'urava-s4-fest';
+        // Strict Paths definition 
+        const appId = 'urava-s4-fest';
         const getCol = (name) => collection(db, 'artifacts', appId, 'public', 'data', name);
         const getDocRef = (name, id) => doc(db, 'artifacts', appId, 'public', 'data', name, id);
 
-        // Constants - Removed Gender/Class concepts entirely
         const TEAMS = ['Al-Masūdi', 'Al-Qazwini'];
-        const CANDIDATE_CATEGORIES = ['Junior', 'Senior']; 
-        const PROGRAM_CATEGORIES = ['Junior', 'Senior', 'General'];
+        const CATEGORIES = ['Junior', 'Senior']; 
         const ADMIN_PASSWORD = "admin";
 
-        // State
         let isAuthStatus = false;
         try { isAuthStatus = sessionStorage.getItem('admin_auth') === 'true'; } catch(e) {}
 
@@ -197,14 +299,22 @@
             setTimeout(() => { toast.classList.add('translate-y-[-200%]'); toast.classList.remove('translate-y-0'); }, 4000); 
         };
 
+        window.customConfirm = (title, msg, onConfirm) => {
+            document.getElementById('confirmTitle').innerText = title;
+            document.getElementById('confirmMsg').innerText = msg;
+            document.getElementById('confirmModal').style.display = 'flex';
+            const okBtn = document.getElementById('confirmOkBtn');
+            const cancelBtn = document.getElementById('confirmCancelBtn');
+            const newOk = okBtn.cloneNode(true); okBtn.parentNode.replaceChild(newOk, okBtn);
+            const newCancel = cancelBtn.cloneNode(true); cancelBtn.parentNode.replaceChild(newCancel, cancelBtn);
+            newCancel.onclick = () => { document.getElementById('confirmModal').style.display = 'none'; };
+            newOk.onclick = () => { document.getElementById('confirmModal').style.display = 'none'; onConfirm(); };
+        };
+
         const initDB = async () => {
-            try { 
-                // Using custom Firebase project, so we must use Anonymous Auth.
-                // You MUST enable "Anonymous" in Firebase Console -> Authentication -> Sign-in methods
-                await signInAnonymously(auth); 
-            } catch (e) { 
+            try { await signInAnonymously(auth); } catch (e) { 
                 console.error("Auth Error:", e);
-                window.showAlert("DB Auth Error: Please enable 'Anonymous' Sign-in in Firebase.", "error"); 
+                window.showAlert("DB Auth Error: Enable 'Anonymous' Sign-in in Firebase.", "error"); 
             }
         };
 
@@ -257,17 +367,17 @@
             return prefix + (max + 1);
         };
 
-        // Programs CRUD
         window.addNewProgram = async (e) => {
             e.preventDefault(); 
             const name = document.getElementById('pName').value; 
             const cat = document.getElementById('pCat').value; 
             const type = document.getElementById('pType').value; 
+            const format = document.getElementById('pFormat').value;
             const pointScheme = document.getElementById('pPoints').value; 
-            const kalaprathiba = document.getElementById('pKalaprathiba').value === "true";
+            const limitExempt = document.getElementById('pLimitExempt').checked;
             const progNo = generateProgramNo();
             
-            const newProg = { id: 'p' + Date.now(), progNo, name, cat, type, pointScheme, kalaprathiba, timestamp: Date.now() }; 
+            const newProg = { id: 'p' + Date.now(), progNo, name, cat, type, format, pointScheme, limitExempt, timestamp: Date.now() }; 
             const updatedProgs = [...state.programs, newProg]; 
             
             const btn = document.getElementById('addProgBtn'); btn.disabled = true; btn.innerText = 'Wait...';
@@ -275,18 +385,51 @@
                 await updateDoc(getDocRef('settings', 'config'), { programs: updatedProgs }); 
                 window.showAlert(`Program Added (${progNo})`); e.target.reset(); 
             } catch(err) { window.showAlert("Error: " + err.message, "error"); }
-            finally { btn.disabled = false; btn.innerText = '+ Add Program'; }
+            finally { btn.disabled = false; btn.innerText = '+ Add'; }
         };
 
         window.deleteProgram = async (id) => {
-            if(confirm("Delete this program? This cannot be undone.")) {
+            window.customConfirm("Delete Program", "Delete this program? This cannot be undone.", async () => {
                 const updatedProgs = state.programs.filter(p => p.id !== id); 
                 try { await updateDoc(getDocRef('settings', 'config'), { programs: updatedProgs }); window.showAlert("Deleted!"); } 
                 catch(e) { window.showAlert("Failed.", "error"); }
-            }
+            });
         };
 
-        // Candidates CRUD - Removed Class and Gender fields
+        window.openEditProg = (id) => {
+            const p = state.programs.find(x => x.id === id); if(!p) return;
+            document.getElementById('editProgId').value = p.id;
+            document.getElementById('editProgNo').value = p.progNo || '';
+            document.getElementById('editProgName').value = p.name;
+            document.getElementById('editProgCat').value = p.cat;
+            document.getElementById('editProgType').value = p.type;
+            document.getElementById('editProgFormat').value = p.format || 'Individual';
+            document.getElementById('editProgPts').value = p.pointScheme || '10,5,3';
+            document.getElementById('editProgExempt').checked = p.limitExempt || false;
+            document.getElementById('editProgModal').style.display = 'flex';
+        };
+
+        window.saveEditProg = async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('editProgId').value;
+            const btn = document.getElementById('saveEditProgBtn'); btn.innerText = 'Saving...'; btn.disabled = true;
+            try {
+                let updated = state.programs.map(p => p.id === id ? { 
+                    ...p, 
+                    progNo: document.getElementById('editProgNo').value,
+                    name: document.getElementById('editProgName').value,
+                    cat: document.getElementById('editProgCat').value,
+                    type: document.getElementById('editProgType').value,
+                    format: document.getElementById('editProgFormat').value,
+                    pointScheme: document.getElementById('editProgPts').value,
+                    limitExempt: document.getElementById('editProgExempt').checked
+                } : p);
+                await updateDoc(getDocRef('settings', 'config'), { programs: updated });
+                window.showAlert("Program updated!"); document.getElementById('editProgModal').style.display = 'none';
+            } catch(err) { window.showAlert("Error.", "error"); }
+            finally { btn.innerText = 'Save Settings'; btn.disabled = false; }
+        };
+
         window.addCandidate = async (e) => {
             e.preventDefault(); 
             const name = document.getElementById('cName').value; 
@@ -305,9 +448,9 @@
         };
 
         window.deleteCandidate = async (id) => {
-            if(confirm("Delete this candidate?")) {
+            window.customConfirm("Delete Candidate", "Delete this candidate? All their data will be lost.", async () => {
                 try { await deleteDoc(getDocRef('candidates', id)); window.showAlert("Deleted."); } catch(e) { window.showAlert("Failed.", "error"); }
-            }
+            });
         };
 
         window.openEditCand = (id) => {
@@ -315,6 +458,8 @@
             document.getElementById('editCandId').value = c.id;
             document.getElementById('editCandName').value = c.name;
             document.getElementById('editCandRegNo').value = c.regNo;
+            document.getElementById('editCandCat').value = c.cat;
+            document.getElementById('editCandTeam').value = c.team;
             document.getElementById('editCandModal').style.display = 'flex';
         };
 
@@ -323,7 +468,12 @@
             const id = document.getElementById('editCandId').value;
             const btn = document.getElementById('saveEditCandBtn'); btn.innerText = 'Saving...'; btn.disabled = true;
             try {
-                await updateDoc(getDocRef('candidates', id), { name: document.getElementById('editCandName').value, regNo: document.getElementById('editCandRegNo').value });
+                await updateDoc(getDocRef('candidates', id), { 
+                    name: document.getElementById('editCandName').value, 
+                    regNo: document.getElementById('editCandRegNo').value,
+                    cat: document.getElementById('editCandCat').value,
+                    team: document.getElementById('editCandTeam').value
+                });
                 window.showAlert("Candidate updated!"); document.getElementById('editCandModal').style.display = 'none';
             } catch(err) { window.showAlert("Error.", "error"); }
             finally { btn.innerText = 'Update'; btn.disabled = false; }
@@ -338,16 +488,13 @@
         };
 
         window.calculateUsage = (assignedArray) => {
-            let usage = { stage: 0, nonStage: 0, general: 0 };
+            let usage = { stage: 0, nonStage: 0 };
             assignedArray.forEach(pId => {
                 const prog = state.programs.find(p => p.id === pId);
-                if (prog) {
-                    if (prog.cat === 'General' || prog.type === 'General') {
-                        usage.general++;
-                    } else {
-                        if (prog.type === 'Stage') usage.stage++;
-                        if (prog.type === 'Non-Stage') usage.nonStage++;
-                    }
+                // Antigravity Limit Check: Exclude Groups, Exclude General, Exclude Manual Exemptions
+                if (prog && prog.format !== 'Group' && prog.cat !== 'General' && prog.limitExempt !== true) {
+                    if (prog.type === 'Stage') usage.stage++;
+                    if (prog.type === 'Non-Stage') usage.nonStage++;
                 }
             });
             return usage;
@@ -360,14 +507,15 @@
             document.getElementById('assignTitle').innerText = `Assign Programs to ${candidate.name}`; 
             document.getElementById('assignSubtitle').innerText = `#${candidate.regNo} • ${candidate.team} • ${candidate.cat}`;
             
+            // Allow programs in their category OR General programs
             const eligibleProgs = state.programs.filter(p => p.cat === candidate.cat || p.cat === 'General'); 
             const assigned = candidate.assignedPrograms || [];
             
-            renderAssignCheckboxes(candidate.cat, eligibleProgs, assigned);
+            window.renderAssignCheckboxes(candidate.cat, eligibleProgs, assigned);
             document.getElementById('assignModal').style.display = 'flex';
         };
 
-        const renderAssignCheckboxes = (cat, eligibleProgs, assigned) => {
+        window.renderAssignCheckboxes = (cat, eligibleProgs, assigned) => {
             const limits = window.getCategoryLimits(cat);
             const usage = window.calculateUsage(assigned);
             
@@ -379,24 +527,28 @@
             nsElem.innerText = `${usage.nonStage}/${limits.nonStage}`;
             nsElem.className = usage.nonStage >= limits.nonStage ? "text-red-400 text-lg font-black" : "text-emerald-300 text-lg";
 
-            document.getElementById('limitGeneral').innerText = usage.general;
-
             let html = '';
             eligibleProgs.forEach(p => {
                 const isChecked = assigned.includes(p.id);
                 
                 let isDisabled = false;
-                if (!isChecked && p.cat !== 'General' && p.type !== 'General') {
+                // Enforce limits strictly for non-exempt individual programs
+                if (!isChecked && p.format !== 'Group' && p.cat !== 'General' && p.limitExempt !== true) {
                     if (p.type === 'Stage' && usage.stage >= limits.stage) isDisabled = true;
                     if (p.type === 'Non-Stage' && usage.nonStage >= limits.nonStage) isDisabled = true;
                 }
+                
+                let specialBadge = '';
+                if (p.format === 'Group') specialBadge = '<span class="ml-2 text-[8px] bg-pink-900/50 text-pink-300 border border-pink-700/50 px-1 py-0.5 rounded uppercase font-bold">Group (Exempt)</span>';
+                else if (p.cat === 'General') specialBadge = '<span class="ml-2 text-[8px] bg-indigo-900/50 text-indigo-300 border border-indigo-700/50 px-1 py-0.5 rounded uppercase font-bold">General (Exempt)</span>';
+                else if (p.limitExempt === true) specialBadge = '<span class="ml-2 text-[8px] bg-purple-900/50 text-purple-300 border border-purple-700/50 px-1 py-0.5 rounded uppercase font-bold">Limit Exempt</span>';
 
                 html += `<label class="flex items-center justify-between p-3 bg-slate-800/50 border border-slate-700 rounded-lg cursor-pointer hover:bg-slate-700/50 transition ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}">
                     <div>
-                        <span class="text-white text-sm font-semibold block ${isDisabled ? 'line-through text-slate-500' : ''}">
-                            <span class="text-sky-400 mr-1">#${p.progNo}</span>${p.name}
+                        <span class="text-white text-sm font-semibold flex items-center ${isDisabled ? 'line-through text-slate-500' : ''}">
+                            <span class="text-sky-400 mr-1">#${p.progNo}</span>${p.name} ${specialBadge}
                         </span>
-                        <span class="text-[10px] ${(p.cat==='General' || p.type==='General') ? 'text-purple-400' : 'text-slate-400'} uppercase font-bold tracking-wider">${p.cat} • ${p.type}</span>
+                        <span class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">${p.cat} • ${p.type} • ${p.format || 'Individual'}</span>
                     </div>
                     <input type="checkbox" value="${p.id}" onchange="window.handleCheckboxChange(this)" class="prog-checkbox w-5 h-5 accent-sky-500 rounded" ${isChecked ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}>
                 </label>`;
@@ -409,7 +561,7 @@
             const eligibleProgs = state.programs.filter(p => p.cat === candidate.cat || p.cat === 'General');
             const checkboxes = document.querySelectorAll('.prog-checkbox');
             const selectedProgs = Array.from(checkboxes).filter(chk => chk.checked).map(chk => chk.value);
-            renderAssignCheckboxes(candidate.cat, eligibleProgs, selectedProgs);
+            window.renderAssignCheckboxes(candidate.cat, eligibleProgs, selectedProgs);
         };
 
         window.closeAssign = () => { document.getElementById('assignModal').style.display = 'none'; currentAssignCandidateId = null; };
@@ -422,9 +574,41 @@
             const btn = document.getElementById('saveAssignBtn'); btn.innerText = 'Saving...'; btn.disabled = true;
             try { 
                 await updateDoc(getDocRef('candidates', currentAssignCandidateId), { assignedPrograms: selectedProgs }); 
-                window.showAlert("Saved!"); closeAssign(); 
+                window.showAlert("Saved!"); window.closeAssign(); 
             } catch (e) { window.showAlert("Error saving", "error"); } 
             finally { btn.innerText = 'Save Selection'; btn.disabled = false; }
+        };
+
+        window.populateResultDropdowns = () => {
+            const progId = document.getElementById('rProg').value;
+            const prog = state.programs.find(p => p.id === progId);
+            const container = document.getElementById('rSelectors');
+            if (!prog) { container.innerHTML = ''; return; }
+
+            // General programs can accept any candidate. Otherwise strictly category matching.
+            let eligible = state.candidates.filter(c => prog.cat === 'General' ? true : c.cat === prog.cat);
+            const assigned = eligible.filter(c => c.assignedPrograms && c.assignedPrograms.includes(progId));
+            
+            let html = '<option value="" disabled>-- Select Candidate --</option>';
+            if(assigned.length > 0) {
+                html += '<optgroup label="Enrolled in this program">';
+                assigned.forEach(c => html += `<option value="${c.id}">#${c.regNo} - ${c.name} (${c.team})</option>`);
+                html += '</optgroup>';
+            }
+            html += '<optgroup label="Other Candidates">';
+            eligible.filter(c => !assigned.includes(c)).forEach(c => html += `<option value="${c.id}">#${c.regNo} - ${c.name} (${c.team})</option>`);
+            html += '</optgroup>';
+
+            let ptsArr = (prog.pointScheme || (prog.format === 'Group' ? "15,8,5" : "10,5,3")).split(',').map(Number);
+
+            container.innerHTML = `
+                <div class="space-y-4 p-4 bg-slate-900/50 rounded-xl border border-slate-700 mt-4">
+                    <div><label class="block text-xs font-bold text-yellow-400 mb-1">1st Place (${ptsArr[0]} Pts)</label><select id="rFirst" multiple size="3" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-white outline-none focus:border-yellow-400">${html}</select></div>
+                    <div><label class="block text-xs font-bold text-slate-300 mb-1">2nd Place (${ptsArr[1]} Pts)</label><select id="rSecond" multiple size="3" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-white outline-none focus:border-slate-400">${html}</select></div>
+                    <div><label class="block text-xs font-bold text-amber-600 mb-1">3rd Place (${ptsArr[2]} Pts)</label><select id="rThird" multiple size="3" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-white outline-none focus:border-amber-600">${html}</select></div>
+                </div>
+                <button type="submit" id="publishBtn" class="w-full mt-4 bg-gradient-to-r from-sky-500 to-indigo-500 text-white font-bold py-3 rounded-xl transition shadow-lg hover:from-sky-400 hover:to-indigo-400">Publish Result</button>
+            `;
         };
 
         window.publishResult = async (e) => {
@@ -438,7 +622,7 @@
             
             if (first.length === 0 && second.length === 0 && third.length === 0) { return window.showAlert("Select at least one winner!", "error"); }
             
-            let ptsArr = (prog.pointScheme || "10,5,3").split(',').map(Number);
+            let ptsArr = (prog.pointScheme || (prog.format === 'Group' ? "15,8,5" : "10,5,3")).split(',').map(Number);
             
             const btn = document.getElementById('publishBtn'); btn.innerText = "Publishing..."; btn.disabled = true;
             try { 
@@ -456,42 +640,12 @@
         };
 
         window.deleteResult = async (resId) => {
-            if(confirm("Delete this result?")) {
+            window.customConfirm("Delete Result", "Delete this result?", async () => {
                 try { await deleteDoc(getDocRef('results', resId)); window.showAlert("Deleted."); } catch(e) { window.showAlert("Failed.", "error"); }
-            }
+            });
         };
 
-        window.populateResultDropdowns = () => {
-            const progId = document.getElementById('rProg').value;
-            const prog = state.programs.find(p => p.id === progId);
-            const container = document.getElementById('rSelectors');
-            if (!prog) { container.innerHTML = ''; return; }
-
-            let eligible = state.candidates.filter(c => prog.cat === 'General' ? true : c.cat === prog.cat);
-            const assigned = eligible.filter(c => c.assignedPrograms && c.assignedPrograms.includes(progId));
-            
-            let html = '<option value="" disabled>-- Select Candidate --</option>';
-            if(assigned.length > 0) {
-                html += '<optgroup label="Enrolled in this program">';
-                assigned.forEach(c => html += `<option value="${c.id}">#${c.regNo} - ${c.name} (${c.team})</option>`);
-                html += '</optgroup>';
-            }
-            html += '<optgroup label="Other Candidates">';
-            eligible.filter(c => !assigned.includes(c)).forEach(c => html += `<option value="${c.id}">#${c.regNo} - ${c.name} (${c.team})</option>`);
-            html += '</optgroup>';
-
-            let ptsArr = (prog.pointScheme || "10,5,3").split(',').map(Number);
-
-            container.innerHTML = `
-                <div class="space-y-4 p-4 bg-slate-900/50 rounded-xl border border-slate-700 mt-4">
-                    <div><label class="block text-xs font-bold text-yellow-400 mb-1">1st Place (${ptsArr[0]} Pts)</label><select id="rFirst" multiple size="3" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-white outline-none focus:border-yellow-400">${html}</select></div>
-                    <div><label class="block text-xs font-bold text-slate-300 mb-1">2nd Place (${ptsArr[1]} Pts)</label><select id="rSecond" multiple size="3" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-white outline-none focus:border-slate-400">${html}</select></div>
-                    <div><label class="block text-xs font-bold text-amber-600 mb-1">3rd Place (${ptsArr[2]} Pts)</label><select id="rThird" multiple size="3" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-white outline-none focus:border-amber-600">${html}</select></div>
-                </div>
-                <button type="submit" id="publishBtn" class="w-full mt-4 bg-gradient-to-r from-sky-500 to-indigo-500 text-white font-bold py-3 rounded-xl transition shadow-lg hover:from-sky-400 hover:to-indigo-400">Publish Result</button>
-            `;
-        };
-
+        // Export/Import/Wipe DB Handlers
         window.exportData = () => {
             const data = { programs: state.programs, candidates: state.candidates, results: state.results, exportDate: new Date().toISOString() };
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
@@ -502,7 +656,6 @@
         };
 
         window.exportCSV = () => {
-            // Removed Gender and Class from CSV
             let csv = "Chest No,Name,Category,Team,Assigned Programs\n";
             state.candidates.forEach(c => {
                 const pNames = (c.assignedPrograms || []).map(pid => {
@@ -527,31 +680,28 @@
                     const data = JSON.parse(e.target.result);
                     if(!data.programs || !data.candidates || !data.results) throw new Error("Invalid format");
                     
-                    if(!confirm("WARNING: This will merge the imported data into the current database. Continue?")) return;
-                    window.showAlert("Importing...", "success");
-                    
-                    await updateDoc(getDocRef('settings', 'config'), { programs: data.programs });
-                    
-                    for(const c of data.candidates) { await setDoc(getDocRef('candidates', c.id), c); }
-                    for(const r of data.results) { await setDoc(getDocRef('results', r.id), r); }
-                    window.showAlert("Import Complete!"); e.target.value = '';
+                    window.customConfirm("Import Database", "WARNING: This will merge imported data into the current DB. Continue?", async () => {
+                        window.showAlert("Importing...", "success");
+                        await updateDoc(getDocRef('settings', 'config'), { programs: data.programs });
+                        for(const c of data.candidates) { await setDoc(getDocRef('candidates', c.id), c); }
+                        for(const r of data.results) { await setDoc(getDocRef('results', r.id), r); }
+                        window.showAlert("Import Complete!"); 
+                    });
                 } catch(err) { window.showAlert("Import Failed: " + err.message, "error"); }
+                document.getElementById('importFile').value = '';
             };
             reader.readAsText(file);
         };
 
         window.wipeDatabase = async () => {
-            const pwd = prompt("DANGER: Type 'DELETE ALL' to wipe the entire database completely.");
-            if(pwd === "DELETE ALL") {
+            window.customConfirm("DANGER ZONE", "Are you absolutely sure you want to WIPE the entire database completely? This cannot be undone.", async () => {
                 try {
                     await updateDoc(getDocRef('settings', 'config'), { programs: [] });
                     for(const c of state.candidates) await deleteDoc(getDocRef('candidates', c.id));
                     for(const r of state.results) await deleteDoc(getDocRef('results', r.id));
                     window.showAlert("Database Wiped Clean.");
                 } catch(err) { window.showAlert("Error: " + err.message, "error"); }
-            } else if (pwd !== null) {
-                window.showAlert("Incorrect confirmation text. Aborted.", "error");
-            }
+            });
         };
 
         window.printIDCards = (candId = null) => {
@@ -573,7 +723,7 @@
                 <div class="id-card">
                     <div class="id-header">
                         <h1 class="id-title">Aawaaze Funoon S4</h1>
-                        <p class="id-sub">Urava Fest</p>
+                        <p class="id-sub">Urava Fest 2026</p>
                     </div>
                     <div class="id-body">
                         <div class="id-chest">${c.regNo}</div>
@@ -585,14 +735,60 @@
             });
             
             printArea.innerHTML = html;
-            
-            setTimeout(() => {
-                window.print();
-                printArea.innerHTML = ''; 
-            }, 500);
+            setTimeout(() => { window.print(); printArea.innerHTML = ''; }, 500);
         };
 
-        const getNamesBadgeHtml = (ids, borderClass, textClass, icon, pts) => { 
+        window.printCerts = (progId) => {
+            const res = state.results.find(r => r.progId === progId);
+            const prog = state.programs.find(p => p.id === progId);
+            if (!res || !prog) return window.showAlert("Result or Program not found", "error");
+
+            const printArea = document.getElementById('print-area');
+            let html = '';
+            const logoMain = "https://raw.githubusercontent.com/BUSA2023/Kottam-admin/main/20261008_191200.png";
+
+            const generateCertHtml = (candIdArray, positionStr) => {
+                let block = '';
+                candIdArray.forEach(cid => {
+                    const c = state.candidates.find(x => x.id === cid);
+                    if(c) {
+                        block += `
+                        <div class="cert-page">
+                            <div class="cert-border"></div>
+                            <img src="${logoMain}" class="cert-logo" alt="Logo">
+                            <h1 class="cert-header">AAWAAZE FUNOON S4</h1>
+                            <div class="cert-sub">Certificate of Achievement</div>
+                            
+                            <div class="cert-text">This is proudly presented to</div>
+                            <div class="cert-name">${c.name}</div>
+                            <div class="cert-text">of team <b>${c.team}</b> (${c.cat})</div>
+                            
+                            <div class="cert-text">for securing</div>
+                            <div class="cert-position">${positionStr}</div>
+                            <div class="cert-text">in the event</div>
+                            <div class="cert-prog">${prog.name}</div>
+                            
+                            <div class="cert-signatures">
+                                <div class="cert-sig-block">Fest Coordinator</div>
+                                <div class="cert-sig-block">Principal</div>
+                            </div>
+                        </div>`;
+                    }
+                });
+                return block;
+            };
+
+            html += generateCertHtml(res.first, "First Place");
+            html += generateCertHtml(res.second, "Second Place");
+            html += generateCertHtml(res.third, "Third Place");
+
+            if(html === '') return window.showAlert("No winners found to print.", "error");
+
+            printArea.innerHTML = html;
+            setTimeout(() => { window.print(); printArea.innerHTML = ''; }, 500);
+        };
+
+        const getNamesBadgeHtml = (ids, borderClass, textClass, icon) => { 
             const arr = Array.isArray(ids) ? ids : (ids ? [ids] : []); 
             if (arr.length === 0) return ''; 
             return arr.map((id) => { 
@@ -607,10 +803,39 @@
         window.render = function() {
             try {
                 const app = document.getElementById('app'); 
-                if (!state.isAuthenticated) return; 
+                
+                // If not authenticated, ensure the robust login template is injected completely
+                if (!state.isAuthenticated) {
+                    app.innerHTML = `
+                    <div class="flex-1 flex flex-col items-center justify-center p-4 min-h-screen relative" id="login-container">
+                        <div class="absolute inset-0 z-0 opacity-20 flex items-center justify-center pointer-events-none">
+                            <img src="https://raw.githubusercontent.com/BUSA2023/Kottam-admin/main/LOGO%204-01.png" alt="Background Element" class="w-full max-w-md object-contain mix-blend-screen">
+                        </div>
+                        <div class="glass-card max-w-sm w-full rounded-[2rem] p-8 shadow-2xl text-center relative z-10 border border-slate-700 bg-slate-900/90">
+                            <div class="flex flex-col items-center justify-center mb-6">
+                                <img src="https://raw.githubusercontent.com/BUSA2023/Kottam-admin/main/20261008_191200.png" alt="Urava Logo Main" class="w-32 h-auto mb-4 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] rounded-2xl">
+                                <span class="text-[10px] text-sky-400 font-extrabold tracking-widest uppercase mb-1">Aawaaze Funoon Season 04</span>
+                                <h2 class="text-xl font-black text-slate-200 tracking-tight">FEST MANAGER</h2>
+                                <div class="flex gap-2 mt-3 justify-center">
+                                    <span class="text-[10px] bg-sky-900/80 text-sky-200 px-3 py-1 rounded-full font-bold border border-sky-700 shadow">Al-Masūdi</span>
+                                    <span class="text-[10px] bg-emerald-900/80 text-emerald-200 px-3 py-1 rounded-full font-bold border border-emerald-700 shadow">Al-Qazwini</span>
+                                </div>
+                            </div>
+                            <form onsubmit="event.preventDefault(); window.handleLogin(event);" class="space-y-4">
+                                <input type="password" id="loginPass" required class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white outline-none focus:border-sky-500 text-center tracking-widest transition" placeholder="Enter Admin PIN">
+                                <button type="submit" class="w-full bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-sky-900/50">Secure Login</button>
+                            </form>
+                        </div>
+                    </div>`;
+                    return; 
+                }
+
+                // Authorized Layout
+                const LOGO_TEXT = "https://raw.githubusercontent.com/BUSA2023/Kottam-admin/main/20261008_183322.png";
+                const LOGO_DECOR = "https://raw.githubusercontent.com/BUSA2023/Kottam-admin/main/LOGO%205-01.png";
 
                 let navHtml = `
-                <nav class="flex overflow-x-auto border-b border-slate-700/80 bg-slate-900/90 backdrop-blur-md px-2 sm:px-6 sticky top-0 z-40 shadow-xl">
+                <nav class="flex overflow-x-auto border-b border-slate-700/80 bg-slate-900/90 backdrop-blur-md px-2 sm:px-6 sticky top-0 z-40 shadow-xl scrollbar-hide">
                     <button onclick="window.switchTab('dashboard')" class="px-5 py-4 font-bold text-sm whitespace-nowrap transition-colors ${state.tab==='dashboard'?'tab-active':'tab-inactive'}">Dashboard</button>
                     <button onclick="window.switchTab('candidates')" class="px-5 py-4 font-bold text-sm whitespace-nowrap transition-colors ${state.tab==='candidates'?'tab-active':'tab-inactive'}">Candidates</button>
                     <button onclick="window.switchTab('programs')" class="px-5 py-4 font-bold text-sm whitespace-nowrap transition-colors ${state.tab==='programs'?'tab-active':'tab-inactive'}">Programs</button>
@@ -620,7 +845,7 @@
                 
                 let mainContent = '';
 
-                // Points Calculation Logic - Gender removed, using teams only
+                // Points Computation
                 var stats = { 'Al-Masūdi': { total:0 }, 'Al-Qazwini': { total:0 } };
                 var catStats = { 'Junior': { 'Al-Masūdi': 0, 'Al-Qazwini': 0 }, 'Senior': { 'Al-Masūdi': 0, 'Al-Qazwini': 0 } };
                 var candTotalPts = {}; var candKalaPts = {};
@@ -628,15 +853,18 @@
                 state.results.forEach(res => {
                     var prog = state.programs.find(p => p.id === res.progId);
                     if (!prog) return;
-                    var pCat = prog.cat || 'General';
-                    var isKala = prog.kalaprathiba !== false; 
+                    
+                    var pCat = prog.cat;
+                    
+                    // Kalaprathiba: Only calculated for strict 'Individual' programs
+                    var isKala = prog.format === 'Individual'; 
 
                     var addPts = function(ids, pts) {
                         var arr = Array.isArray(ids) ? ids : (ids ? [ids] : []);
                         arr.forEach(id => {
                             var c = state.candidates.find(x => x.id === id); 
-                            if(c) { 
-                                if(stats[c.team]) stats[c.team].total += pts;
+                            if(c && stats[c.team]) { 
+                                stats[c.team].total += pts;
                                 if(catStats[c.cat] && catStats[c.cat][c.team] !== undefined) catStats[c.cat][c.team] += pts;
                                 
                                 candTotalPts[c.id] = (candTotalPts[c.id] || 0) + pts;
@@ -648,7 +876,6 @@
                 });
 
                 if (state.tab === 'dashboard') {
-                    // Removed gender filter
                     const getTop = (cat) => {
                         let top = null; let max = 0;
                         state.candidates.filter(c => c.cat === cat).forEach(c => {
@@ -668,10 +895,8 @@
                             <div class="glass-card p-4 rounded-xl border-l-4 border-amber-500 flex flex-col justify-center text-center relative z-10">
                                 <div class="text-3xl font-black num-font">${state.results.length}</div><div class="text-[10px] text-slate-400 font-bold uppercase mt-1">Results Pub</div>
                             </div>
-                            
-                            <!-- Adding one of the illustration logos here as a decorative element -->
-                            <div class="hidden md:flex items-center justify-center relative z-10">
-                                <img src="https://raw.githubusercontent.com/BUSA2023/Kottam-admin/main/LOGO%205-01.png" class="h-24 object-contain mix-blend-screen opacity-80 drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]">
+                            <div class="hidden md:flex items-center justify-center relative z-10 bg-slate-900/50 rounded-xl border border-slate-700/50">
+                                <img src="${LOGO_DECOR}" class="h-16 object-contain mix-blend-screen opacity-80 drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]">
                             </div>
                         </div>
 
@@ -697,10 +922,10 @@
                         <div class="glass-card p-5 rounded-2xl border border-slate-700">
                             <h3 class="font-bold text-yellow-400 text-lg mb-4">👑 Top Scorers (Kalaprathiba)</h3>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                ${CANDIDATE_CATEGORIES.map(c => {
+                                ${CATEGORIES.map(c => {
                                     const top = getTop(c);
                                     return `
-                                    <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-600 flex justify-between items-center">
+                                    <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-600 flex justify-between items-center shadow-lg">
                                         <div>
                                             <div class="text-[10px] text-sky-300 font-bold uppercase mb-1">${c} Champion</div>
                                             <div class="text-lg font-bold text-white">${top ? top.name : 'TBA...'}</div>
@@ -715,7 +940,6 @@
                 }
 
                 if (state.tab === 'candidates') {
-                    // Removed gender/class filters
                     const searchQ = state.searchQuery.toLowerCase();
                     const filteredCands = state.candidates.filter(c => {
                         const matchTeam = state.filterTeam === 'All' || c.team === state.filterTeam;
@@ -734,13 +958,13 @@
                                         <div>
                                             <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Category</label>
                                             <select id="cCat" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-white outline-none text-xs">
-                                                ${CANDIDATE_CATEGORIES.map(c => `<option value="${c}">${c}</option>`).join('')}
+                                                ${CATEGORIES.map(c => `<option value="${c}">${c}</option>`).join('')}
                                             </select>
                                         </div>
                                         <div><label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Team</label><select id="cTeam" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-white outline-none text-xs">${TEAMS.map(t => `<option value="${t}">${t}</option>`).join('')}</select></div>
                                     </div>
-                                    <p class="text-[9px] text-sky-300/60 mt-1 italic">* Chest number auto-generated based on category.</p>
-                                    <button type="submit" id="addCandBtn" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-bold py-2.5 rounded-xl transition mt-2 text-sm">Save Candidate</button>
+                                    <p class="text-[9px] text-sky-300/60 mt-1 italic">* Chest number auto-generated perfectly based on category sequence.</p>
+                                    <button type="submit" id="addCandBtn" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-bold py-2.5 rounded-xl transition mt-2 text-sm shadow-lg">Save Candidate</button>
                                 </form>
                             </div>
 
@@ -749,13 +973,13 @@
                                     <div class="flex justify-between items-center">
                                         <h3 class="font-bold text-white">Registry (${filteredCands.length})</h3>
                                         <div class="flex gap-2">
-                                            <button onclick="window.printIDCards()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1">🖨️ Print IDs</button>
+                                            <button onclick="window.printIDCards()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1 shadow-md">🖨️ Print IDs</button>
                                             <input type="text" id="searchInput" placeholder="Search..." value="${state.searchQuery}" oninput="window.updateSearch(this.value)" class="bg-slate-900 border border-slate-700 text-xs text-white rounded-lg px-3 py-1.5 outline-none focus:border-sky-500 w-32 sm:w-48">
                                         </div>
                                     </div>
                                     <div class="flex gap-2">
                                         <select onchange="window.state.filterTeam = this.value; window.render();" class="bg-slate-900 border border-slate-700 text-xs text-slate-300 rounded-lg px-2 py-1.5 outline-none flex-1"><option value="All">All Teams</option>${TEAMS.map(t => `<option value="${t}" ${state.filterTeam===t?'selected':''}>${t}</option>`).join('')}</select>
-                                        <select onchange="window.state.filterCat = this.value; window.render();" class="bg-slate-900 border border-slate-700 text-xs text-slate-300 rounded-lg px-2 py-1.5 outline-none flex-1"><option value="All">All Categories</option>${CANDIDATE_CATEGORIES.map(c => `<option value="${c}" ${state.filterCat===c?'selected':''}>${c}</option>`).join('')}</select>
+                                        <select onchange="window.state.filterCat = this.value; window.render();" class="bg-slate-900 border border-slate-700 text-xs text-slate-300 rounded-lg px-2 py-1.5 outline-none flex-1"><option value="All">All Categories</option>${CATEGORIES.map(c => `<option value="${c}" ${state.filterCat===c?'selected':''}>${c}</option>`).join('')}</select>
                                     </div>
                                 </div>
                                 <div class="overflow-y-auto flex-1 custom-scrollbar pr-2">
@@ -773,8 +997,8 @@
                                                 </div>
                                                 <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
                                                     <button onclick="window.openAssign('${c.id}')" class="bg-sky-900/40 text-sky-300 border border-sky-800 px-2 py-1 rounded text-xs font-bold hover:bg-sky-600 hover:text-white transition whitespace-nowrap">${eCount > 0 ? eCount + ' Assigned' : '+ Programs'}</button>
-                                                    <button onclick="window.printIDCards('${c.id}')" class="text-indigo-300 bg-slate-900 border border-slate-700 px-2 py-1 rounded text-xs hover:bg-indigo-600 hover:text-white transition">🖨️ ID</button>
-                                                    <button onclick="window.openEditCand('${c.id}')" class="text-slate-400 hover:text-white px-2 py-1 text-xs">Edit</button>
+                                                    <button onclick="window.printIDCards('${c.id}')" class="text-indigo-300 bg-slate-900 border border-slate-700 px-2 py-1 rounded text-xs hover:bg-indigo-600 hover:text-white transition font-bold">🖨️ ID</button>
+                                                    <button onclick="window.openEditCand('${c.id}')" class="text-slate-400 hover:text-white px-2 py-1 text-xs font-semibold">Edit</button>
                                                     <button onclick="window.deleteCandidate('${c.id}')" class="text-red-400 hover:text-white px-1 py-1 text-xs">✕</button>
                                                 </div>
                                             </div>`;
@@ -794,32 +1018,36 @@
                                 <h3 class="font-bold text-emerald-400">Add Program</h3>
                                 <input type="text" id="searchProgInput" placeholder="Search..." value="${state.searchProgQuery}" oninput="window.updateProgSearch(this.value)" class="bg-slate-900 border border-slate-700 text-xs text-white rounded-lg px-3 py-1.5 outline-none focus:border-emerald-500 w-48">
                             </div>
-                            <form onsubmit="window.addNewProgram(event)" class="flex flex-wrap gap-3 items-end">
-                                <div class="flex-1 min-w-[150px]"><label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">Name</label><input type="text" id="pName" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white outline-none focus:border-emerald-500 text-sm"></div>
-                                <div><label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">Cat</label><select id="pCat" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-white outline-none text-sm">${PROGRAM_CATEGORIES.map(c => `<option value="${c}">${c}</option>`).join('')}</select></div>
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">Type</label>
-                                    <select id="pType" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-white outline-none text-sm">
-                                        <option value="Stage">Stage</option>
-                                        <option value="Non-Stage">Non-Stage</option>
-                                        <option value="General">General</option>
-                                    </select>
+                            <form onsubmit="window.addNewProgram(event)" class="flex flex-col gap-3">
+                                <div class="flex flex-wrap gap-3 items-end">
+                                    <div class="flex-1 min-w-[150px]"><label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">Name</label><input type="text" id="pName" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white outline-none focus:border-emerald-500 text-sm"></div>
+                                    <div><label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">Cat</label><select id="pCat" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-white outline-none text-sm">${['Junior', 'Senior', 'General'].map(c => `<option value="${c}">${c}</option>`).join('')}</select></div>
+                                    <div>
+                                        <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">Type</label>
+                                        <select id="pType" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-white outline-none text-sm"><option value="Stage">Stage</option><option value="Non-Stage">Non-Stage</option></select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">Format</label>
+                                        <select id="pFormat" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-white outline-none text-sm font-bold text-pink-300"><option value="Individual">Individual</option><option value="Group">Group</option></select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">Pts Scheme</label>
+                                        <select id="pPoints" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-emerald-300 font-bold outline-none text-sm"><option value="10,5,3">10,5,3 (Indiv)</option><option value="15,8,5">15,8,5 (Group)</option></select>
+                                    </div>
+                                    <button type="submit" id="addProgBtn" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-lg transition text-sm shadow-lg">+ Add</button>
                                 </div>
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">Pts</label>
-                                    <select id="pPoints" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-emerald-300 font-bold outline-none text-sm">
-                                        <option value="10,5,3">10,5,3 (Individual)</option>
-                                        <option value="15,8,5">15,8,5 (Group)</option>
-                                    </select>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <label class="text-[11px] font-bold text-slate-300 flex items-center gap-2 cursor-pointer bg-slate-900/50 p-2 rounded-lg border border-slate-700 w-fit">
+                                        <input type="checkbox" id="pLimitExempt" class="w-4 h-4 accent-emerald-500"> 
+                                        Exclude from Participant Limits (Check for special individual events that bypass the max rules)
+                                    </label>
                                 </div>
-                                <div><label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">Kala?</label><select id="pKalaprathiba" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-yellow-300 font-bold outline-none text-sm"><option value="true">Yes</option><option value="false">No</option></select></div>
-                                <button type="submit" id="addProgBtn" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-lg transition text-sm">+ Add</button>
                             </form>
                         </div>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">`;
                         
-                    PROGRAM_CATEGORIES.forEach(cat => {
+                    ['Junior', 'Senior', 'General'].forEach(cat => {
                         const progs = state.programs.filter(p => p.cat === cat && (!searchPQ || p.name.toLowerCase().includes(searchPQ) || p.progNo.toLowerCase().includes(searchPQ)));
                         if(progs.length === 0) return;
                         
@@ -827,15 +1055,25 @@
                             <div class="glass-card p-4 rounded-2xl h-fit border-t border-slate-700">
                                 <h4 class="font-bold text-sm mb-3 text-slate-300 border-b border-slate-700 pb-2">${cat} Programs</h4>
                                 <div class="space-y-2">
-                                    ${progs.map(p => `
-                                        <div class="bg-slate-800/60 p-3 rounded-lg border border-slate-700 flex justify-between items-start group">
+                                    ${progs.map(p => {
+                                        let badges = [];
+                                        if(p.format === 'Group') badges.push('<span class="bg-pink-900/80 border border-pink-700 text-pink-200 px-1.5 py-0.5 rounded text-[8px] uppercase">Group (Exempt)</span>');
+                                        if(p.limitExempt) badges.push('<span class="bg-purple-900/80 border border-purple-700 text-purple-200 px-1.5 py-0.5 rounded text-[8px] uppercase">Limit Exempt</span>');
+                                        
+                                        return `<div class="bg-slate-800/60 p-3 rounded-lg border border-slate-700 flex justify-between items-start group shadow-inner">
                                             <div>
-                                                <div class="text-white text-sm font-semibold leading-tight"><span class="text-sky-400 font-mono text-xs mr-1">#${p.progNo}</span>${p.name}</div>
-                                                <div class="text-[9px] font-bold text-slate-400 uppercase mt-1 tracking-wider">${p.type} • ${p.pointScheme} • ${p.kalaprathiba ? '⭐' : '🚫'}</div>
+                                                <div class="text-white text-sm font-semibold leading-tight flex flex-wrap items-center gap-1 mb-1">
+                                                    <span class="text-sky-400 font-mono text-xs mr-1">#${p.progNo}</span>${p.name}
+                                                    ${badges.join(' ')}
+                                                </div>
+                                                <div class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">${p.type} • ${p.format || 'Individual'} • Pts: ${p.pointScheme}</div>
                                             </div>
-                                            <button onclick="window.deleteProgram('${p.id}')" class="text-red-400 text-xs opacity-0 group-hover:opacity-100 transition">✕</button>
-                                        </div>
-                                    `).join('')}
+                                            <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition">
+                                                <button onclick="window.openEditProg('${p.id}')" class="text-emerald-400 text-xs font-semibold">Edit</button>
+                                                <button onclick="window.deleteProgram('${p.id}')" class="text-red-400 text-xs font-semibold">Del</button>
+                                            </div>
+                                        </div>`;
+                                    }).join('')}
                                 </div>
                             </div>`;
                     });
@@ -857,11 +1095,13 @@
                         <div class="flex flex-col lg:flex-row gap-6 mt-4">
                             <div class="w-full lg:w-1/3">
                                 <div class="glass-card p-5 rounded-2xl border border-sky-500/30">
-                                    <h3 class="font-bold text-sky-400 mb-4">Publish Result</h3>
+                                    <h3 class="font-bold text-sky-400 mb-4 text-lg">🏆 Publish Result</h3>
                                     <form onsubmit="window.publishResult(event)">
-                                        <select id="rProg" onchange="window.populateResultDropdowns()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white outline-none focus:border-sky-400 text-sm mb-3">
+                                        <select id="rProg" onchange="window.populateResultDropdowns()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-3 text-white outline-none focus:border-sky-400 text-sm mb-3 font-semibold shadow-inner">
                                             <option value="">-- Select Program --</option>
-                                            ${[...state.programs].filter(p => !state.results.find(r => r.progId === p.id)).map(p => `<option value="${p.id}">#${p.progNo} - ${p.name} (${p.cat})</option>`).join('')}
+                                            ${[...state.programs]
+                                                .filter(p => !state.results.find(r => r.progId === p.id)) // Only un-published
+                                                .map(p => `<option value="${p.id}">#${p.progNo} - ${p.name} (${p.cat})</option>`).join('')}
                                         </select>
                                         <div id="rSelectors"></div>
                                     </form>
@@ -870,26 +1110,29 @@
                             
                             <div class="w-full lg:w-2/3 glass-card p-5 rounded-2xl flex flex-col h-[700px] border-t border-slate-700">
                                 <div class="flex justify-between items-center mb-4 border-b border-slate-700 pb-3">
-                                    <h3 class="font-bold text-white">Published Results</h3>
+                                    <h3 class="font-bold text-white text-lg">Published Results</h3>
                                     <div class="flex gap-2">
-                                        <input type="text" id="searchResInput" placeholder="Search..." value="${state.searchResQuery}" oninput="window.updateResSearch(this.value)" class="bg-slate-900 border border-slate-700 text-xs text-white rounded-lg px-3 py-1.5 outline-none w-32">
+                                        <input type="text" id="searchResInput" placeholder="Search..." value="${state.searchResQuery}" oninput="window.updateResSearch(this.value)" class="bg-slate-900 border border-slate-700 text-xs text-white rounded-lg px-3 py-1.5 outline-none w-32 focus:border-sky-500">
                                         <select onchange="window.state.filterResultCat = this.value; window.render();" class="bg-slate-900 border border-slate-700 text-xs text-slate-300 rounded-lg px-2 py-1.5 outline-none">
-                                            <option value="All">All Cats</option>${PROGRAM_CATEGORIES.map(c => `<option value="${c}" ${state.filterResultCat===c?'selected':''}>${c}</option>`).join('')}
+                                            <option value="All">All Categories</option>${['Junior', 'Senior', 'General'].map(c => `<option value="${c}" ${state.filterResultCat===c?'selected':''}>${c}</option>`).join('')}
                                         </select>
                                     </div>
                                 </div>
-                                <div class="overflow-y-auto flex-1 pr-2 space-y-3 custom-scrollbar">
+                                <div class="overflow-y-auto flex-1 pr-2 space-y-4 custom-scrollbar">
                                     ${sortedResults.length === 0 ? `<div class="text-center p-8 text-slate-500 text-sm">No results published yet.</div>` : ''}
                                     ${sortedResults.map(res => {
                                         const prog = state.programs.find(p => p.id === res.progId);
                                         return `
-                                        <div class="bg-slate-800/50 border border-slate-700 p-4 rounded-xl relative">
-                                            <button onclick="window.deleteResult('${res.id}')" class="absolute top-3 right-3 text-red-400 hover:text-white bg-slate-900 px-2 py-1 rounded text-[10px] font-bold border border-red-500/30">Delete</button>
-                                            <h4 class="font-bold text-white text-base mb-3 pr-16">${prog ? `<span class="text-sky-400">#${prog.progNo}</span> ${prog.name} <span class="text-[9px] text-slate-400 uppercase ml-1">${prog.cat}</span>` : 'Unknown Program'}</h4>
+                                        <div class="bg-slate-800/50 border border-slate-700 p-5 rounded-xl relative shadow-lg">
+                                            <div class="absolute top-4 right-4 flex gap-2">
+                                                <button onclick="window.printCerts('${res.progId}')" class="text-emerald-300 hover:text-white bg-slate-900 px-3 py-1.5 rounded text-[10px] font-bold border border-emerald-500/30 transition shadow">🖨️ Print A4 Certs</button>
+                                                <button onclick="window.deleteResult('${res.id}')" class="text-red-400 hover:text-white bg-slate-900 px-3 py-1.5 rounded text-[10px] font-bold border border-red-500/30 transition shadow">Delete</button>
+                                            </div>
+                                            <h4 class="font-bold text-white text-lg mb-4 pr-48">${prog ? `<span class="text-sky-400">#${prog.progNo}</span> ${prog.name} <span class="text-[9px] text-slate-300 bg-slate-900 px-2 py-1 border border-slate-700 rounded uppercase ml-2 tracking-wider">${prog.cat}</span>` : 'Unknown Program'}</h4>
                                             <div class="space-y-1.5">
-                                                ${getNamesBadgeHtml(res.first, 'border-yellow-500/30', 'text-yellow-400', '🥇')}
-                                                ${getNamesBadgeHtml(res.second, 'border-slate-400/30', 'text-slate-300', '🥈')}
-                                                ${getNamesBadgeHtml(res.third, 'border-amber-600/30', 'text-amber-500', '🥉')}
+                                                ${getNamesBadgeHtml(res.first, 'border-yellow-500/40 bg-yellow-900/20', 'text-yellow-400', '🥇')}
+                                                ${getNamesBadgeHtml(res.second, 'border-slate-400/40 bg-slate-800/50', 'text-slate-300', '🥈')}
+                                                ${getNamesBadgeHtml(res.third, 'border-amber-600/40 bg-amber-900/20', 'text-amber-500', '🥉')}
                                             </div>
                                         </div>`;
                                     }).join('')}
@@ -901,7 +1144,7 @@
                 if (state.tab === 'settings') {
                     mainContent = `
                         <div class="max-w-2xl mx-auto mt-8 space-y-6">
-                            <div class="glass-card p-6 rounded-2xl border border-slate-700">
+                            <div class="glass-card p-6 rounded-2xl border border-slate-700 shadow-xl">
                                 <h3 class="font-bold text-white text-lg mb-4 flex items-center gap-2">💾 Database Backup & Export</h3>
                                 <p class="text-sm text-slate-400 mb-6">Securely download your entire fest database as a JSON file, or export candidates to a CSV spreadsheet.</p>
                                 <div class="flex flex-wrap gap-4">
@@ -910,14 +1153,14 @@
                                 </div>
                             </div>
 
-                            <div class="glass-card p-6 rounded-2xl border border-slate-700">
+                            <div class="glass-card p-6 rounded-2xl border border-slate-700 shadow-xl">
                                 <h3 class="font-bold text-white text-lg mb-4 flex items-center gap-2">📥 Restore Database</h3>
                                 <p class="text-sm text-slate-400 mb-4">Restore a previously downloaded JSON backup file. This will overwrite current matching records.</p>
                                 <input type="file" id="importFile" accept=".json" class="hidden" onchange="window.handleImport(event)">
-                                <button onclick="window.triggerImport()" class="bg-slate-700 hover:bg-slate-600 text-white px-5 py-3 rounded-xl font-bold transition border border-slate-600">Select Backup File to Import</button>
+                                <button onclick="window.triggerImport()" class="bg-slate-700 hover:bg-slate-600 text-white px-5 py-3 rounded-xl font-bold transition border border-slate-600 shadow-lg">Select Backup File to Import</button>
                             </div>
 
-                            <div class="glass-card p-6 rounded-2xl border border-red-500/30 bg-red-950/20">
+                            <div class="glass-card p-6 rounded-2xl border border-red-500/30 bg-red-950/20 shadow-xl mt-12">
                                 <h3 class="font-bold text-red-400 text-lg mb-2 flex items-center gap-2">⚠️ Danger Zone</h3>
                                 <p class="text-sm text-red-300/70 mb-4">Wipe all data completely to start a new fest. This cannot be undone without a backup.</p>
                                 <button onclick="window.wipeDatabase()" class="bg-red-600 hover:bg-red-500 text-white px-5 py-2.5 rounded-xl font-bold shadow-lg transition text-sm">Wipe Entire Database</button>
@@ -926,17 +1169,17 @@
                     `;
                 }
 
-                // Header HTML wrapping with custom small text logo
+                // Final Application Stitch
                 app.innerHTML = `
-                    <header class="bg-slate-900/95 backdrop-blur-xl border-b border-slate-800 p-3 px-4 sm:px-6 flex justify-between items-center z-50">
+                    <header class="bg-slate-900/95 backdrop-blur-xl border-b border-slate-800 p-3 px-4 sm:px-6 flex justify-between items-center z-50 sticky top-0">
                         <div class="flex items-center gap-3">
-                            <img src="https://raw.githubusercontent.com/BUSA2023/Kottam-admin/main/20261008_183322.png" alt="Logo" class="h-10 w-auto object-contain drop-shadow-md">
+                            <img src="${LOGO_TEXT}" alt="Logo" class="h-10 w-auto object-contain drop-shadow-md">
                             <div>
                                 <h1 class="text-white text-base sm:text-xl tracking-tight leading-none mb-0.5 font-bold">Aawaaze Funoon</h1>
                                 <p class="text-[9px] text-sky-400 font-bold uppercase tracking-widest">Season 04 • Fest Manager</p>
                             </div>
                         </div>
-                        <button onclick="window.handleLogout()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-bold border border-slate-600 transition">Logout</button>
+                        <button onclick="window.handleLogout()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-bold border border-slate-600 transition shadow">Logout</button>
                     </header>
                     ${navHtml}
                     <main class="flex-1 p-3 sm:p-6 max-w-7xl w-full mx-auto pb-10">
@@ -945,11 +1188,18 @@
                 `;
             } catch(e) {
                 console.error("Rendering Error:", e);
-                document.getElementById('app').innerHTML = `<div class="p-10 text-white text-center bg-red-900 min-h-screen"><h1 class="text-xl font-bold">Error Rendering UI</h1><p>${e.message}</p></div>`;
+                // Fail-safe to ensure UI errors don't result in a blank page
+                document.getElementById('app').innerHTML = `
+                <div class="p-10 text-white text-center bg-red-900 min-h-screen flex flex-col justify-center items-center">
+                    <h1 class="text-2xl font-bold mb-4">Error Rendering UI</h1>
+                    <p class="mb-4">An unexpected bug occurred while drawing the screen.</p>
+                    <pre class="text-xs bg-black/50 p-4 rounded max-w-2xl overflow-auto">${e.stack}</pre>
+                    <button onclick="window.location.reload()" class="mt-6 px-4 py-2 bg-white text-red-900 font-bold rounded">Reload Page</button>
+                </div>`;
             }
         };
         
-        // Ensure UI draws immediately
+        // Execute initial render immediately on load
         window.render();
     </script>
 </body>
