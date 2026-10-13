@@ -25,25 +25,34 @@
         @media print {
             body * { visibility: hidden; }
             #print-area, #print-area * { visibility: visible; }
-            #print-area { position: absolute; left: 0; top: 0; width: 100%; display: flex; flex-wrap: wrap; justify-content: flex-start; gap: 0; margin: 0; padding: 0; }
+            #print-area { position: absolute; left: 0; top: 0; width: 100%; }
             
-            /* 3x2 Inch ID Cards */
+            /* 3x3 Grid - 9 ID Cards per A4 Page */
+            .id-card-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5mm; padding: 5mm; width: 210mm; box-sizing: border-box; }
             .id-card { 
-                width: 3in; height: 2in; background: white !important; color: black !important; 
-                border: 2px solid #0ea5e9; padding: 0.1in; box-sizing: border-box; 
+                height: 92mm; background: white !important; color: black !important; 
+                border: 2px solid #0ea5e9; padding: 3mm; box-sizing: border-box; 
                 display: flex; flex-direction: column; justify-content: space-between; 
-                font-family: sans-serif; border-radius: 8px; margin: 0.1in;
+                font-family: sans-serif; border-radius: 8px;
                 page-break-inside: avoid;
             }
             .id-header { text-align: center; border-bottom: 2px solid #0ea5e9; padding-bottom: 2px; margin-bottom: 2px; }
             .id-title { font-size: 10pt; font-weight: 900; margin: 0; color: #0284c7 !important; text-transform: uppercase; }
             .id-sub { font-size: 6pt; margin: 0; font-weight: bold; }
-            .id-body { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; text-align: center; }
-            .id-name { font-size: 11pt; font-weight: bold; margin: 0; line-height: 1.1; }
+            .id-body { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; text-align: center; overflow: hidden; }
+            .id-name { font-size: 11pt; font-weight: bold; margin: 0; line-height: 1.1; max-height: 2.5em; overflow: hidden; }
             .id-chest { font-size: 16pt; font-weight: 900; margin: 2px 0; color: #0f172a !important; }
             .id-team { font-size: 8pt; font-weight: bold; background: #e2e8f0 !important; padding: 2px 4px; border-radius: 4px; display: inline-block; margin: 0 auto; }
-            .id-footer { font-size: 6pt; border-top: 1px dashed #cbd5e1; padding-top: 2px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #475569 !important; }
+            .id-footer { font-size: 6pt; border-top: 1px dashed #cbd5e1; padding-top: 2px; text-align: center; max-height: 20mm; overflow: hidden; color: #475569 !important; }
             
+            /* Program Participant List Print */
+            .print-prog-page { width: 210mm; background: white !important; color: black !important; padding: 10mm; font-family: sans-serif; box-sizing: border-box; }
+            .print-prog-page h1 { text-align: center; font-size: 18pt; margin-bottom: 5px; color: #0f172a !important; font-weight: bold; }
+            .print-prog-page h3 { text-align: center; font-size: 10pt; margin-top: 0; color: #475569 !important; text-transform: uppercase; letter-spacing: 1px; }
+            .print-prog-table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 10pt; }
+            .print-prog-table th, .print-prog-table td { border: 1px solid #94a3b8; padding: 8px; text-align: left; }
+            .print-prog-table th { background-color: #f1f5f9 !important; text-align: center; font-weight: bold; }
+
             /* A4 Vertical Certificates */
             .cert-page { 
                 width: 210mm; height: 297mm; page-break-after: always; position: relative; 
@@ -145,7 +154,6 @@
                         <select id="editProgCat" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white outline-none text-sm">
                             <option value="Junior">Junior</option>
                             <option value="Senior">Senior</option>
-                            <option value="General">General (Exempt)</option>
                         </select>
                     </div>
                     <div>
@@ -182,7 +190,7 @@
                     <p class="text-[9px] text-slate-400 mt-1 italic pl-1">Check this to allow candidates to join this event even if their Stage/Non-Stage slots are full.</p>
                 </div>
 
-                <div class="flex gap-3 justify-end pt-4">
+                <div class="flex gap-3 justify-end pt-4 border-t border-slate-700/50 mt-4">
                     <button type="button" onclick="document.getElementById('editProgModal').style.display='none'" class="px-4 py-2 bg-slate-800 text-white rounded-lg text-sm border border-slate-600">Cancel</button>
                     <button type="submit" id="saveEditProgBtn" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-sm font-bold shadow-lg">Save Settings</button>
                 </div>
@@ -196,7 +204,6 @@
             <h3 class="text-lg font-bold text-white mb-1" id="assignTitle">Assign Programs</h3>
             <p class="text-xs text-sky-400 mb-2 font-bold tracking-widest uppercase" id="assignSubtitle"></p>
             
-            <!-- Dynamic Usage Limits Box -->
             <div id="limitsInfo" class="bg-slate-800/80 p-3 rounded-lg border border-slate-700 flex justify-around mb-4 text-xs font-bold shadow-inner">
                 <div class="text-center"><span class="text-slate-400 block uppercase text-[9px]">Stage Used</span><span id="limitStage" class="text-sky-300 text-lg">0/0</span></div>
                 <div class="text-center"><span class="text-slate-400 block uppercase text-[9px]">Non-Stage Used</span><span id="limitNonStage" class="text-emerald-300 text-lg">0/0</span></div>
@@ -213,26 +220,9 @@
     </div>
 
     <div id="app" class="min-h-screen flex flex-col">
-        <!-- Initial login container shown to prevent blank screen while loading -->
-        <div class="flex-1 flex flex-col items-center justify-center p-4 min-h-screen relative" id="login-container">
-            <div class="absolute inset-0 z-0 opacity-20 flex items-center justify-center pointer-events-none">
-                <img src="https://raw.githubusercontent.com/BUSA2023/Kottam-admin/main/LOGO%204-01.png" alt="Background Element" class="w-full max-w-md object-contain mix-blend-screen">
-            </div>
-            <div class="glass-card max-w-sm w-full rounded-[2rem] p-8 shadow-2xl text-center relative z-10 border border-slate-700 bg-slate-900/90">
-                <div class="flex flex-col items-center justify-center mb-6">
-                    <img src="https://raw.githubusercontent.com/BUSA2023/Kottam-admin/main/20261008_191200.png" alt="Urava Logo Main" class="w-32 h-auto mb-4 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] rounded-2xl">
-                    <span class="text-[10px] text-sky-400 font-extrabold tracking-widest uppercase mb-1">Aawaaze Funoon Season 04</span>
-                    <h2 class="text-xl font-black text-slate-200 tracking-tight">FEST MANAGER</h2>
-                    <div class="flex gap-2 mt-3 justify-center">
-                        <span class="text-[10px] bg-sky-900/80 text-sky-200 px-3 py-1 rounded-full font-bold border border-sky-700 shadow">Al-Masūdi</span>
-                        <span class="text-[10px] bg-emerald-900/80 text-emerald-200 px-3 py-1 rounded-full font-bold border border-emerald-700 shadow">Al-Qazwini</span>
-                    </div>
-                </div>
-                <form onsubmit="event.preventDefault(); if(window.handleLogin) window.handleLogin(event);" class="space-y-4">
-                    <input type="password" id="loginPass" required class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white outline-none focus:border-sky-500 text-center tracking-widest transition" placeholder="Enter Admin PIN">
-                    <button type="submit" class="w-full bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-sky-900/50">Secure Login</button>
-                </form>
-            </div>
+        <div class="flex-1 flex flex-col items-center justify-center p-4 min-h-screen text-slate-400">
+            <svg class="animate-spin -ml-1 mr-3 h-8 w-8 text-sky-500 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+            Loading Workspace...
         </div>
     </div>
 
@@ -255,7 +245,6 @@
         const auth = getAuth(appInit);
         const db = getFirestore(appInit);
 
-        // Strict Paths definition 
         const appId = 'urava-s4-fest';
         const getCol = (name) => collection(db, 'artifacts', appId, 'public', 'data', name);
         const getDocRef = (name, id) => doc(db, 'artifacts', appId, 'public', 'data', name, id);
@@ -270,9 +259,7 @@
         let state = {
             isAuthenticated: isAuthStatus,
             tab: 'dashboard', 
-            candidates: [], 
-            programs: [], 
-            results: [],
+            candidates: [], programs: [], results: [],
             searchQuery: '', searchProgQuery: '', searchResQuery: '',
             filterTeam: 'All', filterCat: 'All', filterResultCat: 'All'
         };
@@ -311,30 +298,25 @@
             newOk.onclick = () => { document.getElementById('confirmModal').style.display = 'none'; onConfirm(); };
         };
 
-        const initDB = async () => {
-            try { await signInAnonymously(auth); } catch (e) { 
-                console.error("Auth Error:", e);
-                window.showAlert("DB Auth Error: Enable 'Anonymous' Sign-in in Firebase.", "error"); 
-            }
-        };
+        const initDB = async () => { try { await signInAnonymously(auth); } catch (e) { window.showAlert("DB Auth Error", "error"); } };
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 onSnapshot(getDocRef('settings', 'config'), (snap) => {
                     if (snap.exists()) { state.programs = snap.data().programs || []; } 
                     else { setDoc(getDocRef('settings', 'config'), { programs: [] }).catch(e=>{}); }
-                    if(state.isAuthenticated) window.render();
-                }, (err) => console.error(err));
+                    window.render();
+                });
 
                 onSnapshot(getCol('candidates'), (snap) => {
                     state.candidates = snap.docs.map(d => ({ id: d.id, assignedPrograms: [], ...d.data() }));
-                    if(state.isAuthenticated) window.render();
-                }, (err) => console.error(err));
+                    window.render();
+                });
 
                 onSnapshot(getCol('results'), (snap) => {
                     state.results = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-                    if(state.isAuthenticated) window.render();
-                }, (err) => console.error(err));
+                    window.render();
+                });
             }
         });
         
@@ -389,10 +371,9 @@
         };
 
         window.deleteProgram = async (id) => {
-            window.customConfirm("Delete Program", "Delete this program? This cannot be undone.", async () => {
+            window.customConfirm("Delete Program", "Delete this program?", async () => {
                 const updatedProgs = state.programs.filter(p => p.id !== id); 
-                try { await updateDoc(getDocRef('settings', 'config'), { programs: updatedProgs }); window.showAlert("Deleted!"); } 
-                catch(e) { window.showAlert("Failed.", "error"); }
+                try { await updateDoc(getDocRef('settings', 'config'), { programs: updatedProgs }); window.showAlert("Deleted!"); } catch(e) { window.showAlert("Failed.", "error"); }
             });
         };
 
@@ -448,7 +429,7 @@
         };
 
         window.deleteCandidate = async (id) => {
-            window.customConfirm("Delete Candidate", "Delete this candidate? All their data will be lost.", async () => {
+            window.customConfirm("Delete Candidate", "Delete this candidate?", async () => {
                 try { await deleteDoc(getDocRef('candidates', id)); window.showAlert("Deleted."); } catch(e) { window.showAlert("Failed.", "error"); }
             });
         };
@@ -491,8 +472,7 @@
             let usage = { stage: 0, nonStage: 0 };
             assignedArray.forEach(pId => {
                 const prog = state.programs.find(p => p.id === pId);
-                // Antigravity Limit Check: Exclude Groups, Exclude General, Exclude Manual Exemptions
-                if (prog && prog.format !== 'Group' && prog.cat !== 'General' && prog.limitExempt !== true) {
+                if (prog && prog.format !== 'Group' && prog.limitExempt !== true) {
                     if (prog.type === 'Stage') usage.stage++;
                     if (prog.type === 'Non-Stage') usage.nonStage++;
                 }
@@ -503,14 +483,10 @@
         window.openAssign = (candId) => {
             const candidate = state.candidates.find(c => c.id === candId); if (!candidate) return; 
             currentAssignCandidateId = candId;
-            
             document.getElementById('assignTitle').innerText = `Assign Programs to ${candidate.name}`; 
             document.getElementById('assignSubtitle').innerText = `#${candidate.regNo} • ${candidate.team} • ${candidate.cat}`;
-            
-            // Allow programs in their category OR General programs
-            const eligibleProgs = state.programs.filter(p => p.cat === candidate.cat || p.cat === 'General'); 
+            const eligibleProgs = state.programs.filter(p => p.cat === candidate.cat); 
             const assigned = candidate.assignedPrograms || [];
-            
             window.renderAssignCheckboxes(candidate.cat, eligibleProgs, assigned);
             document.getElementById('assignModal').style.display = 'flex';
         };
@@ -530,26 +506,17 @@
             let html = '';
             eligibleProgs.forEach(p => {
                 const isChecked = assigned.includes(p.id);
-                
                 let isDisabled = false;
-                // Enforce limits strictly for non-exempt individual programs
-                if (!isChecked && p.format !== 'Group' && p.cat !== 'General' && p.limitExempt !== true) {
+                if (!isChecked && p.format !== 'Group' && p.limitExempt !== true) {
                     if (p.type === 'Stage' && usage.stage >= limits.stage) isDisabled = true;
                     if (p.type === 'Non-Stage' && usage.nonStage >= limits.nonStage) isDisabled = true;
                 }
-                
                 let specialBadge = '';
                 if (p.format === 'Group') specialBadge = '<span class="ml-2 text-[8px] bg-pink-900/50 text-pink-300 border border-pink-700/50 px-1 py-0.5 rounded uppercase font-bold">Group (Exempt)</span>';
-                else if (p.cat === 'General') specialBadge = '<span class="ml-2 text-[8px] bg-indigo-900/50 text-indigo-300 border border-indigo-700/50 px-1 py-0.5 rounded uppercase font-bold">General (Exempt)</span>';
                 else if (p.limitExempt === true) specialBadge = '<span class="ml-2 text-[8px] bg-purple-900/50 text-purple-300 border border-purple-700/50 px-1 py-0.5 rounded uppercase font-bold">Limit Exempt</span>';
 
                 html += `<label class="flex items-center justify-between p-3 bg-slate-800/50 border border-slate-700 rounded-lg cursor-pointer hover:bg-slate-700/50 transition ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}">
-                    <div>
-                        <span class="text-white text-sm font-semibold flex items-center ${isDisabled ? 'line-through text-slate-500' : ''}">
-                            <span class="text-sky-400 mr-1">#${p.progNo}</span>${p.name} ${specialBadge}
-                        </span>
-                        <span class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">${p.cat} • ${p.type} • ${p.format || 'Individual'}</span>
-                    </div>
+                    <div><span class="text-white text-sm font-semibold flex items-center ${isDisabled ? 'line-through text-slate-500' : ''}"><span class="text-sky-400 mr-1">#${p.progNo}</span>${p.name} ${specialBadge}</span><span class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">${p.cat} • ${p.type} • ${p.format || 'Individual'}</span></div>
                     <input type="checkbox" value="${p.id}" onchange="window.handleCheckboxChange(this)" class="prog-checkbox w-5 h-5 accent-sky-500 rounded" ${isChecked ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}>
                 </label>`;
             });
@@ -558,7 +525,7 @@
 
         window.handleCheckboxChange = (cb) => {
             const candidate = state.candidates.find(c => c.id === currentAssignCandidateId);
-            const eligibleProgs = state.programs.filter(p => p.cat === candidate.cat || p.cat === 'General');
+            const eligibleProgs = state.programs.filter(p => p.cat === candidate.cat);
             const checkboxes = document.querySelectorAll('.prog-checkbox');
             const selectedProgs = Array.from(checkboxes).filter(chk => chk.checked).map(chk => chk.value);
             window.renderAssignCheckboxes(candidate.cat, eligibleProgs, selectedProgs);
@@ -570,13 +537,9 @@
             if (!currentAssignCandidateId) return;
             const checkboxes = document.querySelectorAll('.prog-checkbox');
             const selectedProgs = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
-            
             const btn = document.getElementById('saveAssignBtn'); btn.innerText = 'Saving...'; btn.disabled = true;
-            try { 
-                await updateDoc(getDocRef('candidates', currentAssignCandidateId), { assignedPrograms: selectedProgs }); 
-                window.showAlert("Saved!"); window.closeAssign(); 
-            } catch (e) { window.showAlert("Error saving", "error"); } 
-            finally { btn.innerText = 'Save Selection'; btn.disabled = false; }
+            try { await updateDoc(getDocRef('candidates', currentAssignCandidateId), { assignedPrograms: selectedProgs }); window.showAlert("Saved!"); window.closeAssign(); } 
+            catch (e) { window.showAlert("Error saving", "error"); } finally { btn.innerText = 'Save Selection'; btn.disabled = false; }
         };
 
         window.populateResultDropdowns = () => {
@@ -585,8 +548,7 @@
             const container = document.getElementById('rSelectors');
             if (!prog) { container.innerHTML = ''; return; }
 
-            // General programs can accept any candidate. Otherwise strictly category matching.
-            let eligible = state.candidates.filter(c => prog.cat === 'General' ? true : c.cat === prog.cat);
+            let eligible = state.candidates.filter(c => c.cat === prog.cat);
             const assigned = eligible.filter(c => c.assignedPrograms && c.assignedPrograms.includes(progId));
             
             let html = '<option value="" disabled>-- Select Candidate --</option>';
@@ -616,61 +578,34 @@
             const progId = document.getElementById('rProg').value;
             if(!progId) return;
             const prog = state.programs.find(p => p.id === progId);
-            
             const getSelected = (id) => Array.from(document.getElementById(id).selectedOptions).map(o => o.value).filter(v => v !== "");
             const first = getSelected('rFirst'); const second = getSelected('rSecond'); const third = getSelected('rThird');
             
             if (first.length === 0 && second.length === 0 && third.length === 0) { return window.showAlert("Select at least one winner!", "error"); }
             
             let ptsArr = (prog.pointScheme || (prog.format === 'Group' ? "15,8,5" : "10,5,3")).split(',').map(Number);
-            
             const btn = document.getElementById('publishBtn'); btn.innerText = "Publishing..."; btn.disabled = true;
             try { 
-                await setDoc(getDocRef('results', progId), { 
-                    progId, first, second, third, 
-                    pts1: ptsArr[0], pts2: ptsArr[1], pts3: ptsArr[2],
-                    timestamp: Date.now() 
-                }); 
-                window.showAlert("Result Published!"); 
-                document.getElementById('rProg').value = ""; document.getElementById('rSelectors').innerHTML = ""; 
-                window.fireConfetti();
-            } 
-            catch(err) { window.showAlert("Failed: " + err.message, "error"); }
-            finally { btn.innerText = "Publish Result"; btn.disabled = false; }
+                await setDoc(getDocRef('results', progId), { progId, first, second, third, pts1: ptsArr[0], pts2: ptsArr[1], pts3: ptsArr[2], timestamp: Date.now() }); 
+                window.showAlert("Result Published!"); document.getElementById('rProg').value = ""; document.getElementById('rSelectors').innerHTML = ""; window.fireConfetti();
+            } catch(err) { window.showAlert("Failed: " + err.message, "error"); } finally { btn.innerText = "Publish Result"; btn.disabled = false; }
         };
 
-        window.deleteResult = async (resId) => {
-            window.customConfirm("Delete Result", "Delete this result?", async () => {
-                try { await deleteDoc(getDocRef('results', resId)); window.showAlert("Deleted."); } catch(e) { window.showAlert("Failed.", "error"); }
-            });
-        };
+        window.deleteResult = async (resId) => { window.customConfirm("Delete Result", "Delete this result?", async () => { try { await deleteDoc(getDocRef('results', resId)); window.showAlert("Deleted."); } catch(e) { window.showAlert("Failed.", "error"); } }); };
 
-        // Export/Import/Wipe DB Handlers
         window.exportData = () => {
             const data = { programs: state.programs, candidates: state.candidates, results: state.results, exportDate: new Date().toISOString() };
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a"); a.href = url; a.download = `FestData_Backup_${Date.now()}.json`;
-            document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
-            window.showAlert("Database Exported!");
+            const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = `FestData_Backup_${Date.now()}.json`; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); window.showAlert("Database Exported!");
         };
-
         window.exportCSV = () => {
             let csv = "Chest No,Name,Category,Team,Assigned Programs\n";
             state.candidates.forEach(c => {
-                const pNames = (c.assignedPrograms || []).map(pid => {
-                    const p = state.programs.find(x => x.id === pid);
-                    return p ? `${p.progNo}-${p.name}` : '';
-                }).join('; ');
+                const pNames = (c.assignedPrograms || []).map(pid => { const p = state.programs.find(x => x.id === pid); return p ? `${p.progNo}-${p.name}` : ''; }).join('; ');
                 csv += `"${c.regNo}","${c.name}","${c.cat}","${c.team}","${pNames}"\n`;
             });
-            const blob = new Blob([csv], { type: "text/csv" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a"); a.href = url; a.download = `Candidates_${Date.now()}.csv`;
-            document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
-            window.showAlert("CSV Exported!");
+            const blob = new Blob([csv], { type: "text/csv" }); const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = `Candidates_${Date.now()}.csv`; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); window.showAlert("CSV Exported!");
         };
-
         window.triggerImport = () => document.getElementById('importFile').click();
         window.handleImport = async (e) => {
             const file = e.target.files[0]; if(!file) return;
@@ -679,73 +614,64 @@
                 try {
                     const data = JSON.parse(e.target.result);
                     if(!data.programs || !data.candidates || !data.results) throw new Error("Invalid format");
-                    
-                    window.customConfirm("Import Database", "WARNING: This will merge imported data into the current DB. Continue?", async () => {
+                    window.customConfirm("Import Database", "Merge imported data into current DB?", async () => {
                         window.showAlert("Importing...", "success");
                         await updateDoc(getDocRef('settings', 'config'), { programs: data.programs });
                         for(const c of data.candidates) { await setDoc(getDocRef('candidates', c.id), c); }
                         for(const r of data.results) { await setDoc(getDocRef('results', r.id), r); }
                         window.showAlert("Import Complete!"); 
                     });
-                } catch(err) { window.showAlert("Import Failed: " + err.message, "error"); }
-                document.getElementById('importFile').value = '';
+                } catch(err) { window.showAlert("Import Failed: " + err.message, "error"); } document.getElementById('importFile').value = '';
             };
             reader.readAsText(file);
         };
-
-        window.wipeDatabase = async () => {
-            window.customConfirm("DANGER ZONE", "Are you absolutely sure you want to WIPE the entire database completely? This cannot be undone.", async () => {
-                try {
-                    await updateDoc(getDocRef('settings', 'config'), { programs: [] });
-                    for(const c of state.candidates) await deleteDoc(getDocRef('candidates', c.id));
-                    for(const r of state.results) await deleteDoc(getDocRef('results', r.id));
-                    window.showAlert("Database Wiped Clean.");
-                } catch(err) { window.showAlert("Error: " + err.message, "error"); }
-            });
-        };
+        window.wipeDatabase = async () => { window.customConfirm("DANGER ZONE", "Wipe the entire database completely?", async () => { try { await updateDoc(getDocRef('settings', 'config'), { programs: [] }); for(const c of state.candidates) await deleteDoc(getDocRef('candidates', c.id)); for(const r of state.results) await deleteDoc(getDocRef('results', r.id)); window.showAlert("Database Wiped Clean."); } catch(err) { window.showAlert("Error: " + err.message, "error"); } }); };
 
         window.printIDCards = (candId = null) => {
             const printArea = document.getElementById('print-area');
             let candidatesToPrint = candId ? [state.candidates.find(c => c.id === candId)] : state.candidates;
-            
             if (candidatesToPrint.length === 0 || !candidatesToPrint[0]) return window.showAlert("No candidates to print.", "error");
 
-            let html = '';
+            let html = '<div class="id-card-container">';
             candidatesToPrint.forEach(c => {
-                const assigned = (c.assignedPrograms || []).map(pid => {
-                    const p = state.programs.find(x => x.id === pid);
-                    return p ? `${p.progNo} ${p.name}` : '';
-                }).filter(Boolean);
-                
+                const assigned = (c.assignedPrograms || []).map(pid => { const p = state.programs.find(x => x.id === pid); return p ? `${p.progNo} ${p.name}` : ''; }).filter(Boolean);
                 const progList = assigned.length > 0 ? assigned.join(' • ') : 'No programs assigned';
-
                 html += `
                 <div class="id-card">
-                    <div class="id-header">
-                        <h1 class="id-title">Aawaaze Funoon S4</h1>
-                        <p class="id-sub">Urava Fest 2026</p>
-                    </div>
-                    <div class="id-body">
-                        <div class="id-chest">${c.regNo}</div>
-                        <h2 class="id-name">${c.name}</h2>
-                        <div class="id-team">${c.team} - ${c.cat}</div>
-                    </div>
+                    <div class="id-header"><h1 class="id-title">Aawaaze Funoon S4</h1><p class="id-sub">Urava Fest 2026</p></div>
+                    <div class="id-body"><div class="id-chest">${c.regNo}</div><h2 class="id-name">${c.name}</h2><div class="id-team">${c.team} - ${c.cat}</div></div>
                     <div class="id-footer">${progList}</div>
                 </div>`;
             });
+            html += '</div>';
+            printArea.innerHTML = html; setTimeout(() => { window.print(); printArea.innerHTML = ''; }, 500);
+        };
+
+        window.printProgramList = (progId) => {
+            const prog = state.programs.find(p => p.id === progId); if(!prog) return;
+            const enrolled = state.candidates.filter(c => c.assignedPrograms && c.assignedPrograms.includes(progId));
             
-            printArea.innerHTML = html;
-            setTimeout(() => { window.print(); printArea.innerHTML = ''; }, 500);
+            let html = `
+            <div class="print-prog-page">
+                <h1>${prog.progNo ? `#${prog.progNo} ` : ''}${prog.name}</h1>
+                <h3>${prog.cat} • ${prog.type} • ${prog.format || 'Individual'}</h3>
+                <p style="text-align:center; font-weight:bold; margin-bottom:10px;">Total Enrolled: ${enrolled.length}</p>
+                <table class="print-prog-table">
+                    <thead><tr><th>Chest No</th><th>Candidate Name</th><th>Team</th></tr></thead>
+                    <tbody>
+                        ${enrolled.map(c => `<tr><td style="text-align:center; font-weight:bold; width: 80px;">${c.regNo}</td><td>${c.name}</td><td style="text-align:center; width: 150px;">${c.team}</td></tr>`).join('')}
+                        ${enrolled.length === 0 ? '<tr><td colspan="3" style="text-align:center;">No candidates enrolled yet.</td></tr>' : ''}
+                    </tbody>
+                </table>
+            </div>`;
+            const printArea = document.getElementById('print-area'); printArea.innerHTML = html; setTimeout(() => { window.print(); printArea.innerHTML = ''; }, 500);
         };
 
         window.printCerts = (progId) => {
-            const res = state.results.find(r => r.progId === progId);
-            const prog = state.programs.find(p => p.id === progId);
+            const res = state.results.find(r => r.progId === progId); const prog = state.programs.find(p => p.id === progId);
             if (!res || !prog) return window.showAlert("Result or Program not found", "error");
-
-            const printArea = document.getElementById('print-area');
-            let html = '';
             const logoMain = "https://raw.githubusercontent.com/BUSA2023/Kottam-admin/main/20261008_191200.png";
+            let html = '';
 
             const generateCertHtml = (candIdArray, positionStr) => {
                 let block = '';
@@ -753,50 +679,34 @@
                     const c = state.candidates.find(x => x.id === cid);
                     if(c) {
                         block += `
-                        <div class="cert-page">
-                            <div class="cert-border"></div>
+                        <div class="cert-page"><div class="cert-border"></div>
                             <img src="${logoMain}" class="cert-logo" alt="Logo">
                             <h1 class="cert-header">AAWAAZE FUNOON S4</h1>
                             <div class="cert-sub">Certificate of Achievement</div>
-                            
                             <div class="cert-text">This is proudly presented to</div>
                             <div class="cert-name">${c.name}</div>
                             <div class="cert-text">of team <b>${c.team}</b> (${c.cat})</div>
-                            
                             <div class="cert-text">for securing</div>
                             <div class="cert-position">${positionStr}</div>
                             <div class="cert-text">in the event</div>
                             <div class="cert-prog">${prog.name}</div>
-                            
-                            <div class="cert-signatures">
-                                <div class="cert-sig-block">Fest Coordinator</div>
-                                <div class="cert-sig-block">Principal</div>
-                            </div>
+                            <div class="cert-signatures"><div class="cert-sig-block">Fest Coordinator</div><div class="cert-sig-block">Principal</div></div>
                         </div>`;
                     }
                 });
                 return block;
             };
 
-            html += generateCertHtml(res.first, "First Place");
-            html += generateCertHtml(res.second, "Second Place");
-            html += generateCertHtml(res.third, "Third Place");
-
-            if(html === '') return window.showAlert("No winners found to print.", "error");
-
-            printArea.innerHTML = html;
-            setTimeout(() => { window.print(); printArea.innerHTML = ''; }, 500);
+            html += generateCertHtml(res.first, "First Place"); html += generateCertHtml(res.second, "Second Place"); html += generateCertHtml(res.third, "Third Place");
+            if(html === '') return window.showAlert("No winners found.", "error");
+            document.getElementById('print-area').innerHTML = html; setTimeout(() => { window.print(); document.getElementById('print-area').innerHTML = ''; }, 500);
         };
 
         const getNamesBadgeHtml = (ids, borderClass, textClass, icon) => { 
-            const arr = Array.isArray(ids) ? ids : (ids ? [ids] : []); 
-            if (arr.length === 0) return ''; 
+            const arr = Array.isArray(ids) ? ids : (ids ? [ids] : []); if (arr.length === 0) return ''; 
             return arr.map((id) => { 
                 const c = state.candidates.find(x => x.id === id); 
-                return `<div class="flex justify-between items-center bg-slate-900 p-2 rounded-lg border ${borderClass} mb-1.5">
-                    <div class="flex items-center gap-2"><span>${icon}</span> <div><p class="${textClass} font-bold text-sm leading-tight">${c?.name || '-'}</p><span class="text-[10px] text-slate-400">${c?.team || ''}</span></div></div>
-                    <span class="text-[10px] font-bold text-sky-300 bg-black px-2 py-1 rounded">#${c?.regNo || '-'}</span>
-                </div>`; 
+                return `<div class="flex justify-between items-center bg-slate-900 p-2 rounded-lg border ${borderClass} mb-1.5"><div class="flex items-center gap-2"><span>${icon}</span> <div><p class="${textClass} font-bold text-sm leading-tight">${c?.name || '-'}</p><span class="text-[10px] text-slate-400">${c?.team || ''}</span></div></div><span class="text-[10px] font-bold text-sky-300 bg-black px-2 py-1 rounded">#${c?.regNo || '-'}</span></div>`; 
             }).join(''); 
         };
 
@@ -804,7 +714,6 @@
             try {
                 const app = document.getElementById('app'); 
                 
-                // If not authenticated, ensure the robust login template is injected completely
                 if (!state.isAuthenticated) {
                     app.innerHTML = `
                     <div class="flex-1 flex flex-col items-center justify-center p-4 min-h-screen relative" id="login-container">
@@ -830,7 +739,6 @@
                     return; 
                 }
 
-                // Authorized Layout
                 const LOGO_TEXT = "https://raw.githubusercontent.com/BUSA2023/Kottam-admin/main/20261008_183322.png";
                 const LOGO_DECOR = "https://raw.githubusercontent.com/BUSA2023/Kottam-admin/main/LOGO%205-01.png";
 
@@ -845,19 +753,20 @@
                 
                 let mainContent = '';
 
-                // Points Computation
+                // Core Calculations Engine
                 var stats = { 'Al-Masūdi': { total:0 }, 'Al-Qazwini': { total:0 } };
                 var catStats = { 'Junior': { 'Al-Masūdi': 0, 'Al-Qazwini': 0 }, 'Senior': { 'Al-Masūdi': 0, 'Al-Qazwini': 0 } };
-                var candTotalPts = {}; var candKalaPts = {};
+                var candTotalPts = {}; var candKalaPts = {}; var candKalaBreakdown = {};
+
+                let statsStage = state.programs.filter(p => p.type === 'Stage').length;
+                let statsNonStage = state.programs.filter(p => p.type === 'Non-Stage').length;
+                let statsIndividual = state.programs.filter(p => p.format !== 'Group').length;
+                let statsGroup = state.programs.filter(p => p.format === 'Group').length;
 
                 state.results.forEach(res => {
-                    var prog = state.programs.find(p => p.id === res.progId);
-                    if (!prog) return;
-                    
+                    var prog = state.programs.find(p => p.id === res.progId); if (!prog) return;
                     var pCat = prog.cat;
-                    
-                    // Kalaprathiba: Only calculated for strict 'Individual' programs
-                    var isKala = prog.format === 'Individual'; 
+                    var isKala = prog.format !== 'Group'; // Group bypasses Kalaprathiba
 
                     var addPts = function(ids, pts) {
                         var arr = Array.isArray(ids) ? ids : (ids ? [ids] : []);
@@ -866,9 +775,12 @@
                             if(c && stats[c.team]) { 
                                 stats[c.team].total += pts;
                                 if(catStats[c.cat] && catStats[c.cat][c.team] !== undefined) catStats[c.cat][c.team] += pts;
-                                
                                 candTotalPts[c.id] = (candTotalPts[c.id] || 0) + pts;
-                                if (isKala) candKalaPts[c.id] = (candKalaPts[c.id] || 0) + pts;
+                                if (isKala) {
+                                    candKalaPts[c.id] = (candKalaPts[c.id] || 0) + pts;
+                                    if (!candKalaBreakdown[c.id]) candKalaBreakdown[c.id] = [];
+                                    candKalaBreakdown[c.id].push({ name: prog.name, pts: pts });
+                                }
                             }
                         });
                     };
@@ -878,25 +790,34 @@
                 if (state.tab === 'dashboard') {
                     const getTop = (cat) => {
                         let top = null; let max = 0;
-                        state.candidates.filter(c => c.cat === cat).forEach(c => {
-                            if(candKalaPts[c.id] && candKalaPts[c.id] > max) { max = candKalaPts[c.id]; top = c; }
-                        });
+                        state.candidates.filter(c => c.cat === cat).forEach(c => { if(candKalaPts[c.id] && candKalaPts[c.id] > max) { max = candKalaPts[c.id]; top = c; } });
                         return top ? { ...top, pts: max } : null;
                     };
 
                     mainContent = `
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 mt-4 relative">
-                            <div class="glass-card p-4 rounded-xl border-l-4 border-sky-500 flex flex-col justify-center text-center relative z-10">
+                            <div class="glass-card p-4 rounded-xl border-l-4 border-sky-500 flex flex-col justify-center text-center">
                                 <div class="text-3xl font-black num-font">${state.candidates.length}</div><div class="text-[10px] text-slate-400 font-bold uppercase mt-1">Candidates</div>
                             </div>
-                            <div class="glass-card p-4 rounded-xl border-l-4 border-emerald-500 flex flex-col justify-center text-center relative z-10">
+                            <div class="glass-card p-4 rounded-xl border-l-4 border-emerald-500 flex flex-col justify-center text-center">
                                 <div class="text-3xl font-black num-font">${state.programs.length}</div><div class="text-[10px] text-slate-400 font-bold uppercase mt-1">Programs</div>
                             </div>
-                            <div class="glass-card p-4 rounded-xl border-l-4 border-amber-500 flex flex-col justify-center text-center relative z-10">
+                            <div class="glass-card p-4 rounded-xl border-l-4 border-amber-500 flex flex-col justify-center text-center">
                                 <div class="text-3xl font-black num-font">${state.results.length}</div><div class="text-[10px] text-slate-400 font-bold uppercase mt-1">Results Pub</div>
                             </div>
-                            <div class="hidden md:flex items-center justify-center relative z-10 bg-slate-900/50 rounded-xl border border-slate-700/50">
+                            <div class="hidden md:flex items-center justify-center bg-slate-900/50 rounded-xl border border-slate-700/50">
                                 <img src="${LOGO_DECOR}" class="h-16 object-contain mix-blend-screen opacity-80 drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]">
+                            </div>
+                        </div>
+
+                        <!-- Advanced Program Overview -->
+                        <div class="glass-card p-4 rounded-xl border border-slate-700 mb-6">
+                            <h3 class="font-bold text-slate-300 text-sm mb-3">Programs Overview</h3>
+                            <div class="grid grid-cols-4 gap-4 text-center">
+                                <div class="bg-slate-900/50 p-2 rounded-lg border border-slate-700/50"><div class="text-xl font-bold text-pink-400">${statsStage}</div><div class="text-[10px] uppercase text-slate-400 font-bold">Stage</div></div>
+                                <div class="bg-slate-900/50 p-2 rounded-lg border border-slate-700/50"><div class="text-xl font-bold text-teal-400">${statsNonStage}</div><div class="text-[10px] uppercase text-slate-400 font-bold">Non-Stage</div></div>
+                                <div class="bg-slate-900/50 p-2 rounded-lg border border-slate-700/50"><div class="text-xl font-bold text-blue-400">${statsIndividual}</div><div class="text-[10px] uppercase text-slate-400 font-bold">Individual</div></div>
+                                <div class="bg-slate-900/50 p-2 rounded-lg border border-slate-700/50"><div class="text-xl font-bold text-purple-400">${statsGroup}</div><div class="text-[10px] uppercase text-slate-400 font-bold">Groups</div></div>
                             </div>
                         </div>
 
@@ -924,14 +845,26 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 ${CATEGORIES.map(c => {
                                     const top = getTop(c);
+                                    let breakdownHtml = '';
+                                    if (top && candKalaBreakdown[top.id]) {
+                                        breakdownHtml = `<div class="mt-3 pt-3 border-t border-slate-700">
+                                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-1.5">Points Earned In:</p>
+                                            <div class="space-y-1 max-h-24 overflow-y-auto custom-scrollbar pr-1">
+                                                ${candKalaBreakdown[top.id].map(b => `<div class="flex justify-between items-center text-xs bg-slate-900/50 px-2 py-1 rounded border border-slate-700/50"><span class="text-slate-300 truncate pr-2">${b.name}</span><span class="text-amber-400 font-bold">+${b.pts}</span></div>`).join('')}
+                                            </div>
+                                        </div>`;
+                                    }
                                     return `
-                                    <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-600 flex justify-between items-center shadow-lg">
-                                        <div>
-                                            <div class="text-[10px] text-sky-300 font-bold uppercase mb-1">${c} Champion</div>
-                                            <div class="text-lg font-bold text-white">${top ? top.name : 'TBA...'}</div>
-                                            <div class="text-xs text-slate-400">${top ? top.team : '-'}</div>
+                                    <div class="bg-slate-800/80 p-5 rounded-xl border border-slate-600 flex flex-col shadow-lg">
+                                        <div class="flex justify-between items-start mb-2">
+                                            <div>
+                                                <div class="text-[10px] text-sky-300 font-bold uppercase mb-1">${c} Champion</div>
+                                                <div class="text-lg font-bold text-white leading-tight">${top ? top.name : 'TBA...'}</div>
+                                                <div class="text-xs text-slate-400">${top ? top.team : '-'}</div>
+                                            </div>
+                                            <div class="text-3xl font-black text-amber-400 num-font drop-shadow-md">${top ? top.pts : '-'}</div>
                                         </div>
-                                        <div class="text-3xl font-black text-amber-400 num-font">${top ? top.pts : '-'}</div>
+                                        ${breakdownHtml}
                                     </div>`;
                                 }).join('')}
                             </div>
@@ -955,15 +888,9 @@
                                 <form onsubmit="window.addCandidate(event)" class="space-y-3">
                                     <div><label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Name</label><input type="text" id="cName" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white outline-none focus:border-sky-500 text-sm"></div>
                                     <div class="grid grid-cols-2 gap-2">
-                                        <div>
-                                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Category</label>
-                                            <select id="cCat" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-white outline-none text-xs">
-                                                ${CATEGORIES.map(c => `<option value="${c}">${c}</option>`).join('')}
-                                            </select>
-                                        </div>
+                                        <div><label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Category</label><select id="cCat" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-white outline-none text-xs">${CATEGORIES.map(c => `<option value="${c}">${c}</option>`).join('')}</select></div>
                                         <div><label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Team</label><select id="cTeam" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-white outline-none text-xs">${TEAMS.map(t => `<option value="${t}">${t}</option>`).join('')}</select></div>
                                     </div>
-                                    <p class="text-[9px] text-sky-300/60 mt-1 italic">* Chest number auto-generated perfectly based on category sequence.</p>
                                     <button type="submit" id="addCandBtn" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-bold py-2.5 rounded-xl transition mt-2 text-sm shadow-lg">Save Candidate</button>
                                 </form>
                             </div>
@@ -973,7 +900,7 @@
                                     <div class="flex justify-between items-center">
                                         <h3 class="font-bold text-white">Registry (${filteredCands.length})</h3>
                                         <div class="flex gap-2">
-                                            <button onclick="window.printIDCards()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1 shadow-md">🖨️ Print IDs</button>
+                                            <button onclick="window.printIDCards()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1 shadow-md">🖨️ Print IDs (9/A4)</button>
                                             <input type="text" id="searchInput" placeholder="Search..." value="${state.searchQuery}" oninput="window.updateSearch(this.value)" class="bg-slate-900 border border-slate-700 text-xs text-white rounded-lg px-3 py-1.5 outline-none focus:border-sky-500 w-32 sm:w-48">
                                         </div>
                                     </div>
@@ -983,23 +910,20 @@
                                     </div>
                                 </div>
                                 <div class="overflow-y-auto flex-1 custom-scrollbar pr-2">
-                                    <div class="grid grid-cols-1 gap-2">
+                                    <div class="grid grid-cols-1 gap-3">
                                         ${filteredCands.map(c => {
                                             const eCount = c.assignedPrograms ? c.assignedPrograms.length : 0;
                                             return `
-                                            <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 hover:bg-slate-800 transition">
-                                                <div class="flex items-center gap-3">
-                                                    <div class="bg-slate-900 text-sky-400 font-black num-font px-2 py-1.5 rounded border border-slate-700 min-w-[3.5rem] text-center">${c.regNo}</div>
-                                                    <div>
-                                                        <div class="font-bold text-white text-sm">${c.name}</div>
-                                                        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">${c.team} • ${c.cat}</div>
-                                                    </div>
+                                            <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 hover:bg-slate-800 transition shadow-sm">
+                                                <div class="flex items-center gap-4">
+                                                    <div class="bg-slate-900 text-sky-400 font-black num-font px-2 py-1.5 rounded border border-slate-700 min-w-[3.5rem] text-center shadow-inner">${c.regNo}</div>
+                                                    <div><div class="font-bold text-white text-base leading-tight">${c.name}</div><div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">${c.team} • ${c.cat}</div></div>
                                                 </div>
-                                                <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
-                                                    <button onclick="window.openAssign('${c.id}')" class="bg-sky-900/40 text-sky-300 border border-sky-800 px-2 py-1 rounded text-xs font-bold hover:bg-sky-600 hover:text-white transition whitespace-nowrap">${eCount > 0 ? eCount + ' Assigned' : '+ Programs'}</button>
-                                                    <button onclick="window.printIDCards('${c.id}')" class="text-indigo-300 bg-slate-900 border border-slate-700 px-2 py-1 rounded text-xs hover:bg-indigo-600 hover:text-white transition font-bold">🖨️ ID</button>
-                                                    <button onclick="window.openEditCand('${c.id}')" class="text-slate-400 hover:text-white px-2 py-1 text-xs font-semibold">Edit</button>
-                                                    <button onclick="window.deleteCandidate('${c.id}')" class="text-red-400 hover:text-white px-1 py-1 text-xs">✕</button>
+                                                <div class="flex flex-wrap items-center gap-2">
+                                                    <button onclick="window.openAssign('${c.id}')" class="bg-sky-900/40 text-sky-300 border border-sky-800 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-sky-500 hover:text-white transition whitespace-nowrap shadow-sm">${eCount > 0 ? eCount + ' Assigned' : '+ Programs'}</button>
+                                                    <button onclick="window.printIDCards('${c.id}')" class="text-indigo-300 bg-slate-900 border border-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-indigo-600 hover:text-white transition shadow-sm">🖨️ ID</button>
+                                                    <button onclick="window.openEditCand('${c.id}')" class="text-slate-300 bg-slate-900 border border-slate-700 hover:bg-slate-700 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm">Edit</button>
+                                                    <button onclick="window.deleteCandidate('${c.id}')" class="text-red-400 bg-red-950/20 border border-red-900/50 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm">Del</button>
                                                 </div>
                                             </div>`;
                                         }).join('')}
@@ -1011,44 +935,28 @@
 
                 if (state.tab === 'programs') {
                     const searchPQ = state.searchProgQuery.toLowerCase();
-                    
                     mainContent = `
                         <div class="glass-card p-5 rounded-2xl mb-6 border-t border-emerald-500/40 mt-4">
-                            <div class="flex justify-between items-center mb-4">
-                                <h3 class="font-bold text-emerald-400">Add Program</h3>
-                                <input type="text" id="searchProgInput" placeholder="Search..." value="${state.searchProgQuery}" oninput="window.updateProgSearch(this.value)" class="bg-slate-900 border border-slate-700 text-xs text-white rounded-lg px-3 py-1.5 outline-none focus:border-emerald-500 w-48">
-                            </div>
+                            <div class="flex justify-between items-center mb-4"><h3 class="font-bold text-emerald-400">Add Program</h3><input type="text" id="searchProgInput" placeholder="Search..." value="${state.searchProgQuery}" oninput="window.updateProgSearch(this.value)" class="bg-slate-900 border border-slate-700 text-xs text-white rounded-lg px-3 py-1.5 outline-none focus:border-emerald-500 w-48"></div>
                             <form onsubmit="window.addNewProgram(event)" class="flex flex-col gap-3">
                                 <div class="flex flex-wrap gap-3 items-end">
                                     <div class="flex-1 min-w-[150px]"><label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">Name</label><input type="text" id="pName" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white outline-none focus:border-emerald-500 text-sm"></div>
-                                    <div><label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">Cat</label><select id="pCat" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-white outline-none text-sm">${['Junior', 'Senior', 'General'].map(c => `<option value="${c}">${c}</option>`).join('')}</select></div>
-                                    <div>
-                                        <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">Type</label>
-                                        <select id="pType" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-white outline-none text-sm"><option value="Stage">Stage</option><option value="Non-Stage">Non-Stage</option></select>
-                                    </div>
-                                    <div>
-                                        <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">Format</label>
-                                        <select id="pFormat" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-white outline-none text-sm font-bold text-pink-300"><option value="Individual">Individual</option><option value="Group">Group</option></select>
-                                    </div>
-                                    <div>
-                                        <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">Pts Scheme</label>
-                                        <select id="pPoints" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-emerald-300 font-bold outline-none text-sm"><option value="10,5,3">10,5,3 (Indiv)</option><option value="15,8,5">15,8,5 (Group)</option></select>
-                                    </div>
+                                    <div><label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">Cat</label><select id="pCat" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-white outline-none text-sm">${CATEGORIES.map(c => `<option value="${c}">${c}</option>`).join('')}</select></div>
+                                    <div><label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">Type</label><select id="pType" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-white outline-none text-sm"><option value="Stage">Stage</option><option value="Non-Stage">Non-Stage</option></select></div>
+                                    <div><label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">Format</label><select id="pFormat" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-white outline-none text-sm font-bold text-pink-300"><option value="Individual">Individual</option><option value="Group">Group</option></select></div>
+                                    <div><label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">Pts Scheme</label><select id="pPoints" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-emerald-300 font-bold outline-none text-sm"><option value="10,5,3">10,5,3 (Indiv)</option><option value="15,8,5">15,8,5 (Group)</option></select></div>
                                     <button type="submit" id="addProgBtn" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-lg transition text-sm shadow-lg">+ Add</button>
                                 </div>
                                 <div class="flex items-center gap-2 mt-1">
-                                    <label class="text-[11px] font-bold text-slate-300 flex items-center gap-2 cursor-pointer bg-slate-900/50 p-2 rounded-lg border border-slate-700 w-fit">
-                                        <input type="checkbox" id="pLimitExempt" class="w-4 h-4 accent-emerald-500"> 
-                                        Exclude from Participant Limits (Check for special individual events that bypass the max rules)
-                                    </label>
+                                    <label class="text-[11px] font-bold text-slate-300 flex items-center gap-2 cursor-pointer bg-slate-900/50 p-2 rounded-lg border border-slate-700 w-fit"><input type="checkbox" id="pLimitExempt" class="w-4 h-4 accent-emerald-500"> Exclude from Limits (Check for special individual events that bypass max rules)</label>
                                 </div>
                             </form>
                         </div>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">`;
                         
-                    ['Junior', 'Senior', 'General'].forEach(cat => {
-                        const progs = state.programs.filter(p => p.cat === cat && (!searchPQ || p.name.toLowerCase().includes(searchPQ) || p.progNo.toLowerCase().includes(searchPQ)));
+                    CATEGORIES.forEach(cat => {
+                        const progs = state.programs.filter(p => p.cat === cat && (!searchPQ || p.name.toLowerCase().includes(searchPQ) || (p.progNo && p.progNo.toLowerCase().includes(searchPQ))));
                         if(progs.length === 0) return;
                         
                         mainContent += `
@@ -1056,21 +964,25 @@
                                 <h4 class="font-bold text-sm mb-3 text-slate-300 border-b border-slate-700 pb-2">${cat} Programs</h4>
                                 <div class="space-y-2">
                                     ${progs.map(p => {
+                                        const enrolledCount = state.candidates.filter(c => c.assignedPrograms && c.assignedPrograms.includes(p.id)).length;
                                         let badges = [];
                                         if(p.format === 'Group') badges.push('<span class="bg-pink-900/80 border border-pink-700 text-pink-200 px-1.5 py-0.5 rounded text-[8px] uppercase">Group (Exempt)</span>');
                                         if(p.limitExempt) badges.push('<span class="bg-purple-900/80 border border-purple-700 text-purple-200 px-1.5 py-0.5 rounded text-[8px] uppercase">Limit Exempt</span>');
                                         
-                                        return `<div class="bg-slate-800/60 p-3 rounded-lg border border-slate-700 flex justify-between items-start group shadow-inner">
-                                            <div>
-                                                <div class="text-white text-sm font-semibold leading-tight flex flex-wrap items-center gap-1 mb-1">
-                                                    <span class="text-sky-400 font-mono text-xs mr-1">#${p.progNo}</span>${p.name}
-                                                    ${badges.join(' ')}
+                                        return `<div class="bg-slate-800/60 p-3 rounded-lg border border-slate-700 flex flex-col group shadow-inner">
+                                            <div class="flex justify-between items-start mb-1">
+                                                <div class="text-white text-sm font-semibold leading-tight flex flex-wrap items-center gap-1">
+                                                    <span class="text-sky-400 font-mono text-xs mr-1">#${p.progNo}</span>${p.name} ${badges.join(' ')}
                                                 </div>
-                                                <div class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">${p.type} • ${p.format || 'Individual'} • Pts: ${p.pointScheme}</div>
+                                                <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition">
+                                                    <button onclick="window.openEditProg('${p.id}')" class="text-emerald-400 text-xs font-semibold">Edit</button>
+                                                    <button onclick="window.deleteProgram('${p.id}')" class="text-red-400 text-xs font-semibold">Del</button>
+                                                </div>
                                             </div>
-                                            <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition">
-                                                <button onclick="window.openEditProg('${p.id}')" class="text-emerald-400 text-xs font-semibold">Edit</button>
-                                                <button onclick="window.deleteProgram('${p.id}')" class="text-red-400 text-xs font-semibold">Del</button>
+                                            <div class="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-2">${p.type} • ${p.format || 'Individual'} • Pts: ${p.pointScheme}</div>
+                                            <div class="flex justify-between items-center border-t border-slate-700/50 pt-2">
+                                                <button onclick="window.printProgramList('${p.id}')" class="text-[10px] text-indigo-300 hover:text-white bg-indigo-900/40 px-2 py-1 rounded font-bold border border-indigo-700/50 transition flex items-center gap-1">🖨️ Print List</button>
+                                                <span class="text-[10px] text-sky-400 font-bold bg-slate-900 px-2.5 py-1 rounded border border-slate-700">👤 ${enrolledCount} Enrolled</span>
                                             </div>
                                         </div>`;
                                     }).join('')}
@@ -1084,38 +996,31 @@
                     const searchRQ = state.searchResQuery.toLowerCase();
                     const sortedResults = [...state.results]
                         .filter(res => {
-                            const prog = state.programs.find(p => p.id === res.progId);
-                            if(!prog) return true;
-                            if (searchRQ && !prog.name.toLowerCase().includes(searchRQ) && !prog.progNo.toLowerCase().includes(searchRQ)) return false;
+                            const prog = state.programs.find(p => p.id === res.progId); if(!prog) return true;
+                            if (searchRQ && !prog.name.toLowerCase().includes(searchRQ) && !(prog.progNo && prog.progNo.toLowerCase().includes(searchRQ))) return false;
                             if (state.filterResultCat !== 'All' && prog.cat !== state.filterResultCat) return false;
                             return true;
                         }).sort((a, b) => b.timestamp - a.timestamp);
 
                     mainContent = `
                         <div class="flex flex-col lg:flex-row gap-6 mt-4">
-                            <div class="w-full lg:w-1/3">
-                                <div class="glass-card p-5 rounded-2xl border border-sky-500/30">
-                                    <h3 class="font-bold text-sky-400 mb-4 text-lg">🏆 Publish Result</h3>
-                                    <form onsubmit="window.publishResult(event)">
-                                        <select id="rProg" onchange="window.populateResultDropdowns()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-3 text-white outline-none focus:border-sky-400 text-sm mb-3 font-semibold shadow-inner">
-                                            <option value="">-- Select Program --</option>
-                                            ${[...state.programs]
-                                                .filter(p => !state.results.find(r => r.progId === p.id)) // Only un-published
-                                                .map(p => `<option value="${p.id}">#${p.progNo} - ${p.name} (${p.cat})</option>`).join('')}
-                                        </select>
-                                        <div id="rSelectors"></div>
-                                    </form>
-                                </div>
-                            </div>
+                            <div class="w-full lg:w-1/3"><div class="glass-card p-5 rounded-2xl border border-sky-500/30">
+                                <h3 class="font-bold text-sky-400 mb-4 text-lg">🏆 Publish Result</h3>
+                                <form onsubmit="window.publishResult(event)">
+                                    <select id="rProg" onchange="window.populateResultDropdowns()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-3 text-white outline-none focus:border-sky-400 text-sm mb-3 font-semibold shadow-inner">
+                                        <option value="">-- Select Program --</option>
+                                        ${[...state.programs].filter(p => !state.results.find(r => r.progId === p.id)).map(p => `<option value="${p.id}">${p.progNo?`#${p.progNo} - `:''}${p.name} (${p.cat})</option>`).join('')}
+                                    </select>
+                                    <div id="rSelectors"></div>
+                                </form>
+                            </div></div>
                             
                             <div class="w-full lg:w-2/3 glass-card p-5 rounded-2xl flex flex-col h-[700px] border-t border-slate-700">
                                 <div class="flex justify-between items-center mb-4 border-b border-slate-700 pb-3">
                                     <h3 class="font-bold text-white text-lg">Published Results</h3>
                                     <div class="flex gap-2">
                                         <input type="text" id="searchResInput" placeholder="Search..." value="${state.searchResQuery}" oninput="window.updateResSearch(this.value)" class="bg-slate-900 border border-slate-700 text-xs text-white rounded-lg px-3 py-1.5 outline-none w-32 focus:border-sky-500">
-                                        <select onchange="window.state.filterResultCat = this.value; window.render();" class="bg-slate-900 border border-slate-700 text-xs text-slate-300 rounded-lg px-2 py-1.5 outline-none">
-                                            <option value="All">All Categories</option>${['Junior', 'Senior', 'General'].map(c => `<option value="${c}" ${state.filterResultCat===c?'selected':''}>${c}</option>`).join('')}
-                                        </select>
+                                        <select onchange="window.state.filterResultCat = this.value; window.render();" class="bg-slate-900 border border-slate-700 text-xs text-slate-300 rounded-lg px-2 py-1.5 outline-none"><option value="All">All Categories</option>${CATEGORIES.map(c => `<option value="${c}" ${state.filterResultCat===c?'selected':''}>${c}</option>`).join('')}</select>
                                     </div>
                                 </div>
                                 <div class="overflow-y-auto flex-1 pr-2 space-y-4 custom-scrollbar">
@@ -1128,7 +1033,7 @@
                                                 <button onclick="window.printCerts('${res.progId}')" class="text-emerald-300 hover:text-white bg-slate-900 px-3 py-1.5 rounded text-[10px] font-bold border border-emerald-500/30 transition shadow">🖨️ Print A4 Certs</button>
                                                 <button onclick="window.deleteResult('${res.id}')" class="text-red-400 hover:text-white bg-slate-900 px-3 py-1.5 rounded text-[10px] font-bold border border-red-500/30 transition shadow">Delete</button>
                                             </div>
-                                            <h4 class="font-bold text-white text-lg mb-4 pr-48">${prog ? `<span class="text-sky-400">#${prog.progNo}</span> ${prog.name} <span class="text-[9px] text-slate-300 bg-slate-900 px-2 py-1 border border-slate-700 rounded uppercase ml-2 tracking-wider">${prog.cat}</span>` : 'Unknown Program'}</h4>
+                                            <h4 class="font-bold text-white text-lg mb-4 pr-48">${prog ? `<span class="text-sky-400">${prog.progNo?`#${prog.progNo}`:''}</span> ${prog.name} <span class="text-[9px] text-slate-300 bg-slate-900 px-2 py-1 border border-slate-700 rounded uppercase ml-2 tracking-wider">${prog.cat}</span>` : 'Unknown Program'}</h4>
                                             <div class="space-y-1.5">
                                                 ${getNamesBadgeHtml(res.first, 'border-yellow-500/40 bg-yellow-900/20', 'text-yellow-400', '🥇')}
                                                 ${getNamesBadgeHtml(res.second, 'border-slate-400/40 bg-slate-800/50', 'text-slate-300', '🥈')}
@@ -1152,24 +1057,20 @@
                                     <button onclick="window.exportCSV()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-3 rounded-xl font-bold shadow-lg transition">Export Candidates (CSV)</button>
                                 </div>
                             </div>
-
                             <div class="glass-card p-6 rounded-2xl border border-slate-700 shadow-xl">
                                 <h3 class="font-bold text-white text-lg mb-4 flex items-center gap-2">📥 Restore Database</h3>
-                                <p class="text-sm text-slate-400 mb-4">Restore a previously downloaded JSON backup file. This will overwrite current matching records.</p>
+                                <p class="text-sm text-slate-400 mb-4">Restore a previously downloaded JSON backup file.</p>
                                 <input type="file" id="importFile" accept=".json" class="hidden" onchange="window.handleImport(event)">
                                 <button onclick="window.triggerImport()" class="bg-slate-700 hover:bg-slate-600 text-white px-5 py-3 rounded-xl font-bold transition border border-slate-600 shadow-lg">Select Backup File to Import</button>
                             </div>
-
                             <div class="glass-card p-6 rounded-2xl border border-red-500/30 bg-red-950/20 shadow-xl mt-12">
                                 <h3 class="font-bold text-red-400 text-lg mb-2 flex items-center gap-2">⚠️ Danger Zone</h3>
                                 <p class="text-sm text-red-300/70 mb-4">Wipe all data completely to start a new fest. This cannot be undone without a backup.</p>
                                 <button onclick="window.wipeDatabase()" class="bg-red-600 hover:bg-red-500 text-white px-5 py-2.5 rounded-xl font-bold shadow-lg transition text-sm">Wipe Entire Database</button>
                             </div>
-                        </div>
-                    `;
+                        </div>`;
                 }
 
-                // Final Application Stitch
                 app.innerHTML = `
                     <header class="bg-slate-900/95 backdrop-blur-xl border-b border-slate-800 p-3 px-4 sm:px-6 flex justify-between items-center z-50 sticky top-0">
                         <div class="flex items-center gap-3">
@@ -1188,18 +1089,10 @@
                 `;
             } catch(e) {
                 console.error("Rendering Error:", e);
-                // Fail-safe to ensure UI errors don't result in a blank page
-                document.getElementById('app').innerHTML = `
-                <div class="p-10 text-white text-center bg-red-900 min-h-screen flex flex-col justify-center items-center">
-                    <h1 class="text-2xl font-bold mb-4">Error Rendering UI</h1>
-                    <p class="mb-4">An unexpected bug occurred while drawing the screen.</p>
-                    <pre class="text-xs bg-black/50 p-4 rounded max-w-2xl overflow-auto">${e.stack}</pre>
-                    <button onclick="window.location.reload()" class="mt-6 px-4 py-2 bg-white text-red-900 font-bold rounded">Reload Page</button>
-                </div>`;
+                document.getElementById('app').innerHTML = `<div class="p-10 text-white text-center bg-red-900 min-h-screen flex flex-col justify-center items-center"><h1 class="text-2xl font-bold mb-4">Error Rendering UI</h1><pre class="text-xs bg-black/50 p-4 rounded max-w-2xl overflow-auto">${e.stack}</pre></div>`;
             }
         };
         
-        // Execute initial render immediately on load
         window.render();
     </script>
 </body>
