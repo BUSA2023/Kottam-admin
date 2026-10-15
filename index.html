@@ -23,30 +23,61 @@
         select option { background-color: #0f172a; color: #f8fafc; }
         
         @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
             body * { visibility: hidden; }
             #print-area, #print-area * { visibility: visible; }
-            #print-area { position: absolute; left: 0; top: 0; width: 100%; }
+            #print-area { position: absolute; left: 0; top: 0; width: 100%; background: white !important; }
             
-            /* 3x3 Grid - 9 ID Cards per A4 Page */
-            .id-card-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5mm; padding: 5mm; width: 210mm; box-sizing: border-box; }
-            .id-card { 
-                height: 92mm; background: white !important; color: black !important; 
-                border: 2px solid #0ea5e9; padding: 3mm; box-sizing: border-box; 
-                display: flex; flex-direction: column; justify-content: space-between; 
-                font-family: sans-serif; border-radius: 8px;
-                page-break-inside: avoid;
+            /* Exact 4 ID Cards per A4 Page (2x2 Grid, Each 7cm W x 9.5cm H) */
+            .id-a4-page {
+                width: 210mm;
+                height: 297mm;
+                page-break-after: always;
+                display: grid;
+                grid-template-columns: repeat(2, 70mm);
+                grid-template-rows: repeat(2, 95mm);
+                gap: 20mm 25mm;
+                justify-content: center;
+                align-content: center;
+                box-sizing: border-box;
+                background: white !important;
             }
-            .id-header { text-align: center; border-bottom: 2px solid #0ea5e9; padding-bottom: 2px; margin-bottom: 2px; }
-            .id-title { font-size: 10pt; font-weight: 900; margin: 0; color: #0284c7 !important; text-transform: uppercase; }
-            .id-sub { font-size: 6pt; margin: 0; font-weight: bold; }
-            .id-body { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; text-align: center; overflow: hidden; }
-            .id-name { font-size: 11pt; font-weight: bold; margin: 0; line-height: 1.1; max-height: 2.5em; overflow: hidden; }
-            .id-chest { font-size: 16pt; font-weight: 900; margin: 2px 0; color: #0f172a !important; }
-            .id-team { font-size: 8pt; font-weight: bold; background: #e2e8f0 !important; padding: 2px 4px; border-radius: 4px; display: inline-block; margin: 0 auto; }
-            .id-footer { font-size: 6pt; border-top: 1px dashed #cbd5e1; padding-top: 2px; text-align: center; max-height: 20mm; overflow: hidden; color: #475569 !important; }
-            
+            .id-a4-page:last-child {
+                page-break-after: auto;
+            }
+            .id-card { 
+                width: 70mm !important;
+                height: 95mm !important;
+                background: white !important; 
+                color: black !important; 
+                border: 2px solid #0284c7; 
+                padding: 4mm; 
+                box-sizing: border-box; 
+                display: flex; 
+                flex-direction: column; 
+                justify-content: space-between; 
+                font-family: 'Outfit', 'Anek Malayalam', sans-serif; 
+                border-radius: 8px;
+                page-break-inside: avoid;
+                position: relative;
+                overflow: hidden;
+                box-shadow: none !important;
+            }
+            .id-header { text-align: center; border-bottom: 2px solid #0ea5e9; padding-bottom: 4px; margin-bottom: 4px; }
+            .id-title { font-size: 11pt; font-weight: 900; margin: 0; color: #0284c7 !important; text-transform: uppercase; letter-spacing: 0.5px; }
+            .id-sub { font-size: 7.5pt; margin: 2px 0 0 0; font-weight: 800; color: #334155 !important; text-transform: uppercase; }
+            .id-body { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; overflow: hidden; padding: 2mm 0; }
+            .id-chest { font-size: 22pt; font-weight: 900; margin: 0 0 4px 0; color: #0f172a !important; background: #f1f5f9 !important; border: 1.5px solid #cbd5e1; padding: 2px 12px; border-radius: 6px; line-height: 1.1; }
+            .id-name { font-size: 12pt; font-weight: 800; margin: 4px 0; line-height: 1.2; max-height: 2.4em; overflow: hidden; color: #0f172a !important; width: 100%; }
+            .id-team { font-size: 8.5pt; font-weight: 800; background: #e0f2fe !important; color: #0369a1 !important; border: 1px solid #bae6fd; padding: 3px 8px; border-radius: 4px; display: inline-block; margin-top: 2px; }
+            .id-footer { font-size: 6.5pt; border-top: 1px dashed #94a3b8; padding-top: 4px; text-align: center; height: 23mm; overflow: hidden; color: #334155 !important; display: flex; flex-direction: column; justify-content: flex-start; line-height: 1.25; }
+            .id-footer-title { font-weight: 800; font-size: 6pt; text-transform: uppercase; color: #0284c7 !important; margin-bottom: 2px; }
+
             /* Program Participant List Print */
-            .print-prog-page { width: 210mm; background: white !important; color: black !important; padding: 10mm; font-family: sans-serif; box-sizing: border-box; }
+            .print-prog-page { width: 210mm; min-height: 297mm; background: white !important; color: black !important; padding: 15mm; font-family: sans-serif; box-sizing: border-box; }
             .print-prog-page h1 { text-align: center; font-size: 18pt; margin-bottom: 5px; color: #0f172a !important; font-weight: bold; }
             .print-prog-page h3 { text-align: center; font-size: 10pt; margin-top: 0; color: #475569 !important; text-transform: uppercase; letter-spacing: 1px; }
             .print-prog-table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 10pt; }
@@ -75,7 +106,7 @@
 </head>
 <body class="bg-gradient-to-br from-slate-950 via-sky-950 to-slate-900 min-h-screen">
 
-    <div id="toast" class="fixed top-5 right-5 z-[100] transform translate-y-[-200%] transition-transform duration-300 px-6 py-3 rounded-xl shadow-2xl font-semibold flex items-center space-x-3 text-sm">
+    <div id="toast" class="fixed top-5 right-5 z-[500] transform translate-y-[-200%] transition-transform duration-300 px-6 py-3 rounded-xl shadow-2xl font-semibold flex items-center space-x-3 text-sm">
         <span id="toastIcon"></span><span id="toastMsg"></span>
     </div>
 
@@ -222,16 +253,28 @@
     <div id="app" class="min-h-screen flex flex-col">
         <div class="flex-1 flex flex-col items-center justify-center p-4 min-h-screen text-slate-400">
             <svg class="animate-spin -ml-1 mr-3 h-8 w-8 text-sky-500 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-            Loading Workspace...
+            Connecting to Fest Database...
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, addDoc, deleteDoc, doc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, addDoc, deleteDoc, doc, setDoc, updateDoc, getDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+        // NEW PRIMARY DATABASE CONFIG (fest-66fe3)
         const firebaseConfig = {
+            apiKey: "AIzaSyDy4XPx_UwsoLzh3PTCgfsccZxz5Oc80n8",
+            authDomain: "fest-66fe3.firebaseapp.com",
+            projectId: "fest-66fe3",
+            storageBucket: "fest-66fe3.firebasestorage.app",
+            messagingSenderId: "1044450457376",
+            appId: "1:1044450457376:web:94c5aa76b0bf7a2fc20945",
+            measurementId: "G-47FEMSFRCH"
+        };
+
+        // OLD DATABASE CONFIG FOR 1-CLICK DATA RECOVERY / MIGRATION (pullani-6a39b)
+        const legacyFirebaseConfig = {
             apiKey: "AIzaSyCIbvk4teIJ6AlfaXbFgDMgCWpnekNwmx8",
             authDomain: "pullani-6a39b.firebaseapp.com",
             projectId: "pullani-6a39b",
@@ -241,9 +284,15 @@
             measurementId: "G-DX50SRTWJS"
         };
         
+        // Initialize New Primary App
         const appInit = initializeApp(firebaseConfig);
         const auth = getAuth(appInit);
         const db = getFirestore(appInit);
+
+        // Initialize Secondary Legacy App (so you never lose data from your old DB!)
+        const legacyAppInit = initializeApp(legacyFirebaseConfig, "legacyFestApp");
+        const legacyAuth = getAuth(legacyAppInit);
+        const legacyDb = getFirestore(legacyAppInit);
 
         const appId = 'urava-s4-fest';
         const getCol = (name) => collection(db, 'artifacts', appId, 'public', 'data', name);
@@ -253,6 +302,9 @@
         const CATEGORIES = ['Junior', 'Senior']; 
         const ADMIN_PASSWORD = "admin";
 
+        // Local Backup Cache Key to prevent data loss on reload or offline state
+        const LOCAL_CACHE_KEY = 'urava_s4_local_safety_backup';
+
         let isAuthStatus = false;
         try { isAuthStatus = sessionStorage.getItem('admin_auth') === 'true'; } catch(e) {}
 
@@ -261,9 +313,25 @@
             tab: 'dashboard', 
             candidates: [], programs: [], results: [],
             searchQuery: '', searchProgQuery: '', searchResQuery: '',
-            filterTeam: 'All', filterCat: 'All', filterResultCat: 'All'
+            filterTeam: 'All', filterCat: 'All', filterResultCat: 'All',
+            dbConnected: false,
+            isMigrating: false
         };
         window.state = state;
+
+        // Automatically keep a rolling local safety copy whenever data is loaded
+        const updateLocalSafetyCache = () => {
+            try {
+                if (state.programs.length > 0 || state.candidates.length > 0 || state.results.length > 0) {
+                    localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify({
+                        programs: state.programs,
+                        candidates: state.candidates,
+                        results: state.results,
+                        savedAt: new Date().toLocaleString()
+                    }));
+                }
+            } catch(e) {}
+        };
 
         window.updateSearch = (val) => { state.searchQuery = val; window.render(); const s = document.getElementById('searchInput'); if(s) {s.focus(); s.setSelectionRange(s.value.length, s.value.length);} };
         window.updateProgSearch = (val) => { state.searchProgQuery = val; window.render(); const s = document.getElementById('searchProgInput'); if(s) {s.focus(); s.setSelectionRange(s.value.length, s.value.length);} };
@@ -282,8 +350,8 @@
             const toast = document.getElementById('toast'); 
             document.getElementById('toastMsg').innerText = msg;
             document.getElementById('toastIcon').innerText = type === 'error' ? '⚠️' : '✨';
-            toast.className = `fixed top-5 right-5 z-[100] transform transition-transform duration-300 px-6 py-3 rounded-xl shadow-2xl font-semibold flex items-center space-x-3 text-sm translate-y-0 ${type === 'error' ? 'bg-slate-900/95 border border-red-500/50 text-red-200' : 'bg-slate-900/95 border border-sky-500/50 text-sky-200'}`;
-            setTimeout(() => { toast.classList.add('translate-y-[-200%]'); toast.classList.remove('translate-y-0'); }, 4000); 
+            toast.className = `fixed top-5 right-5 z-[500] transform transition-transform duration-300 px-6 py-3 rounded-xl shadow-2xl font-semibold flex items-center space-x-3 text-sm translate-y-0 ${type === 'error' ? 'bg-slate-900/95 border border-red-500/50 text-red-200' : 'bg-slate-900/95 border border-sky-500/50 text-sky-200'}`;
+            setTimeout(() => { toast.classList.add('translate-y-[-200%]'); toast.classList.remove('translate-y-0'); }, 4500); 
         };
 
         window.customConfirm = (title, msg, onConfirm) => {
@@ -298,29 +366,134 @@
             newOk.onclick = () => { document.getElementById('confirmModal').style.display = 'none'; onConfirm(); };
         };
 
-        const initDB = async () => { try { await signInAnonymously(auth); } catch (e) { window.showAlert("DB Auth Error", "error"); } };
+        const attachDatabaseListeners = () => {
+            // Listen to Programs Config
+            onSnapshot(getDocRef('settings', 'config'), (snap) => {
+                state.dbConnected = true;
+                if (snap.exists()) { 
+                    state.programs = snap.data().programs || []; 
+                } else { 
+                    setDoc(getDocRef('settings', 'config'), { programs: [] }, { merge: true }).catch(e=>{}); 
+                }
+                updateLocalSafetyCache();
+                window.render();
+            }, (err) => {
+                console.warn("Firestore Config Read Error:", err);
+                window.showAlert("DB Permission/Connection Notice: Check Firestore Rules", "error");
+            });
+
+            // Listen to Candidates
+            onSnapshot(getCol('candidates'), (snap) => {
+                state.dbConnected = true;
+                state.candidates = snap.docs.map(d => ({ id: d.id, assignedPrograms: [], ...d.data() }));
+                updateLocalSafetyCache();
+                window.render();
+            }, (err) => console.warn("Candidates Listener Error:", err));
+
+            // Listen to Results
+            onSnapshot(getCol('results'), (snap) => {
+                state.dbConnected = true;
+                state.results = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                updateLocalSafetyCache();
+                window.render();
+            }, (err) => console.warn("Results Listener Error:", err));
+        };
+
+        const initDB = async () => { 
+            try { 
+                await signInAnonymously(auth); 
+            } catch (e) { 
+                console.warn("Anonymous Auth not enabled on new Firebase project, connecting directly to Firestore...", e);
+                attachDatabaseListeners();
+            } 
+        };
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                onSnapshot(getDocRef('settings', 'config'), (snap) => {
-                    if (snap.exists()) { state.programs = snap.data().programs || []; } 
-                    else { setDoc(getDocRef('settings', 'config'), { programs: [] }).catch(e=>{}); }
-                    window.render();
-                });
-
-                onSnapshot(getCol('candidates'), (snap) => {
-                    state.candidates = snap.docs.map(d => ({ id: d.id, assignedPrograms: [], ...d.data() }));
-                    window.render();
-                });
-
-                onSnapshot(getCol('results'), (snap) => {
-                    state.results = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-                    window.render();
-                });
+                attachDatabaseListeners();
             }
         });
         
-        initDB(); 
+        initDB();
+
+        // MIGRATION FUNCTION: Pulls data from old Firebase (pullani-6a39b) into new Firebase (fest-66fe3)
+        window.syncFromLegacyDatabase = async () => {
+            window.customConfirm(
+                "Sync from Old Database", 
+                "This will copy all Programs, Candidates, and Results from your previous database (pullani-6a39b) into your new database (fest-66fe3). Continue?", 
+                async () => {
+                    state.isMigrating = true;
+                    window.render();
+                    window.showAlert("Connecting to previous database...");
+                    try {
+                        try { await signInAnonymously(legacyAuth); } catch(e) {}
+                        
+                        const oldConfigSnap = await getDoc(doc(legacyDb, 'artifacts', appId, 'public', 'data', 'settings', 'config'));
+                        const oldCandsSnap = await getDocs(collection(legacyDb, 'artifacts', appId, 'public', 'data', 'candidates'));
+                        const oldResultsSnap = await getDocs(collection(legacyDb, 'artifacts', appId, 'public', 'data', 'results'));
+
+                        let migratedProgs = [];
+                        if (oldConfigSnap.exists() && oldConfigSnap.data().programs) {
+                            migratedProgs = oldConfigSnap.data().programs;
+                        }
+
+                        // Merge programs without duplicates
+                        const existingProgIds = new Set(state.programs.map(p => p.id));
+                        const mergedPrograms = [...state.programs];
+                        migratedProgs.forEach(p => {
+                            if (!existingProgIds.has(p.id)) mergedPrograms.push(p);
+                        });
+
+                        await setDoc(getDocRef('settings', 'config'), { programs: mergedPrograms }, { merge: true });
+
+                        let candCount = 0;
+                        for (const cDoc of oldCandsSnap.docs) {
+                            await setDoc(getDocRef('candidates', cDoc.id), cDoc.data(), { merge: true });
+                            candCount++;
+                        }
+
+                        let resCount = 0;
+                        for (const rDoc of oldResultsSnap.docs) {
+                            await setDoc(getDocRef('results', rDoc.id), rDoc.data(), { merge: true });
+                            resCount++;
+                        }
+
+                        window.showAlert(`Migrated ${migratedProgs.length} Programs, ${candCount} Candidates, ${resCount} Results!`);
+                        window.fireConfetti();
+                    } catch (err) {
+                        window.showAlert("Migration Error: " + err.message, "error");
+                    } finally {
+                        state.isMigrating = false;
+                        window.render();
+                    }
+                }
+            );
+        };
+
+        // RESTORE FROM LOCAL BROWSER SAFETY CACHE
+        window.restoreFromLocalCache = async () => {
+            const raw = localStorage.getItem(LOCAL_CACHE_KEY);
+            if (!raw) return window.showAlert("No local safety cache found on this browser.", "error");
+            try {
+                const cached = JSON.parse(raw);
+                window.customConfirm(
+                    "Restore Local Safety Cache",
+                    `Found backup from ${cached.savedAt} (${(cached.programs||[]).length} programs, ${(cached.candidates||[]).length} candidates). Restore to database?`,
+                    async () => {
+                        await setDoc(getDocRef('settings', 'config'), { programs: cached.programs || [] }, { merge: true });
+                        for (const c of (cached.candidates || [])) {
+                            await setDoc(getDocRef('candidates', c.id), c, { merge: true });
+                        }
+                        for (const r of (cached.results || [])) {
+                            await setDoc(getDocRef('results', r.id), r, { merge: true });
+                        }
+                        window.showAlert("Restored from Local Safety Cache!");
+                    }
+                );
+            } catch (e) {
+                window.showAlert("Failed to read cache.", "error");
+            }
+        };
 
         window.handleLogin = (e) => {
             e.preventDefault();
@@ -343,7 +516,7 @@
             let prefix = category === 'Junior' ? 'J' : 'S';
             let max = 100;
             catCands.forEach(c => {
-                const num = parseInt(c.regNo.replace(/\D/g, ''));
+                const num = parseInt(String(c.regNo).replace(/\D/g, ''));
                 if (!isNaN(num) && num > max) max = num;
             });
             return prefix + (max + 1);
@@ -364,7 +537,7 @@
             
             const btn = document.getElementById('addProgBtn'); btn.disabled = true; btn.innerText = 'Wait...';
             try { 
-                await updateDoc(getDocRef('settings', 'config'), { programs: updatedProgs }); 
+                await setDoc(getDocRef('settings', 'config'), { programs: updatedProgs }, { merge: true }); 
                 window.showAlert(`Program Added (${progNo})`); e.target.reset(); 
             } catch(err) { window.showAlert("Error: " + err.message, "error"); }
             finally { btn.disabled = false; btn.innerText = '+ Add'; }
@@ -373,7 +546,7 @@
         window.deleteProgram = async (id) => {
             window.customConfirm("Delete Program", "Delete this program?", async () => {
                 const updatedProgs = state.programs.filter(p => p.id !== id); 
-                try { await updateDoc(getDocRef('settings', 'config'), { programs: updatedProgs }); window.showAlert("Deleted!"); } catch(e) { window.showAlert("Failed.", "error"); }
+                try { await setDoc(getDocRef('settings', 'config'), { programs: updatedProgs }, { merge: true }); window.showAlert("Deleted!"); } catch(e) { window.showAlert("Failed.", "error"); }
             });
         };
 
@@ -405,7 +578,7 @@
                     pointScheme: document.getElementById('editProgPts').value,
                     limitExempt: document.getElementById('editProgExempt').checked
                 } : p);
-                await updateDoc(getDocRef('settings', 'config'), { programs: updated });
+                await setDoc(getDocRef('settings', 'config'), { programs: updated }, { merge: true });
                 window.showAlert("Program updated!"); document.getElementById('editProgModal').style.display = 'none';
             } catch(err) { window.showAlert("Error.", "error"); }
             finally { btn.innerText = 'Save Settings'; btn.disabled = false; }
@@ -616,35 +789,56 @@
                     if(!data.programs || !data.candidates || !data.results) throw new Error("Invalid format");
                     window.customConfirm("Import Database", "Merge imported data into current DB?", async () => {
                         window.showAlert("Importing...", "success");
-                        await updateDoc(getDocRef('settings', 'config'), { programs: data.programs });
-                        for(const c of data.candidates) { await setDoc(getDocRef('candidates', c.id), c); }
-                        for(const r of data.results) { await setDoc(getDocRef('results', r.id), r); }
+                        await setDoc(getDocRef('settings', 'config'), { programs: data.programs }, { merge: true });
+                        for(const c of data.candidates) { await setDoc(getDocRef('candidates', c.id), c, { merge: true }); }
+                        for(const r of data.results) { await setDoc(getDocRef('results', r.id), r, { merge: true }); }
                         window.showAlert("Import Complete!"); 
                     });
                 } catch(err) { window.showAlert("Import Failed: " + err.message, "error"); } document.getElementById('importFile').value = '';
             };
             reader.readAsText(file);
         };
-        window.wipeDatabase = async () => { window.customConfirm("DANGER ZONE", "Wipe the entire database completely?", async () => { try { await updateDoc(getDocRef('settings', 'config'), { programs: [] }); for(const c of state.candidates) await deleteDoc(getDocRef('candidates', c.id)); for(const r of state.results) await deleteDoc(getDocRef('results', r.id)); window.showAlert("Database Wiped Clean."); } catch(err) { window.showAlert("Error: " + err.message, "error"); } }); };
+        window.wipeDatabase = async () => { window.customConfirm("DANGER ZONE", "Wipe the entire database completely?", async () => { try { await setDoc(getDocRef('settings', 'config'), { programs: [] }); for(const c of state.candidates) await deleteDoc(getDocRef('candidates', c.id)); for(const r of state.results) await deleteDoc(getDocRef('results', r.id)); window.showAlert("Database Wiped Clean."); } catch(err) { window.showAlert("Error: " + err.message, "error"); } }); };
 
+        // PRINT 4 ID CARDS PER A4 PAGE (Each Card: 7cm W x 9.5cm H)
         window.printIDCards = (candId = null) => {
             const printArea = document.getElementById('print-area');
-            let candidatesToPrint = candId ? [state.candidates.find(c => c.id === candId)] : state.candidates;
+            let candidatesToPrint = candId ? [state.candidates.find(c => c.id === candId)] : [...state.candidates].sort((a,b) => Number(String(a.regNo).replace(/\D/g, '')) - Number(String(b.regNo).replace(/\D/g, '')));
             if (candidatesToPrint.length === 0 || !candidatesToPrint[0]) return window.showAlert("No candidates to print.", "error");
 
-            let html = '<div class="id-card-container">';
-            candidatesToPrint.forEach(c => {
-                const assigned = (c.assignedPrograms || []).map(pid => { const p = state.programs.find(x => x.id === pid); return p ? `${p.progNo} ${p.name}` : ''; }).filter(Boolean);
-                const progList = assigned.length > 0 ? assigned.join(' • ') : 'No programs assigned';
-                html += `
-                <div class="id-card">
-                    <div class="id-header"><h1 class="id-title">Aawaaze Funoon S4</h1><p class="id-sub">Urava Fest 2026</p></div>
-                    <div class="id-body"><div class="id-chest">${c.regNo}</div><h2 class="id-name">${c.name}</h2><div class="id-team">${c.team} - ${c.cat}</div></div>
-                    <div class="id-footer">${progList}</div>
-                </div>`;
-            });
-            html += '</div>';
-            printArea.innerHTML = html; setTimeout(() => { window.print(); printArea.innerHTML = ''; }, 500);
+            let html = '';
+            // Group into chunks of 4 per A4 page
+            for (let i = 0; i < candidatesToPrint.length; i += 4) {
+                const pageChunk = candidatesToPrint.slice(i, i + 4);
+                html += '<div class="id-a4-page">';
+                pageChunk.forEach(c => {
+                    const assigned = (c.assignedPrograms || []).map(pid => { 
+                        const p = state.programs.find(x => x.id === pid); 
+                        return p ? `${p.progNo} ${p.name}` : ''; 
+                    }).filter(Boolean);
+                    const progList = assigned.length > 0 ? assigned.join(' • ') : 'No programs assigned';
+                    html += `
+                    <div class="id-card">
+                        <div class="id-header">
+                            <h1 class="id-title">Aawaaze Funoon S4</h1>
+                            <p class="id-sub">Urava Fest 2026</p>
+                        </div>
+                        <div class="id-body">
+                            <div class="id-chest">${c.regNo}</div>
+                            <h2 class="id-name">${c.name}</h2>
+                            <div class="id-team">${c.team} • ${c.cat}</div>
+                        </div>
+                        <div class="id-footer">
+                            <div class="id-footer-title">Registered Programs (${assigned.length})</div>
+                            <div>${progList}</div>
+                        </div>
+                    </div>`;
+                });
+                html += '</div>';
+            }
+
+            printArea.innerHTML = html; 
+            setTimeout(() => { window.print(); printArea.innerHTML = ''; }, 500);
         };
 
         window.printProgramList = (progId) => {
@@ -675,7 +869,7 @@
 
             const generateCertHtml = (candIdArray, positionStr) => {
                 let block = '';
-                candIdArray.forEach(cid => {
+                (candIdArray || []).forEach(cid => {
                     const c = state.candidates.find(x => x.id === cid);
                     if(c) {
                         block += `
@@ -699,7 +893,7 @@
 
             html += generateCertHtml(res.first, "First Place"); html += generateCertHtml(res.second, "Second Place"); html += generateCertHtml(res.third, "Third Place");
             if(html === '') return window.showAlert("No winners found.", "error");
-            document.getElementById('print-area').innerHTML = html; setTimeout(() => { window.print(); document.getElementById('print-area').innerHTML = ''; }, 500);
+            document.getElementById('print-area').innerHTML = html; setTimeout(() => { window.print(); printArea.innerHTML = ''; }, 500);
         };
 
         const getNamesBadgeHtml = (ids, borderClass, textClass, icon) => { 
@@ -748,7 +942,7 @@
                     <button onclick="window.switchTab('candidates')" class="px-5 py-4 font-bold text-sm whitespace-nowrap transition-colors ${state.tab==='candidates'?'tab-active':'tab-inactive'}">Candidates</button>
                     <button onclick="window.switchTab('programs')" class="px-5 py-4 font-bold text-sm whitespace-nowrap transition-colors ${state.tab==='programs'?'tab-active':'tab-inactive'}">Programs</button>
                     <button onclick="window.switchTab('results')" class="px-5 py-4 font-bold text-sm whitespace-nowrap transition-colors ${state.tab==='results'?'tab-active':'tab-inactive'}">Results</button>
-                    <button onclick="window.switchTab('settings')" class="px-5 py-4 font-bold text-sm whitespace-nowrap transition-colors ${state.tab==='settings'?'tab-active':'tab-inactive'}">⚙️ Settings</button>
+                    <button onclick="window.switchTab('settings')" class="px-5 py-4 font-bold text-sm whitespace-nowrap transition-colors ${state.tab==='settings'?'tab-active':'tab-inactive'}">⚙️ Settings & Sync</button>
                 </nav>`;
                 
                 let mainContent = '';
@@ -765,7 +959,6 @@
 
                 state.results.forEach(res => {
                     var prog = state.programs.find(p => p.id === res.progId); if (!prog) return;
-                    var pCat = prog.cat;
                     var isKala = prog.format !== 'Group'; // Group bypasses Kalaprathiba
 
                     var addPts = function(ids, pts) {
@@ -787,6 +980,20 @@
                     addPts(res.first, res.pts1); addPts(res.second, res.pts2); addPts(res.third, res.pts3);
                 });
 
+                // Show Quick Recovery Banner if the new DB is currently empty
+                const isNewDbEmpty = state.candidates.length === 0 && state.programs.length === 0;
+                const migrationBanner = isNewDbEmpty ? `
+                    <div class="glass-card p-4 rounded-2xl border border-amber-500/50 bg-amber-950/20 mb-6 mt-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div>
+                            <h4 class="font-bold text-amber-300 text-sm flex items-center gap-2">🔄 Connected to New Database (fest-66fe3) — No Data Found Yet</h4>
+                            <p class="text-xs text-slate-300 mt-1">When you switch Firebase configs, it connects to a brand new empty database. Click the button to copy all your data from your previous database (<span class="font-mono text-sky-300">pullani-6a39b</span>) automatically!</p>
+                        </div>
+                        <button onclick="window.syncFromLegacyDatabase()" ${state.isMigrating ? 'disabled' : ''} class="whitespace-nowrap bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-4 py-2.5 rounded-xl text-xs shadow-lg transition">
+                            ${state.isMigrating ? 'Syncing Data...' : '⚡ Import Data from Old DB'}
+                        </button>
+                    </div>
+                ` : '';
+
                 if (state.tab === 'dashboard') {
                     const getTop = (cat) => {
                         let top = null; let max = 0;
@@ -795,6 +1002,7 @@
                     };
 
                     mainContent = `
+                        ${migrationBanner}
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 mt-4 relative">
                             <div class="glass-card p-4 rounded-xl border-l-4 border-sky-500 flex flex-col justify-center text-center">
                                 <div class="text-3xl font-black num-font">${state.candidates.length}</div><div class="text-[10px] text-slate-400 font-bold uppercase mt-1">Candidates</div>
@@ -879,7 +1087,7 @@
                         const matchCat = state.filterCat === 'All' || c.cat === state.filterCat;
                         const matchSearch = !searchQ || (c.name && c.name.toLowerCase().includes(searchQ)) || (c.regNo && String(c.regNo).toLowerCase().includes(searchQ));
                         return matchTeam && matchCat && matchSearch;
-                    }).sort((a,b) => Number(a.regNo.replace(/\D/g, '')) - Number(b.regNo.replace(/\D/g, '')));
+                    }).sort((a,b) => Number(String(a.regNo).replace(/\D/g, '')) - Number(String(b.regNo).replace(/\D/g, '')));
 
                     mainContent = `
                         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-4">
@@ -897,10 +1105,10 @@
 
                             <div class="lg:col-span-2 glass-card p-5 rounded-2xl flex flex-col h-[700px] border-t border-slate-700">
                                 <div class="flex flex-col gap-3 mb-4">
-                                    <div class="flex justify-between items-center">
+                                    <div class="flex flex-wrap justify-between items-center gap-2">
                                         <h3 class="font-bold text-white">Registry (${filteredCands.length})</h3>
                                         <div class="flex gap-2">
-                                            <button onclick="window.printIDCards()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1 shadow-md">🖨️ Print IDs (9/A4)</button>
+                                            <button onclick="window.printIDCards()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1 shadow-md">🖨️ Print IDs (4/A4 • 7×9.5cm)</button>
                                             <input type="text" id="searchInput" placeholder="Search..." value="${state.searchQuery}" oninput="window.updateSearch(this.value)" class="bg-slate-900 border border-slate-700 text-xs text-white rounded-lg px-3 py-1.5 outline-none focus:border-sky-500 w-32 sm:w-48">
                                         </div>
                                     </div>
@@ -1049,17 +1257,27 @@
                 if (state.tab === 'settings') {
                     mainContent = `
                         <div class="max-w-2xl mx-auto mt-8 space-y-6">
+                            <!-- Legacy Migration Card -->
+                            <div class="glass-card p-6 rounded-2xl border border-amber-500/40 bg-amber-950/10 shadow-xl">
+                                <h3 class="font-bold text-amber-400 text-lg mb-2 flex items-center gap-2">🔄 Migrate Data from Old Database</h3>
+                                <p class="text-sm text-slate-300 mb-4">Because you updated the Firebase project to <span class="font-mono text-sky-300">fest-66fe3</span>, your previous data is stored in <span class="font-mono text-amber-300">pullani-6a39b</span>. Use this tool anytime to copy all programs, candidates, and results from the old database into the new one without losing anything.</p>
+                                <div class="flex flex-wrap gap-3">
+                                    <button onclick="window.syncFromLegacyDatabase()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 px-5 py-3 rounded-xl font-black shadow-lg transition text-sm">⚡ Sync All Data from Old DB (pullani-6a39b)</button>
+                                    <button onclick="window.restoreFromLocalCache()" class="bg-slate-800 hover:bg-slate-700 text-sky-300 border border-sky-500/30 px-4 py-3 rounded-xl font-bold shadow-lg transition text-sm">🛡️ Restore Browser Auto-Backup</button>
+                                </div>
+                            </div>
+
                             <div class="glass-card p-6 rounded-2xl border border-slate-700 shadow-xl">
                                 <h3 class="font-bold text-white text-lg mb-4 flex items-center gap-2">💾 Database Backup & Export</h3>
-                                <p class="text-sm text-slate-400 mb-6">Securely download your entire fest database as a JSON file, or export candidates to a CSV spreadsheet.</p>
+                                <p class="text-sm text-slate-400 mb-6">Always download a JSON backup before changing Firebase projects or modifying code so you can restore in 1 click.</p>
                                 <div class="flex flex-wrap gap-4">
                                     <button onclick="window.exportData()" class="bg-sky-600 hover:bg-sky-500 text-white px-5 py-3 rounded-xl font-bold shadow-lg transition">Download Full Backup (JSON)</button>
                                     <button onclick="window.exportCSV()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-3 rounded-xl font-bold shadow-lg transition">Export Candidates (CSV)</button>
                                 </div>
                             </div>
                             <div class="glass-card p-6 rounded-2xl border border-slate-700 shadow-xl">
-                                <h3 class="font-bold text-white text-lg mb-4 flex items-center gap-2">📥 Restore Database</h3>
-                                <p class="text-sm text-slate-400 mb-4">Restore a previously downloaded JSON backup file.</p>
+                                <h3 class="font-bold text-white text-lg mb-4 flex items-center gap-2">📥 Restore Database from File</h3>
+                                <p class="text-sm text-slate-400 mb-4">Restore a previously downloaded JSON backup file into <span class="font-mono text-sky-400">fest-66fe3</span>.</p>
                                 <input type="file" id="importFile" accept=".json" class="hidden" onchange="window.handleImport(event)">
                                 <button onclick="window.triggerImport()" class="bg-slate-700 hover:bg-slate-600 text-white px-5 py-3 rounded-xl font-bold transition border border-slate-600 shadow-lg">Select Backup File to Import</button>
                             </div>
@@ -1077,7 +1295,7 @@
                             <img src="${LOGO_TEXT}" alt="Logo" class="h-10 w-auto object-contain drop-shadow-md">
                             <div>
                                 <h1 class="text-white text-base sm:text-xl tracking-tight leading-none mb-0.5 font-bold">Aawaaze Funoon</h1>
-                                <p class="text-[9px] text-sky-400 font-bold uppercase tracking-widest">Season 04 • Fest Manager</p>
+                                <p class="text-[9px] text-sky-400 font-bold uppercase tracking-widest">Season 04 • Fest Manager (fest-66fe3)</p>
                             </div>
                         </div>
                         <button onclick="window.handleLogout()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-bold border border-slate-600 transition shadow">Logout</button>
