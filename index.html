@@ -62,27 +62,30 @@
                 font-family: 'Outfit', 'Anek Malayalam', sans-serif; 
                 border-radius: 8px;
                 page-break-inside: avoid;
-                position: relative;
-                overflow: hidden;
-                box-shadow: none !important;
-            }
-            .id-header { text-align: center; border-bottom: 2px solid #0ea5e9; padding-bottom: 4px; margin-bottom: 4px; }
-            .id-title { font-size: 11pt; font-weight: 900; margin: 0; color: #0284c7 !important; text-transform: uppercase; letter-spacing: 0.5px; }
-            .id-sub { font-size: 7.5pt; margin: 2px 0 0 0; font-weight: 800; color: #334155 !important; text-transform: uppercase; }
-            .id-body { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; overflow: hidden; padding: 2mm 0; }
-            .id-chest { font-size: 22pt; font-weight: 900; margin: 0 0 4px 0; color: #0f172a !important; background: #f1f5f9 !important; border: 1.5px solid #cbd5e1; padding: 2px 12px; border-radius: 6px; line-height: 1.1; }
-            .id-name { font-size: 12pt; font-weight: 800; margin: 4px 0; line-height: 1.2; max-height: 2.4em; overflow: hidden; color: #0f172a !important; width: 100%; }
-            .id-team { font-size: 8.5pt; font-weight: 800; background: #e0f2fe !important; color: #0369a1 !important; border: 1px solid #bae6fd; padding: 3px 8px; border-radius: 4px; display: inline-block; margin-top: 2px; }
-            .id-footer { font-size: 6.5pt; border-top: 1px dashed #94a3b8; padding-top: 4px; text-align: center; height: 23mm; overflow: hidden; color: #334155 !important; display: flex; flex-direction: column; justify-content: flex-start; line-height: 1.25; }
+            .id-header { text-align: center; border-bottom: 2px solid #0ea5e9; padding-bottom: 3px; margin-bottom: 3px; }
+            .id-title { font-size: 10.5pt; font-weight: 900; margin: 0; color: #0284c7 !important; text-transform: uppercase; letter-spacing: 0.5px; }
+            .id-sub { font-size: 7pt; margin: 1px 0 0 0; font-weight: 800; color: #334155 !important; text-transform: uppercase; }
+            .id-body { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; overflow: hidden; padding: 1mm 0; }
+            .id-top-row { display: flex; align-items: center; justify-content: center; gap: 3mm; width: 100%; margin-bottom: 3px; }
+            .id-chest { font-size: 19pt; font-weight: 900; margin: 0; color: #0f172a !important; background: #f1f5f9 !important; border: 1.5px solid #cbd5e1; padding: 2px 10px; border-radius: 6px; line-height: 1.1; }
+            .id-qr-box { display: flex; flex-direction: column; align-items: center; justify-content: center; background: white !important; border: 1px solid #cbd5e1; padding: 2px; border-radius: 4px; }
+            .id-qr { width: 15mm !important; height: 15mm !important; object-fit: contain; display: block; }
+            .id-qr-text { font-size: 4.5pt; font-weight: 800; color: #0284c7 !important; text-transform: uppercase; margin-top: 1px; letter-spacing: 0.2px; }
+            .id-name { font-size: 11.5pt; font-weight: 800; margin: 3px 0; line-height: 1.15; max-height: 2.3em; overflow: hidden; color: #0f172a !important; width: 100%; }
+            .id-team { font-size: 8pt; font-weight: 800; background: #e0f2fe !important; color: #0369a1 !important; border: 1px solid #bae6fd; padding: 2px 8px; border-radius: 4px; display: inline-block; margin-top: 1px; }
+            .id-footer { font-size: 6.5pt; border-top: 1px dashed #94a3b8; padding-top: 3px; text-align: center; height: 22mm; overflow: hidden; color: #334155 !important; display: flex; flex-direction: column; justify-content: flex-start; line-height: 1.25; }
             .id-footer-title { font-weight: 800; font-size: 6pt; text-transform: uppercase; color: #0284c7 !important; margin-bottom: 2px; }
 
             /* Program Participant List Print */
-            .print-prog-page { width: 210mm; min-height: 297mm; background: white !important; color: black !important; padding: 15mm; font-family: sans-serif; box-sizing: border-box; }
+            .print-prog-page { width: 210mm; min-height: 297mm; page-break-after: always; background: white !important; color: black !important; padding: 15mm; font-family: sans-serif; box-sizing: border-box; }
+            .print-prog-page:last-child { page-break-after: auto; }
             .print-prog-page h1 { text-align: center; font-size: 18pt; margin-bottom: 5px; color: #0f172a !important; font-weight: bold; }
             .print-prog-page h3 { text-align: center; font-size: 10pt; margin-top: 0; color: #475569 !important; text-transform: uppercase; letter-spacing: 1px; }
-            .print-prog-table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 10pt; }
-            .print-prog-table th, .print-prog-table td { border: 1px solid #94a3b8; padding: 8px; text-align: left; }
-            .print-prog-table th { background-color: #f1f5f9 !important; text-align: center; font-weight: bold; }
+            .print-prog-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 10pt; }
+            .print-prog-table th, .print-prog-table td { border: 1.5px solid #334155; padding: 9px 8px; text-align: left; }
+            .print-prog-table th { background-color: #f1f5f9 !important; text-align: center; font-weight: bold; font-size: 9pt; text-transform: uppercase; }
+            .print-prog-sig { display: flex; justify-content: space-between; margin-top: 28mm; font-size: 10pt; font-weight: bold; color: #0f172a !important; }
+            .print-prog-sig div { border-top: 1px solid #0f172a; width: 180px; text-align: center; padding-top: 5px; }
 
             /* A4 Vertical Certificates */
             .cert-page { 
@@ -779,32 +782,13 @@
             });
             const blob = new Blob([csv], { type: "text/csv" }); const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = `Candidates_${Date.now()}.csv`; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); window.showAlert("CSV Exported!");
         };
-        window.triggerImport = () => document.getElementById('importFile').click();
-        window.handleImport = async (e) => {
-            const file = e.target.files[0]; if(!file) return;
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    if(!data.programs || !data.candidates || !data.results) throw new Error("Invalid format");
-                    window.customConfirm("Import Database", "Merge imported data into current DB?", async () => {
-                        window.showAlert("Importing...", "success");
-                        await setDoc(getDocRef('settings', 'config'), { programs: data.programs }, { merge: true });
-                        for(const c of data.candidates) { await setDoc(getDocRef('candidates', c.id), c, { merge: true }); }
-                        for(const r of data.results) { await setDoc(getDocRef('results', r.id), r, { merge: true }); }
-                        window.showAlert("Import Complete!"); 
-                    });
-                } catch(err) { window.showAlert("Import Failed: " + err.message, "error"); } document.getElementById('importFile').value = '';
-            };
-            reader.readAsText(file);
-        };
-        window.wipeDatabase = async () => { window.customConfirm("DANGER ZONE", "Wipe the entire database completely?", async () => { try { await setDoc(getDocRef('settings', 'config'), { programs: [] }); for(const c of state.candidates) await deleteDoc(getDocRef('candidates', c.id)); for(const r of state.results) await deleteDoc(getDocRef('results', r.id)); window.showAlert("Database Wiped Clean."); } catch(err) { window.showAlert("Error: " + err.message, "error"); } }); };
-
-        // PRINT 4 ID CARDS PER A4 PAGE (Each Card: 7cm W x 9.5cm H)
+        // PRINT 4 ID CARDS PER A4 PAGE (Each Card: 7cm W x 9.5cm H) WITH TINY QR CODE
         window.printIDCards = (candId = null) => {
             const printArea = document.getElementById('print-area');
             let candidatesToPrint = candId ? [state.candidates.find(c => c.id === candId)] : [...state.candidates].sort((a,b) => Number(String(a.regNo).replace(/\D/g, '')) - Number(String(b.regNo).replace(/\D/g, '')));
             if (candidatesToPrint.length === 0 || !candidatesToPrint[0]) return window.showAlert("No candidates to print.", "error");
+
+            window.showAlert("Preparing ID Cards & QR Codes...");
 
             let html = '';
             // Group into chunks of 4 per A4 page
@@ -817,6 +801,11 @@
                         return p ? `${p.progNo} ${p.name}` : ''; 
                     }).filter(Boolean);
                     const progList = assigned.length > 0 ? assigned.join(' • ') : 'No programs assigned';
+                    
+                    // Direct Candidate Result Portal Link with ?c=ChestNo
+                    const portalUrl = `https://fest.busadars.online/?c=${encodeURIComponent(c.regNo)}`;
+                    const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&margin=0&data=${encodeURIComponent(portalUrl)}`;
+
                     html += `
                     <div class="id-card">
                         <div class="id-header">
@@ -824,7 +813,13 @@
                             <p class="id-sub">Urava Fest 2026</p>
                         </div>
                         <div class="id-body">
-                            <div class="id-chest">${c.regNo}</div>
+                            <div class="id-top-row">
+                                <div class="id-chest">${c.regNo}</div>
+                                <div class="id-qr-box">
+                                    <img src="${qrSrc}" class="id-qr" alt="QR" crossorigin="anonymous">
+                                    <span class="id-qr-text">Scan Result</span>
+                                </div>
+                            </div>
                             <h2 class="id-name">${c.name}</h2>
                             <div class="id-team">${c.team} • ${c.cat}</div>
                         </div>
@@ -837,28 +832,140 @@
                 html += '</div>';
             }
 
-            printArea.innerHTML = html; 
-            setTimeout(() => { window.print(); printArea.innerHTML = ''; }, 500);
+            printArea.innerHTML = html;
+            
+            // Wait for QR code images to finish loading before opening print dialog
+            const qrImages = Array.from(printArea.querySelectorAll('img.id-qr'));
+            Promise.all(qrImages.map(img => {
+                if (img.complete) return Promise.resolve();
+                return new Promise(resolve => { img.onload = resolve; img.onerror = resolve; });
+            })).then(() => {
+                setTimeout(() => { window.print(); printArea.innerHTML = ''; }, 300);
+            });
         };
 
         window.printProgramList = (progId) => {
             const prog = state.programs.find(p => p.id === progId); if(!prog) return;
-            const enrolled = state.candidates.filter(c => c.assignedPrograms && c.assignedPrograms.includes(progId));
+            const enrolled = state.candidates.filter(c => c.assignedPrograms && c.assignedPrograms.includes(progId))
+                .sort((a,b) => Number(String(a.regNo).replace(/\D/g, '')) - Number(String(b.regNo).replace(/\D/g, '')));
             
+            // Extra blank rows for on-the-spot additions with a pen
+            const blankRowCount = enrolled.length === 0 ? 12 : 4;
+            const blankRowsHtml = Array.from({ length: blankRowCount }, (_, i) => `
+                <tr>
+                    <td style="text-align:center; height: 26px; color: #64748b;">${enrolled.length + i + 1}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>`).join('');
+
             let html = `
             <div class="print-prog-page">
                 <h1>${prog.progNo ? `#${prog.progNo} ` : ''}${prog.name}</h1>
                 <h3>${prog.cat} • ${prog.type} • ${prog.format || 'Individual'}</h3>
-                <p style="text-align:center; font-weight:bold; margin-bottom:10px;">Total Enrolled: ${enrolled.length}</p>
+                <p style="text-align:center; font-weight:bold; margin-bottom:10px; font-size: 10pt;">Total Enrolled: ${enrolled.length}</p>
                 <table class="print-prog-table">
-                    <thead><tr><th>Chest No</th><th>Candidate Name</th><th>Team</th></tr></thead>
+                    <thead>
+                        <tr>
+                            <th style="width: 35px;">SL</th>
+                            <th style="width: 75px;">Chest No</th>
+                            <th style="width: 70px;">Code No</th>
+                            <th>Candidate Name</th>
+                            <th style="width: 105px;">Team</th>
+                            <th style="width: 85px;">Marks / Pts</th>
+                            <th style="width: 85px;">Rank / Grade</th>
+                        </tr>
+                    </thead>
                     <tbody>
-                        ${enrolled.map(c => `<tr><td style="text-align:center; font-weight:bold; width: 80px;">${c.regNo}</td><td>${c.name}</td><td style="text-align:center; width: 150px;">${c.team}</td></tr>`).join('')}
-                        ${enrolled.length === 0 ? '<tr><td colspan="3" style="text-align:center;">No candidates enrolled yet.</td></tr>' : ''}
+                        ${enrolled.map((c, idx) => `
+                            <tr>
+                                <td style="text-align:center;">${idx + 1}</td>
+                                <td style="text-align:center; font-weight:bold; font-size: 11pt;">${c.regNo}</td>
+                                <td></td>
+                                <td style="font-weight: 600;">${c.name}</td>
+                                <td style="text-align:center;">${c.team}</td>
+                                <td></td>
+                                <td></td>
+                            </tr>`).join('')}
+                        ${blankRowsHtml}
                     </tbody>
                 </table>
+                <div class="print-prog-sig">
+                    <div>Stage Manager</div>
+                    <div>Judge Signature</div>
+                    <div>Tabulation Controller</div>
+                </div>
             </div>`;
             const printArea = document.getElementById('print-area'); printArea.innerHTML = html; setTimeout(() => { window.print(); printArea.innerHTML = ''; }, 500);
+        };
+
+        window.printAllStagePrograms = () => {
+            const stageProgs = state.programs.filter(p => p.type === 'Stage');
+            if (stageProgs.length === 0) return window.showAlert("No Stage programs found to print.", "error");
+
+            let html = '';
+            stageProgs.forEach(prog => {
+                const enrolled = state.candidates.filter(c => c.assignedPrograms && c.assignedPrograms.includes(prog.id))
+                    .sort((a,b) => Number(String(a.regNo).replace(/\D/g, '')) - Number(String(b.regNo).replace(/\D/g, '')));
+                
+                // Extra blank rows so you can write with a pen
+                const blankRowCount = enrolled.length === 0 ? 12 : 4;
+                const blankRowsHtml = Array.from({ length: blankRowCount }, (_, i) => `
+                    <tr>
+                        <td style="text-align:center; height: 26px; color: #64748b;">${enrolled.length + i + 1}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>`).join('');
+
+                html += `
+                <div class="print-prog-page">
+                    <h1>${prog.progNo ? `#${prog.progNo} ` : ''}${prog.name}</h1>
+                    <h3>${prog.cat} • ${prog.type} • ${prog.format || 'Individual'}</h3>
+                    <p style="text-align:center; font-weight:bold; margin-bottom:10px; font-size: 10pt;">Total Enrolled: ${enrolled.length}</p>
+                    <table class="print-prog-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 35px;">SL</th>
+                                <th style="width: 75px;">Chest No</th>
+                                <th style="width: 70px;">Code No</th>
+                                <th>Candidate Name</th>
+                                <th style="width: 105px;">Team</th>
+                                <th style="width: 85px;">Marks / Pts</th>
+                                <th style="width: 85px;">Rank / Grade</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${enrolled.map((c, idx) => `
+                                <tr>
+                                    <td style="text-align:center;">${idx + 1}</td>
+                                    <td style="text-align:center; font-weight:bold; font-size: 11pt;">${c.regNo}</td>
+                                    <td></td>
+                                    <td style="font-weight: 600;">${c.name}</td>
+                                    <td style="text-align:center;">${c.team}</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>`).join('')}
+                            ${blankRowsHtml}
+                        </tbody>
+                    </table>
+                    <div class="print-prog-sig">
+                        <div>Stage Manager</div>
+                        <div>Judge Signature</div>
+                        <div>Tabulation Controller</div>
+                    </div>
+                </div>`;
+            });
+
+            const printArea = document.getElementById('print-area');
+            printArea.innerHTML = html;
+            setTimeout(() => { window.print(); printArea.innerHTML = ''; }, 500);
         };
 
         window.printCerts = (progId) => {
@@ -1145,7 +1252,13 @@
                     const searchPQ = state.searchProgQuery.toLowerCase();
                     mainContent = `
                         <div class="glass-card p-5 rounded-2xl mb-6 border-t border-emerald-500/40 mt-4">
-                            <div class="flex justify-between items-center mb-4"><h3 class="font-bold text-emerald-400">Add Program</h3><input type="text" id="searchProgInput" placeholder="Search..." value="${state.searchProgQuery}" oninput="window.updateProgSearch(this.value)" class="bg-slate-900 border border-slate-700 text-xs text-white rounded-lg px-3 py-1.5 outline-none focus:border-emerald-500 w-48"></div>
+                            <div class="flex flex-wrap justify-between items-center gap-2 mb-4">
+                                <h3 class="font-bold text-emerald-400">Add Program</h3>
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <button type="button" onclick="window.printAllStagePrograms()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1 shadow-md">🖨️ Print All Stage Sheets</button>
+                                    <input type="text" id="searchProgInput" placeholder="Search..." value="${state.searchProgQuery}" oninput="window.updateProgSearch(this.value)" class="bg-slate-900 border border-slate-700 text-xs text-white rounded-lg px-3 py-1.5 outline-none focus:border-emerald-500 w-36 sm:w-48">
+                                </div>
+                            </div>
                             <form onsubmit="window.addNewProgram(event)" class="flex flex-col gap-3">
                                 <div class="flex flex-wrap gap-3 items-end">
                                     <div class="flex-1 min-w-[150px]"><label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">Name</label><input type="text" id="pName" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white outline-none focus:border-emerald-500 text-sm"></div>
