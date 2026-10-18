@@ -253,6 +253,50 @@
         </div>
     </div>
 
+    <!-- Manage Group Members Modal (Two Groups: Al-Masūdi & Al-Qazwini) -->
+    <div id="groupAssignModal" style="display: none;" class="fixed inset-0 bg-black/90 z-[250] items-center justify-center p-3 sm:p-4 backdrop-blur-sm">
+        <div class="glass-card p-4 sm:p-6 rounded-2xl max-w-4xl w-full shadow-2xl flex flex-col max-h-[92vh] border border-pink-500/40">
+            <div class="flex justify-between items-start border-b border-slate-700 pb-3 mb-3">
+                <div>
+                    <h3 class="text-base sm:text-lg font-bold text-pink-400" id="groupModalTitle">Manage Group Members (2 Groups)</h3>
+                    <p class="text-[10px] sm:text-xs text-slate-400 font-bold uppercase tracking-wider mt-0.5" id="groupModalSubtitle"></p>
+                </div>
+                <button onclick="window.closeGroupAssign()" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-sm font-bold border border-slate-600">✕</button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1 overflow-y-auto pr-1 custom-scrollbar">
+                <!-- Group 1: Al-Masūdi -->
+                <div class="bg-slate-900/70 border border-sky-500/30 rounded-xl p-3 flex flex-col max-h-[58vh]">
+                    <div class="flex justify-between items-center mb-2 pb-2 border-b border-slate-800">
+                        <span class="font-bold text-sky-400 text-xs sm:text-sm uppercase tracking-wider">👥 Group 1: Al-Masūdi</span>
+                        <div class="flex gap-1.5">
+                            <button type="button" onclick="window.toggleAllGroupTeam('Al-Masūdi', true)" class="text-[10px] bg-sky-900/60 hover:bg-sky-800 text-sky-200 px-2 py-0.5 rounded border border-sky-700/50 font-bold">Select All</button>
+                            <button type="button" onclick="window.toggleAllGroupTeam('Al-Masūdi', false)" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-0.5 rounded border border-slate-700 font-bold">Clear</button>
+                        </div>
+                    </div>
+                    <div id="groupListMasudi" class="space-y-1.5 overflow-y-auto flex-1 pr-1 custom-scrollbar"></div>
+                </div>
+                <!-- Group 2: Al-Qazwini -->
+                <div class="bg-slate-900/70 border border-emerald-500/30 rounded-xl p-3 flex flex-col max-h-[58vh]">
+                    <div class="flex justify-between items-center mb-2 pb-2 border-b border-slate-800">
+                        <span class="font-bold text-emerald-400 text-xs sm:text-sm uppercase tracking-wider">👥 Group 2: Al-Qazwini</span>
+                        <div class="flex gap-1.5">
+                            <button type="button" onclick="window.toggleAllGroupTeam('Al-Qazwini', true)" class="text-[10px] bg-emerald-900/60 hover:bg-emerald-800 text-emerald-200 px-2 py-0.5 rounded border border-emerald-700/50 font-bold">Select All</button>
+                            <button type="button" onclick="window.toggleAllGroupTeam('Al-Qazwini', false)" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-0.5 rounded border border-slate-700 font-bold">Clear</button>
+                        </div>
+                    </div>
+                    <div id="groupListQazwini" class="space-y-1.5 overflow-y-auto flex-1 pr-1 custom-scrollbar"></div>
+                </div>
+            </div>
+            <div class="flex justify-between items-center pt-3 mt-3 border-t border-slate-800">
+                <span class="text-[11px] text-pink-300 font-semibold italic">Note: Group points add to Team Total only (not added to individual candidate points).</span>
+                <div class="flex gap-2">
+                    <button onclick="window.closeGroupAssign()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs sm:text-sm font-semibold border border-slate-600">Cancel</button>
+                    <button id="saveGroupAssignBtn" onclick="window.saveGroupAssign()" class="px-5 py-2 bg-pink-600 hover:bg-pink-500 text-white rounded-lg text-xs sm:text-sm font-bold shadow-lg">Save Both Groups</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="app" class="min-h-screen flex flex-col">
         <div class="flex-1 flex flex-col items-center justify-center p-4 min-h-screen text-slate-400">
             <svg class="animate-spin -ml-1 mr-3 h-8 w-8 text-sky-500 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
@@ -311,12 +355,25 @@
         let isAuthStatus = false;
         try { isAuthStatus = sessionStorage.getItem('admin_auth') === 'true'; } catch(e) {}
 
+        const DEFAULT_POSTER_TEMPLATES = {
+            winnerModel1: "https://raw.githubusercontent.com/BUSA2023/Festviewmob/refs/heads/main/Untitled-1-Recovered-Recovered.png",
+            winnerModel2: "",
+            winnerModel3: "",
+            resultModel1: "https://raw.githubusercontent.com/BUSA2023/Festviewmob/refs/heads/main/Untitled-1-Recovered-Recovered.png",
+            resultModel2: "",
+            resultModel3: "",
+            activeWinnerModel: 1,
+            activeResultModel: 1
+        };
+
         let state = {
             isAuthenticated: isAuthStatus,
             tab: 'dashboard', 
             candidates: [], programs: [], results: [],
-            searchQuery: '', searchProgQuery: '', searchResQuery: '',
+            posterTemplates: { ...DEFAULT_POSTER_TEMPLATES },
+            searchQuery: '', searchProgQuery: '', searchResQuery: '', searchPtsQuery: '',
             filterTeam: 'All', filterCat: 'All', filterResultCat: 'All',
+            filterPtsCat: 'All', filterPtsTeam: 'All',
             dbConnected: false,
             isMigrating: false
         };
@@ -330,6 +387,7 @@
                         programs: state.programs,
                         candidates: state.candidates,
                         results: state.results,
+                        posterTemplates: state.posterTemplates,
                         savedAt: new Date().toLocaleString()
                     }));
                 }
@@ -339,6 +397,7 @@
         window.updateSearch = (val) => { state.searchQuery = val; window.render(); const s = document.getElementById('searchInput'); if(s) {s.focus(); s.setSelectionRange(s.value.length, s.value.length);} };
         window.updateProgSearch = (val) => { state.searchProgQuery = val; window.render(); const s = document.getElementById('searchProgInput'); if(s) {s.focus(); s.setSelectionRange(s.value.length, s.value.length);} };
         window.updateResSearch = (val) => { state.searchResQuery = val; window.render(); const s = document.getElementById('searchResInput'); if(s) {s.focus(); s.setSelectionRange(s.value.length, s.value.length);} };
+        window.updatePtsSearch = (val) => { state.searchPtsQuery = val; window.render(); const s = document.getElementById('searchPtsInput'); if(s) {s.focus(); s.setSelectionRange(s.value.length, s.value.length);} };
 
         window.fireConfetti = () => {
             var duration = 3 * 1000; var end = Date.now() + duration;
@@ -375,13 +434,15 @@
             if (dbListenersAttached) return;
             dbListenersAttached = true;
 
-            // Listen to Programs Config
+            // Listen to Programs & Poster Templates Config
             onSnapshot(getDocRef('settings', 'config'), (snap) => {
                 state.dbConnected = true;
                 if (snap.exists()) { 
-                    state.programs = snap.data().programs || []; 
+                    const data = snap.data();
+                    state.programs = data.programs || []; 
+                    state.posterTemplates = { ...DEFAULT_POSTER_TEMPLATES, ...(data.posterTemplates || {}) };
                 } else { 
-                    setDoc(getDocRef('settings', 'config'), { programs: [] }, { merge: true }).catch(e=>{}); 
+                    setDoc(getDocRef('settings', 'config'), { programs: [], posterTemplates: DEFAULT_POSTER_TEMPLATES }, { merge: true }).catch(e=>{}); 
                 }
                 updateLocalSafetyCache();
                 window.render();
@@ -435,8 +496,12 @@
                         const oldResultsSnap = await getDocs(collection(legacyDb, 'artifacts', appId, 'public', 'data', 'results'));
 
                         let migratedProgs = [];
-                        if (oldConfigSnap.exists() && oldConfigSnap.data().programs) {
-                            migratedProgs = oldConfigSnap.data().programs;
+                        let migratedTemplates = { ...state.posterTemplates };
+                        if (oldConfigSnap.exists()) {
+                            if (oldConfigSnap.data().programs) migratedProgs = oldConfigSnap.data().programs;
+                            if (oldConfigSnap.data().posterTemplates) {
+                                migratedTemplates = { ...DEFAULT_POSTER_TEMPLATES, ...oldConfigSnap.data().posterTemplates, ...state.posterTemplates };
+                            }
                         }
 
                         // Merge programs without duplicates
@@ -446,7 +511,7 @@
                             if (!existingProgIds.has(p.id)) mergedPrograms.push(p);
                         });
 
-                        await setDoc(getDocRef('settings', 'config'), { programs: mergedPrograms }, { merge: true });
+                        await setDoc(getDocRef('settings', 'config'), { programs: mergedPrograms, posterTemplates: migratedTemplates }, { merge: true });
 
                         let candCount = 0;
                         for (const cDoc of oldCandsSnap.docs) {
@@ -482,7 +547,10 @@
                     "Restore Local Safety Cache",
                     `Found backup from ${cached.savedAt} (${(cached.programs||[]).length} programs, ${(cached.candidates||[]).length} candidates). Restore to database?`,
                     async () => {
-                        await setDoc(getDocRef('settings', 'config'), { programs: cached.programs || [] }, { merge: true });
+                        await setDoc(getDocRef('settings', 'config'), { 
+                            programs: cached.programs || [],
+                            posterTemplates: { ...DEFAULT_POSTER_TEMPLATES, ...(cached.posterTemplates || {}) }
+                        }, { merge: true });
                         for (const c of (cached.candidates || [])) {
                             await setDoc(getDocRef('candidates', c.id), c, { merge: true });
                         }
@@ -494,6 +562,33 @@
                 );
             } catch (e) {
                 window.showAlert("Failed to read cache.", "error");
+            }
+        };
+
+        window.savePosterTemplates = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('saveTemplatesBtn');
+            if (btn) { btn.innerText = 'Saving Models...'; btn.disabled = true; }
+            try {
+                const updatedTemplates = {
+                    winnerModel1: document.getElementById('tplWinner1').value.trim() || DEFAULT_POSTER_TEMPLATES.winnerModel1,
+                    winnerModel2: document.getElementById('tplWinner2').value.trim(),
+                    winnerModel3: document.getElementById('tplWinner3').value.trim(),
+                    resultModel1: document.getElementById('tplResult1').value.trim() || DEFAULT_POSTER_TEMPLATES.resultModel1,
+                    resultModel2: document.getElementById('tplResult2').value.trim(),
+                    resultModel3: document.getElementById('tplResult3').value.trim(),
+                    activeWinnerModel: Number(document.getElementById('tplActiveWinner').value) || 1,
+                    activeResultModel: Number(document.getElementById('tplActiveResult').value) || 1
+                };
+                await setDoc(getDocRef('settings', 'config'), { posterTemplates: updatedTemplates }, { merge: true });
+                setDoc(doc(legacyDb, 'artifacts', appId, 'public', 'data', 'settings', 'config'), { posterTemplates: updatedTemplates }, { merge: true }).catch(()=>{});
+                state.posterTemplates = updatedTemplates;
+                updateLocalSafetyCache();
+                window.showAlert("Poster Background Models Saved & Backed Up!");
+            } catch (err) {
+                window.showAlert("Error saving templates: " + err.message, "error");
+            } finally {
+                if (btn) { btn.innerText = '💾 Save Poster Background Models'; btn.disabled = false; }
             }
         };
 
@@ -719,34 +814,194 @@
             catch (e) { window.showAlert("Error saving", "error"); } finally { btn.innerText = 'Save Selection'; btn.disabled = false; }
         };
 
-        window.populateResultDropdowns = () => {
+        let currentGroupProgId = null;
+
+        window.openGroupAssign = (progId) => {
+            const prog = state.programs.find(p => p.id === progId);
+            if (!prog) return;
+            currentGroupProgId = progId;
+            document.getElementById('groupModalTitle').innerText = `👥 Manage Group Candidates: ${prog.name}`;
+            document.getElementById('groupModalSubtitle').innerText = `#${prog.progNo || ''} • ${prog.cat} Category • Two Team Groups`;
+
+            const renderTeamChecklist = (teamName, containerId) => {
+                const cands = state.candidates
+                    .filter(c => c.cat === prog.cat && c.team === teamName)
+                    .sort((a,b) => Number(String(a.regNo).replace(/\D/g, '')) - Number(String(b.regNo).replace(/\D/g, '')));
+                
+                if (cands.length === 0) {
+                    document.getElementById(containerId).innerHTML = `<div class="text-xs text-slate-500 p-4 text-center">No ${prog.cat} candidates in ${teamName}</div>`;
+                    return;
+                }
+                document.getElementById(containerId).innerHTML = cands.map(c => {
+                    const checked = (c.assignedPrograms || []).includes(progId);
+                    return `
+                        <label class="flex items-center justify-between p-2 bg-slate-800/60 hover:bg-slate-800 border border-slate-700/70 rounded-lg cursor-pointer transition">
+                            <div class="flex items-center gap-2">
+                                <span class="text-[11px] font-mono font-bold text-sky-300 bg-slate-950 px-1.5 py-0.5 rounded border border-slate-800">#${c.regNo}</span>
+                                <span class="text-xs font-bold text-white">${c.name}</span>
+                            </div>
+                            <input type="checkbox" value="${c.id}" data-team="${teamName}" class="group-cand-cb w-4 h-4 accent-pink-500 rounded" ${checked ? 'checked' : ''}>
+                        </label>
+                    `;
+                }).join('');
+            };
+
+            renderTeamChecklist('Al-Masūdi', 'groupListMasudi');
+            renderTeamChecklist('Al-Qazwini', 'groupListQazwini');
+            document.getElementById('groupAssignModal').style.display = 'flex';
+        };
+
+        window.toggleAllGroupTeam = (teamName, checkState) => {
+            document.querySelectorAll(`.group-cand-cb[data-team="${teamName}"]`).forEach(cb => {
+                cb.checked = checkState;
+            });
+        };
+
+        window.closeGroupAssign = () => {
+            document.getElementById('groupAssignModal').style.display = 'none';
+            currentGroupProgId = null;
+        };
+
+        let editingResultProgId = null;
+
+        window.editResult = (progId) => {
+            const res = state.results.find(r => r.progId === progId);
+            if (!res) return;
+            editingResultProgId = progId;
+            state.tab = 'results';
+            window.render();
+            setTimeout(() => {
+                const progSelect = document.getElementById('rProg');
+                if (progSelect) {
+                    progSelect.value = progId;
+                    window.populateResultDropdowns(res);
+                    progSelect.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 50);
+        };
+
+        window.cancelEditResult = () => {
+            editingResultProgId = null;
+            window.render();
+        };
+
+        window.saveGroupAssign = async () => {
+            if (!currentGroupProgId) return;
+            const prog = state.programs.find(p => p.id === currentGroupProgId);
+            if (!prog) return;
+
+            const btn = document.getElementById('saveGroupAssignBtn');
+            btn.innerText = 'Saving Groups...';
+            btn.disabled = true;
+
+            try {
+                const checkboxes = Array.from(document.querySelectorAll('.group-cand-cb'));
+                const selectedCandIds = new Set(checkboxes.filter(cb => cb.checked).map(cb => cb.value));
+                const eligibleCands = state.candidates.filter(c => c.cat === prog.cat);
+
+                for (const c of eligibleCands) {
+                    const currentAssigned = new Set(c.assignedPrograms || []);
+                    const shouldHave = selectedCandIds.has(c.id);
+                    const currentlyHas = currentAssigned.has(currentGroupProgId);
+
+                    if (shouldHave && !currentlyHas) {
+                        currentAssigned.add(currentGroupProgId);
+                        await updateDoc(getDocRef('candidates', c.id), { assignedPrograms: Array.from(currentAssigned) });
+                    } else if (!shouldHave && currentlyHas) {
+                        currentAssigned.delete(currentGroupProgId);
+                        await updateDoc(getDocRef('candidates', c.id), { assignedPrograms: Array.from(currentAssigned) });
+                    }
+                }
+                window.showAlert("Both Team Groups Saved!");
+                window.closeGroupAssign();
+            } catch (err) {
+                window.showAlert("Error saving group: " + err.message, "error");
+            } finally {
+                btn.innerText = 'Save Both Groups';
+                btn.disabled = false;
+            }
+        };
+
+        window.populateResultDropdowns = (existingRes = null) => {
             const progId = document.getElementById('rProg').value;
             const prog = state.programs.find(p => p.id === progId);
             const container = document.getElementById('rSelectors');
             if (!prog) { container.innerHTML = ''; return; }
 
-            let eligible = state.candidates.filter(c => c.cat === prog.cat);
-            const assigned = eligible.filter(c => c.assignedPrograms && c.assignedPrograms.includes(progId));
-            
-            let html = '<option value="" disabled>-- Select Candidate --</option>';
-            if(assigned.length > 0) {
-                html += '<optgroup label="Enrolled in this program">';
-                assigned.forEach(c => html += `<option value="${c.id}">#${c.regNo} - ${c.name} (${c.team})</option>`);
-                html += '</optgroup>';
-            }
-            html += '<optgroup label="Other Candidates">';
-            eligible.filter(c => !assigned.includes(c)).forEach(c => html += `<option value="${c.id}">#${c.regNo} - ${c.name} (${c.team})</option>`);
-            html += '</optgroup>';
+            const resToLoad = existingRes || state.results.find(r => r.progId === progId) || null;
+            const isEditing = Boolean(resToLoad);
 
             let ptsArr = (prog.pointScheme || (prog.format === 'Group' ? "15,8,5" : "10,5,3")).split(',').map(Number);
 
+            if (prog.format === 'Group') {
+                const mCount = state.candidates.filter(c => c.cat === prog.cat && c.team === 'Al-Masūdi' && (c.assignedPrograms || []).includes(progId)).length;
+                const qCount = state.candidates.filter(c => c.cat === prog.cat && c.team === 'Al-Qazwini' && (c.assignedPrograms || []).includes(progId)).length;
+
+                const detectSelectedTeam = (arr) => {
+                    const list = Array.isArray(arr) ? arr : [];
+                    for (const val of list) {
+                        if (String(val).startsWith('TEAM:')) return String(val);
+                        const c = state.candidates.find(x => x.id === val);
+                        if (c && c.team) return `TEAM:${c.team}`;
+                    }
+                    return "";
+                };
+
+                const sel1 = resToLoad ? detectSelectedTeam(resToLoad.first) : "";
+                const sel2 = resToLoad ? detectSelectedTeam(resToLoad.second) : "";
+                const sel3 = resToLoad ? detectSelectedTeam(resToLoad.third) : "";
+
+                const buildGroupOpts = (selectedVal) => `
+                    <option value="">-- None --</option>
+                    <option value="TEAM:Al-Masūdi" ${selectedVal === 'TEAM:Al-Masūdi' ? 'selected' : ''}>👥 Al-Masūdi Group (${mCount} Members)</option>
+                    <option value="TEAM:Al-Qazwini" ${selectedVal === 'TEAM:Al-Qazwini' ? 'selected' : ''}>👥 Al-Qazwini Group (${qCount} Members)</option>
+                `;
+
+                container.innerHTML = `
+                    <div class="p-3 bg-pink-950/30 border border-pink-500/40 rounded-xl mb-3 text-xs text-pink-200 flex items-center justify-between gap-2">
+                        <span>👥 <b>Group Event:</b> Select winning team group. Points add to Team Total only (not individual candidates).</span>
+                        <button type="button" onclick="window.openGroupAssign('${prog.id}')" class="shrink-0 bg-pink-600 hover:bg-pink-500 text-white px-2.5 py-1 rounded font-bold text-[10px]">Edit Members</button>
+                    </div>
+                    <div class="space-y-4 p-4 bg-slate-900/50 rounded-xl border border-slate-700">
+                        <div><label class="block text-xs font-bold text-yellow-400 mb-1">1st Place Group (${ptsArr[0]} Team Pts)</label><select id="rFirst" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2.5 text-white outline-none focus:border-yellow-400">${buildGroupOpts(sel1)}</select></div>
+                        <div><label class="block text-xs font-bold text-slate-300 mb-1">2nd Place Group (${ptsArr[1]} Team Pts)</label><select id="rSecond" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2.5 text-white outline-none focus:border-slate-400">${buildGroupOpts(sel2)}</select></div>
+                        <div><label class="block text-xs font-bold text-amber-600 mb-1">3rd Place Group (${ptsArr[2]} Team Pts)</label><select id="rThird" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2.5 text-white outline-none focus:border-amber-600">${buildGroupOpts(sel3)}</select></div>
+                    </div>
+                    <div class="flex gap-2 mt-4">
+                        ${isEditing ? `<button type="button" onclick="window.cancelEditResult()" class="px-4 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl text-xs border border-slate-600">Cancel</button>` : ''}
+                        <button type="submit" id="publishBtn" class="flex-1 bg-gradient-to-r from-pink-600 to-indigo-600 text-white font-bold py-3 rounded-xl transition shadow-lg hover:from-pink-500 hover:to-indigo-500">${isEditing ? 'Update Group Result' : 'Publish Group Result'}</button>
+                    </div>
+                `;
+                return;
+            }
+
+            let eligible = state.candidates.filter(c => c.cat === prog.cat);
+            const assigned = eligible.filter(c => c.assignedPrograms && c.assignedPrograms.includes(progId));
+            
+            const buildCandOptions = (selectedIds = []) => {
+                const selSet = new Set(Array.isArray(selectedIds) ? selectedIds : []);
+                let html = '<option value="" disabled>-- Select Candidate (Hold Ctrl/Tap to select multiple) --</option>';
+                if(assigned.length > 0) {
+                    html += '<optgroup label="Enrolled in this program">';
+                    assigned.forEach(c => html += `<option value="${c.id}" ${selSet.has(c.id) ? 'selected' : ''}>#${c.regNo} - ${c.name} (${c.team})</option>`);
+                    html += '</optgroup>';
+                }
+                html += '<optgroup label="Other Candidates">';
+                eligible.filter(c => !assigned.includes(c)).forEach(c => html += `<option value="${c.id}" ${selSet.has(c.id) ? 'selected' : ''}>#${c.regNo} - ${c.name} (${c.team})</option>`);
+                html += '</optgroup>';
+                return html;
+            };
+
             container.innerHTML = `
                 <div class="space-y-4 p-4 bg-slate-900/50 rounded-xl border border-slate-700 mt-4">
-                    <div><label class="block text-xs font-bold text-yellow-400 mb-1">1st Place (${ptsArr[0]} Pts)</label><select id="rFirst" multiple size="3" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-white outline-none focus:border-yellow-400">${html}</select></div>
-                    <div><label class="block text-xs font-bold text-slate-300 mb-1">2nd Place (${ptsArr[1]} Pts)</label><select id="rSecond" multiple size="3" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-white outline-none focus:border-slate-400">${html}</select></div>
-                    <div><label class="block text-xs font-bold text-amber-600 mb-1">3rd Place (${ptsArr[2]} Pts)</label><select id="rThird" multiple size="3" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-white outline-none focus:border-amber-600">${html}</select></div>
+                    <div><label class="block text-xs font-bold text-yellow-400 mb-1">1st Place (${ptsArr[0]} Pts)</label><select id="rFirst" multiple size="4" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-white outline-none focus:border-yellow-400">${buildCandOptions(resToLoad?.first)}</select></div>
+                    <div><label class="block text-xs font-bold text-slate-300 mb-1">2nd Place (${ptsArr[1]} Pts)</label><select id="rSecond" multiple size="4" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-white outline-none focus:border-slate-400">${buildCandOptions(resToLoad?.second)}</select></div>
+                    <div><label class="block text-xs font-bold text-amber-600 mb-1">3rd Place (${ptsArr[2]} Pts)</label><select id="rThird" multiple size="4" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-white outline-none focus:border-amber-600">${buildCandOptions(resToLoad?.third)}</select></div>
                 </div>
-                <button type="submit" id="publishBtn" class="w-full mt-4 bg-gradient-to-r from-sky-500 to-indigo-500 text-white font-bold py-3 rounded-xl transition shadow-lg hover:from-sky-400 hover:to-indigo-400">Publish Result</button>
+                <div class="flex gap-2 mt-4">
+                    ${isEditing ? `<button type="button" onclick="window.cancelEditResult()" class="px-4 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl text-xs border border-slate-600">Cancel</button>` : ''}
+                    <button type="submit" id="publishBtn" class="flex-1 bg-gradient-to-r from-sky-500 to-indigo-500 text-white font-bold py-3 rounded-xl transition shadow-lg hover:from-sky-400 hover:to-indigo-400">${isEditing ? 'Update Result' : 'Publish Result'}</button>
+                </div>
             `;
         };
 
@@ -755,25 +1010,63 @@
             const progId = document.getElementById('rProg').value;
             if(!progId) return;
             const prog = state.programs.find(p => p.id === progId);
-            const getSelected = (id) => Array.from(document.getElementById(id).selectedOptions).map(o => o.value).filter(v => v !== "");
-            const first = getSelected('rFirst'); const second = getSelected('rSecond'); const third = getSelected('rThird');
+            const resolveSelection = (id) => {
+                const raw = Array.from(document.getElementById(id).selectedOptions).map(o => o.value).filter(v => v !== "");
+                if (prog.format === 'Group') {
+                    let expanded = [];
+                    raw.forEach(val => {
+                        if (val.startsWith('TEAM:')) {
+                            const tName = val.replace('TEAM:', '');
+                            const groupMembers = state.candidates.filter(c => c.cat === prog.cat && c.team === tName && (c.assignedPrograms || []).includes(progId)).map(c => c.id);
+                            if (groupMembers.length > 0) expanded.push(...groupMembers);
+                            else expanded.push(val);
+                        } else {
+                            expanded.push(val);
+                        }
+                    });
+                    return expanded;
+                }
+                return raw;
+            };
+            const first = resolveSelection('rFirst'); const second = resolveSelection('rSecond'); const third = resolveSelection('rThird');
             
             if (first.length === 0 && second.length === 0 && third.length === 0) { return window.showAlert("Select at least one winner!", "error"); }
             
             let ptsArr = (prog.pointScheme || (prog.format === 'Group' ? "15,8,5" : "10,5,3")).split(',').map(Number);
-            const btn = document.getElementById('publishBtn'); btn.innerText = "Publishing..."; btn.disabled = true;
+            const btn = document.getElementById('publishBtn'); btn.innerText = "Saving..."; btn.disabled = true;
             try { 
-                await setDoc(getDocRef('results', progId), { progId, first, second, third, pts1: ptsArr[0], pts2: ptsArr[1], pts3: ptsArr[2], timestamp: Date.now() }); 
-                window.showAlert("Result Published!"); document.getElementById('rProg').value = ""; document.getElementById('rSelectors').innerHTML = ""; window.fireConfetti();
+                const existingRes = state.results.find(r => r.progId === progId);
+                await setDoc(getDocRef('results', progId), { 
+                    progId, 
+                    first, 
+                    second, 
+                    third, 
+                    pts1: ptsArr[0], 
+                    pts2: ptsArr[1], 
+                    pts3: ptsArr[2], 
+                    timestamp: existingRes ? existingRes.timestamp : Date.now(),
+                    updatedAt: Date.now()
+                }); 
+                window.showAlert(editingResultProgId ? "Result Updated!" : "Result Published!"); 
+                editingResultProgId = null;
+                document.getElementById('rProg').value = ""; 
+                document.getElementById('rSelectors').innerHTML = ""; 
+                window.fireConfetti();
             } catch(err) { window.showAlert("Failed: " + err.message, "error"); } finally { btn.innerText = "Publish Result"; btn.disabled = false; }
         };
 
         window.deleteResult = async (resId) => { window.customConfirm("Delete Result", "Delete this result?", async () => { try { await deleteDoc(getDocRef('results', resId)); window.showAlert("Deleted."); } catch(e) { window.showAlert("Failed.", "error"); } }); };
 
         window.exportData = () => {
-            const data = { programs: state.programs, candidates: state.candidates, results: state.results, exportDate: new Date().toISOString() };
+            const data = { 
+                programs: state.programs, 
+                candidates: state.candidates, 
+                results: state.results, 
+                posterTemplates: state.posterTemplates,
+                exportDate: new Date().toISOString() 
+            };
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-            const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = `FestData_Backup_${Date.now()}.json`; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); window.showAlert("Database Exported!");
+            const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = `FestData_Backup_${Date.now()}.json`; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); window.showAlert("Database & Poster Models Exported!");
         };
         window.exportCSV = () => {
             let csv = "Chest No,Name,Category,Team,Assigned Programs\n";
@@ -797,19 +1090,21 @@
                         throw new Error("Invalid backup file format");
                     }
                     const totalAssigns = data.candidates.reduce((sum, c) => sum + ((c.assignedPrograms || []).length), 0);
+                    const hasTemplates = data.posterTemplates ? " + Poster Design Links" : "";
                     window.customConfirm(
                         "Restore Full Backup",
-                        `Found ${data.programs.length} Programs, ${data.candidates.length} Candidates (${totalAssigns} Program Assignments), and ${data.results.length} Results. Restore all to database?`,
+                        `Found ${data.programs.length} Programs, ${data.candidates.length} Candidates (${totalAssigns} Program Assignments), and ${data.results.length} Results${hasTemplates}. Restore all to database?`,
                         async () => {
                             window.showAlert("Restoring all data to database...", "success");
-                            await setDoc(getDocRef('settings', 'config'), { programs: data.programs }, { merge: true });
+                            const mergedTemplates = { ...DEFAULT_POSTER_TEMPLATES, ...(data.posterTemplates || {}) };
+                            await setDoc(getDocRef('settings', 'config'), { programs: data.programs, posterTemplates: mergedTemplates }, { merge: true });
                             for (const c of data.candidates) {
                                 await setDoc(getDocRef('candidates', c.id), c, { merge: true });
                             }
                             for (const r of data.results) {
                                 await setDoc(getDocRef('results', r.id), r, { merge: true });
                             }
-                            window.showAlert("Full Backup Restored Successfully!");
+                            window.showAlert("Full Backup & Poster Models Restored!");
                             window.fireConfetti();
                         }
                     );
@@ -994,8 +1289,34 @@
             document.getElementById('print-area').innerHTML = html; setTimeout(() => { window.print(); printArea.innerHTML = ''; }, 500);
         };
 
-        const getNamesBadgeHtml = (ids, borderClass, textClass, icon) => { 
+        const getNamesBadgeHtml = (ids, borderClass, textClass, icon, isGroup = false) => { 
             const arr = Array.isArray(ids) ? ids : (ids ? [ids] : []); if (arr.length === 0) return ''; 
+            if (isGroup) {
+                let teamGroups = {};
+                arr.forEach(id => {
+                    if (String(id).startsWith('TEAM:')) {
+                        const tName = String(id).replace('TEAM:', '');
+                        if (!teamGroups[tName]) teamGroups[tName] = [];
+                    } else {
+                        const c = state.candidates.find(x => x.id === id);
+                        if (c) {
+                            if (!teamGroups[c.team]) teamGroups[c.team] = [];
+                            teamGroups[c.team].push(c);
+                        }
+                    }
+                });
+                return Object.keys(teamGroups).map(tName => {
+                    const members = teamGroups[tName];
+                    const memberNames = members.length > 0 ? members.map(m => `${m.name} (#${m.regNo})`).join(', ') : 'Team Entry';
+                    return `<div class="bg-slate-900 p-2.5 rounded-lg border ${borderClass} mb-1.5">
+                        <div class="flex justify-between items-center">
+                            <span class="${textClass} font-bold text-sm">${icon} 👥 ${tName} Group</span>
+                            <span class="text-[10px] font-bold text-pink-300 bg-pink-950/60 border border-pink-700/40 px-2 py-0.5 rounded">${members.length} Members</span>
+                        </div>
+                        <div class="text-[11px] text-slate-400 mt-1 leading-snug">${memberNames}</div>
+                    </div>`;
+                }).join('');
+            }
             return arr.map((id) => { 
                 const c = state.candidates.find(x => x.id === id); 
                 return `<div class="flex justify-between items-center bg-slate-900 p-2 rounded-lg border ${borderClass} mb-1.5"><div class="flex items-center gap-2"><span>${icon}</span> <div><p class="${textClass} font-bold text-sm leading-tight">${c?.name || '-'}</p><span class="text-[10px] text-slate-400">${c?.team || ''}</span></div></div><span class="text-[10px] font-bold text-sky-300 bg-black px-2 py-1 rounded">#${c?.regNo || '-'}</span></div>`; 
@@ -1007,6 +1328,9 @@
                 const app = document.getElementById('app'); 
                 
                 if (!state.isAuthenticated) {
+                    if (document.getElementById('loginPass')) {
+                        return; // Prevent database listeners from re-rendering the login box while typing PIN
+                    }
                     app.innerHTML = `
                     <div class="flex-1 flex flex-col items-center justify-center p-4 min-h-screen relative" id="login-container">
                         <div class="absolute inset-0 z-0 opacity-20 flex items-center justify-center pointer-events-none">
@@ -1049,6 +1373,7 @@
                 var stats = { 'Al-Masūdi': { total:0 }, 'Al-Qazwini': { total:0 } };
                 var catStats = { 'Junior': { 'Al-Masūdi': 0, 'Al-Qazwini': 0 }, 'Senior': { 'Al-Masūdi': 0, 'Al-Qazwini': 0 } };
                 var candTotalPts = {}; var candKalaPts = {}; var candKalaBreakdown = {};
+                var candPlaceCounts = {};
 
                 let statsStage = state.programs.filter(p => p.type === 'Stage').length;
                 let statsNonStage = state.programs.filter(p => p.type === 'Non-Stage').length;
@@ -1057,25 +1382,49 @@
 
                 state.results.forEach(res => {
                     var prog = state.programs.find(p => p.id === res.progId); if (!prog) return;
-                    var isKala = prog.format !== 'Group'; // Group bypasses Kalaprathiba
+                    var isGroupProg = prog.format === 'Group';
 
-                    var addPts = function(ids, pts) {
+                    var addPts = function(ids, pts, placeRank) {
                         var arr = Array.isArray(ids) ? ids : (ids ? [ids] : []);
-                        arr.forEach(id => {
-                            var c = state.candidates.find(x => x.id === id); 
-                            if(c && stats[c.team]) { 
-                                stats[c.team].total += pts;
-                                if(catStats[c.cat] && catStats[c.cat][c.team] !== undefined) catStats[c.cat][c.team] += pts;
-                                candTotalPts[c.id] = (candTotalPts[c.id] || 0) + pts;
-                                if (isKala) {
+                        if (isGroupProg) {
+                            // Group Program: Add points ONCE per winning team to Team Totals ONLY (do NOT add to individual candidate points)
+                            var awardedTeams = new Set();
+                            arr.forEach(id => {
+                                if (String(id).startsWith('TEAM:')) {
+                                    awardedTeams.add(String(id).replace('TEAM:', ''));
+                                } else {
+                                    var c = state.candidates.find(x => x.id === id);
+                                    if (c && c.team) awardedTeams.add(c.team);
+                                }
+                            });
+                            awardedTeams.forEach(tName => {
+                                if (stats[tName]) {
+                                    stats[tName].total += pts;
+                                    if (catStats[prog.cat] && catStats[prog.cat][tName] !== undefined) {
+                                        catStats[prog.cat][tName] += pts;
+                                    }
+                                }
+                            });
+                        } else {
+                            // Individual Program: Add points to both Team and Individual Candidate
+                            arr.forEach(id => {
+                                var c = state.candidates.find(x => x.id === id); 
+                                if(c && stats[c.team]) { 
+                                    stats[c.team].total += pts;
+                                    if(catStats[c.cat] && catStats[c.cat][c.team] !== undefined) catStats[c.cat][c.team] += pts;
+                                    candTotalPts[c.id] = (candTotalPts[c.id] || 0) + pts;
                                     candKalaPts[c.id] = (candKalaPts[c.id] || 0) + pts;
                                     if (!candKalaBreakdown[c.id]) candKalaBreakdown[c.id] = [];
-                                    candKalaBreakdown[c.id].push({ name: prog.name, pts: pts });
+                                    candKalaBreakdown[c.id].push({ name: prog.name, progNo: prog.progNo, pts: pts, place: placeRank });
+                                    if (!candPlaceCounts[c.id]) candPlaceCounts[c.id] = { first: 0, second: 0, third: 0 };
+                                    if (placeRank === 1) candPlaceCounts[c.id].first++;
+                                    if (placeRank === 2) candPlaceCounts[c.id].second++;
+                                    if (placeRank === 3) candPlaceCounts[c.id].third++;
                                 }
-                            }
-                        });
+                            });
+                        }
                     };
-                    addPts(res.first, res.pts1); addPts(res.second, res.pts2); addPts(res.third, res.pts3);
+                    addPts(res.first, res.pts1, 1); addPts(res.second, res.pts2, 2); addPts(res.third, res.pts3, 3);
                 });
 
                 // Show Quick Recovery Banner if the new DB is currently empty
@@ -1173,6 +1522,99 @@
                                         ${breakdownHtml}
                                     </div>`;
                                 }).join('')}
+                            </div>
+                        </div>
+
+                        <!-- Candidate Earned Points Table -->
+                        <div class="glass-card p-5 rounded-2xl border border-slate-700 mt-6">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 pb-3 border-b border-slate-700/80">
+                                <div>
+                                    <h3 class="font-bold text-sky-400 text-lg flex items-center gap-2">📊 Candidate Earned Points Table</h3>
+                                    <p class="text-[11px] text-slate-400">Live individual points breakdown across all published events (excludes group points)</p>
+                                </div>
+                                <div class="flex flex-wrap gap-2 w-full sm:w-auto">
+                                    <input type="text" id="searchPtsInput" placeholder="Search Chest No or Name..." value="${state.searchPtsQuery}" oninput="window.updatePtsSearch(this.value)" class="bg-slate-900 border border-slate-700 text-xs text-white rounded-lg px-3 py-1.5 outline-none focus:border-sky-500 flex-1 sm:w-44">
+                                    <select onchange="window.state.filterPtsCat = this.value; window.render();" class="bg-slate-900 border border-slate-700 text-xs text-slate-300 rounded-lg px-2.5 py-1.5 outline-none">
+                                        <option value="All" ${state.filterPtsCat==='All'?'selected':''}>All Categories</option>
+                                        ${CATEGORIES.map(c => `<option value="${c}" ${state.filterPtsCat===c?'selected':''}>${c}</option>`).join('')}
+                                    </select>
+                                    <select onchange="window.state.filterPtsTeam = this.value; window.render();" class="bg-slate-900 border border-slate-700 text-xs text-slate-300 rounded-lg px-2.5 py-1.5 outline-none">
+                                        <option value="All" ${state.filterPtsTeam==='All'?'selected':''}>All Teams</option>
+                                        ${TEAMS.map(t => `<option value="${t}" ${state.filterPtsTeam===t?'selected':''}>${t}</option>`).join('')}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="overflow-x-auto max-h-[520px] overflow-y-auto custom-scrollbar rounded-xl border border-slate-800">
+                                <table class="w-full text-left border-collapse">
+                                    <thead class="bg-slate-900 sticky top-0 z-10 border-b border-slate-700 text-[10px] uppercase font-extrabold text-slate-400 tracking-wider">
+                                        <tr>
+                                            <th class="py-3 px-3 text-center w-14">Rank</th>
+                                            <th class="py-3 px-3 w-24">Chest No</th>
+                                            <th class="py-3 px-3">Candidate Name</th>
+                                            <th class="py-3 px-3">Team & Cat</th>
+                                            <th class="py-3 px-2 text-center w-14 text-yellow-400">🥇 1st</th>
+                                            <th class="py-3 px-2 text-center w-14 text-slate-300">🥈 2nd</th>
+                                            <th class="py-3 px-2 text-center w-14 text-amber-500">🥉 3rd</th>
+                                            <th class="py-3 px-3">Winning Events Breakdown</th>
+                                            <th class="py-3 px-4 text-right w-28 text-emerald-400">Total Pts</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-800/70 text-xs">
+                                        ${(() => {
+                                            const qPts = (state.searchPtsQuery || '').toLowerCase();
+                                            const rankedCands = [...state.candidates]
+                                                .map(c => ({
+                                                    ...c,
+                                                    pts: candTotalPts[c.id] || 0,
+                                                    places: candPlaceCounts[c.id] || { first: 0, second: 0, third: 0 },
+                                                    breakdown: candKalaBreakdown[c.id] || []
+                                                }))
+                                                .filter(c => {
+                                                    if (state.filterPtsCat !== 'All' && c.cat !== state.filterPtsCat) return false;
+                                                    if (state.filterPtsTeam !== 'All' && c.team !== state.filterPtsTeam) return false;
+                                                    if (qPts && !c.name.toLowerCase().includes(qPts) && !String(c.regNo).toLowerCase().includes(qPts)) return false;
+                                                    return true;
+                                                })
+                                                .sort((a, b) => {
+                                                    if (b.pts !== a.pts) return b.pts - a.pts;
+                                                    if (b.places.first !== a.places.first) return b.places.first - a.places.first;
+                                                    if (b.places.second !== a.places.second) return b.places.second - a.places.second;
+                                                    return Number(String(a.regNo).replace(/\D/g, '')) - Number(String(b.regNo).replace(/\D/g, ''));
+                                                });
+
+                                            if (rankedCands.length === 0) {
+                                                return `<tr><td colspan="9" class="py-8 text-center text-slate-500 text-xs">No candidates match the selected filter.</td></tr>`;
+                                            }
+
+                                            return rankedCands.map((c, idx) => {
+                                                const rankBadge = idx === 0 && c.pts > 0 ? '👑 1' : (idx + 1);
+                                                const teamBadge = c.team === 'Al-Masūdi'
+                                                    ? 'bg-sky-950/80 text-sky-300 border-sky-700/50'
+                                                    : 'bg-emerald-950/80 text-emerald-300 border-emerald-700/50';
+                                                const eventsHtml = c.breakdown.length > 0
+                                                    ? c.breakdown.map(b => `<span class="inline-flex items-center gap-1 bg-slate-900 border border-slate-700/80 px-2 py-0.5 rounded text-[10px] mr-1 mb-1"><span class="text-slate-300">${b.name}</span><span class="text-amber-400 font-bold">+${b.pts}</span></span>`).join('')
+                                                    : '<span class="text-slate-600 italic text-[11px]">No points yet</span>';
+
+                                                return `
+                                                <tr class="hover:bg-slate-800/50 transition ${c.pts > 0 ? 'bg-slate-900/30' : 'opacity-70'}">
+                                                    <td class="py-2.5 px-3 text-center font-black num-font ${idx < 3 && c.pts > 0 ? 'text-amber-400 text-sm' : 'text-slate-400'}">${rankBadge}</td>
+                                                    <td class="py-2.5 px-3 font-mono font-bold text-sky-400">#${c.regNo}</td>
+                                                    <td class="py-2.5 px-3 font-bold text-white text-sm">${c.name}</td>
+                                                    <td class="py-2.5 px-3">
+                                                        <span class="text-[10px] font-bold px-2 py-0.5 rounded border ${teamBadge}">${c.team}</span>
+                                                        <span class="text-[10px] text-slate-400 font-bold ml-1 uppercase">${c.cat}</span>
+                                                    </td>
+                                                    <td class="py-2.5 px-2 text-center num-font font-bold ${c.places.first > 0 ? 'text-yellow-400' : 'text-slate-600'}">${c.places.first || '-'}</td>
+                                                    <td class="py-2.5 px-2 text-center num-font font-bold ${c.places.second > 0 ? 'text-slate-200' : 'text-slate-600'}">${c.places.second || '-'}</td>
+                                                    <td class="py-2.5 px-2 text-center num-font font-bold ${c.places.third > 0 ? 'text-amber-500' : 'text-slate-600'}">${c.places.third || '-'}</td>
+                                                    <td class="py-2.5 px-3">${eventsHtml}</td>
+                                                    <td class="py-2.5 px-4 text-right font-black num-font text-base ${c.pts > 0 ? 'text-emerald-400' : 'text-slate-500'}">${c.pts}</td>
+                                                </tr>`;
+                                            }).join('');
+                                        })()}
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     `;
@@ -1292,8 +1734,11 @@
                                                 </div>
                                             </div>
                                             <div class="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-2">${p.type} • ${p.format || 'Individual'} • Pts: ${p.pointScheme}</div>
-                                            <div class="flex justify-between items-center border-t border-slate-700/50 pt-2">
-                                                <button onclick="window.printProgramList('${p.id}')" class="text-[10px] text-indigo-300 hover:text-white bg-indigo-900/40 px-2 py-1 rounded font-bold border border-indigo-700/50 transition flex items-center gap-1">🖨️ Print List</button>
+                                            <div class="flex flex-wrap justify-between items-center gap-1.5 border-t border-slate-700/50 pt-2">
+                                                <div class="flex gap-1.5">
+                                                    <button onclick="window.printProgramList('${p.id}')" class="text-[10px] text-indigo-300 hover:text-white bg-indigo-900/40 px-2 py-1 rounded font-bold border border-indigo-700/50 transition flex items-center gap-1">🖨️ Print List</button>
+                                                    ${p.format === 'Group' ? `<button onclick="window.openGroupAssign('${p.id}')" class="text-[10px] text-pink-200 hover:text-white bg-pink-900/50 hover:bg-pink-600 px-2 py-1 rounded font-bold border border-pink-600/50 transition flex items-center gap-1">👥 + Group Candidates</button>` : ''}
+                                                </div>
                                                 <span class="text-[10px] text-sky-400 font-bold bg-slate-900 px-2.5 py-1 rounded border border-slate-700">👤 ${enrolledCount} Enrolled</span>
                                             </div>
                                         </div>`;
@@ -1314,15 +1759,22 @@
                             return true;
                         }).sort((a, b) => b.timestamp - a.timestamp);
 
+                    const unpublishedProgs = [...state.programs].filter(p => !state.results.find(r => r.progId === p.id));
+                    const publishedProgs = [...state.programs].filter(p => state.results.find(r => r.progId === p.id));
+
                     mainContent = `
                         <div class="flex flex-col lg:flex-row gap-6 mt-4">
                             <div class="w-full lg:w-1/3">
-                                <div class="glass-card p-5 rounded-2xl border border-sky-500/30">
-                                    <h3 class="font-bold text-sky-400 mb-4 text-lg">🏆 Publish Result</h3>
+                                <div class="glass-card p-5 rounded-2xl border ${editingResultProgId ? 'border-amber-500/60 bg-amber-950/10' : 'border-sky-500/30'}">
+                                    <div class="flex justify-between items-center mb-4">
+                                        <h3 class="font-bold ${editingResultProgId ? 'text-amber-400' : 'text-sky-400'} text-lg">${editingResultProgId ? '✏️ Edit Published Result' : '🏆 Publish / Edit Result'}</h3>
+                                        ${editingResultProgId ? `<button type="button" onclick="window.cancelEditResult()" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-lg border border-slate-600 font-bold">✕ Cancel Edit</button>` : ''}
+                                    </div>
                                     <form onsubmit="window.publishResult(event)">
                                         <select id="rProg" onchange="window.populateResultDropdowns()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-3 text-white outline-none focus:border-sky-400 text-sm mb-3 font-semibold shadow-inner">
                                             <option value="">-- Select Program --</option>
-                                            ${[...state.programs].filter(p => !state.results.find(r => r.progId === p.id)).map(p => `<option value="${p.id}">${p.progNo?`#${p.progNo} - `:''}${p.name} (${p.cat})</option>`).join('')}
+                                            ${unpublishedProgs.length > 0 ? `<optgroup label="Unpublished Programs (${unpublishedProgs.length})">${unpublishedProgs.map(p => `<option value="${p.id}" ${editingResultProgId === p.id ? 'selected' : ''}>${p.progNo?`#${p.progNo} - `:''}${p.name} (${p.cat})</option>`).join('')}</optgroup>` : ''}
+                                            ${publishedProgs.length > 0 ? `<optgroup label="Already Published (Select to Edit)">${publishedProgs.map(p => `<option value="${p.id}" ${editingResultProgId === p.id ? 'selected' : ''}>✏️ ${p.progNo?`#${p.progNo} - `:''}${p.name} (${p.cat})</option>`).join('')}</optgroup>` : ''}
                                         </select>
                                         <div id="rSelectors"></div>
                                     </form>
@@ -1341,18 +1793,19 @@
                                     ${sortedResults.map(res => {
                                         const prog = state.programs.find(p => p.id === res.progId);
                                         return `
-                                        <div class="bg-slate-800/50 border border-slate-700 p-4 sm:p-5 rounded-xl relative shadow-lg">
+                                        <div class="bg-slate-800/50 border ${editingResultProgId === res.progId ? 'border-amber-500 ring-1 ring-amber-500/40' : 'border-slate-700'} p-4 sm:p-5 rounded-xl relative shadow-lg">
                                             <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-4">
                                                 <h4 class="font-bold text-white text-base sm:text-lg leading-tight">${prog ? `<span class="text-sky-400">${prog.progNo?`#${prog.progNo}`:''}</span> ${prog.name} <span class="text-[9px] text-slate-300 bg-slate-900 px-2 py-0.5 border border-slate-700 rounded uppercase ml-1 tracking-wider inline-block">${prog.cat}</span>` : 'Unknown Program'}</h4>
-                                                <div class="flex gap-2 shrink-0">
+                                                <div class="flex flex-wrap gap-2 shrink-0">
+                                                    <button onclick="window.editResult('${res.progId}')" class="text-amber-300 hover:text-white bg-slate-900 hover:bg-amber-600 px-3 py-1.5 rounded text-[10px] font-bold border border-amber-500/40 transition shadow">✏️ Edit</button>
                                                     <button onclick="window.printCerts('${res.progId}')" class="text-emerald-300 hover:text-white bg-slate-900 px-3 py-1.5 rounded text-[10px] font-bold border border-emerald-500/30 transition shadow">🖨️ Print A4 Certs</button>
                                                     <button onclick="window.deleteResult('${res.id}')" class="text-red-400 hover:text-white bg-slate-900 px-3 py-1.5 rounded text-[10px] font-bold border border-red-500/30 transition shadow">Delete</button>
                                                 </div>
                                             </div>
                                             <div class="space-y-1.5">
-                                                ${getNamesBadgeHtml(res.first, 'border-yellow-500/40 bg-yellow-900/20', 'text-yellow-400', '🥇')}
-                                                ${getNamesBadgeHtml(res.second, 'border-slate-400/40 bg-slate-800/50', 'text-slate-300', '🥈')}
-                                                ${getNamesBadgeHtml(res.third, 'border-amber-600/40 bg-amber-900/20', 'text-amber-500', '🥉')}
+                                                ${getNamesBadgeHtml(res.first, 'border-yellow-500/40 bg-yellow-900/20', 'text-yellow-400', '🥇', prog?.format === 'Group')}
+                                                ${getNamesBadgeHtml(res.second, 'border-slate-400/40 bg-slate-800/50', 'text-slate-300', '🥈', prog?.format === 'Group')}
+                                                ${getNamesBadgeHtml(res.third, 'border-amber-600/40 bg-amber-900/20', 'text-amber-500', '🥉', prog?.format === 'Group')}
                                             </div>
                                         </div>`;
                                     }).join('')}
@@ -1363,17 +1816,83 @@
 
                 if (state.tab === 'settings') {
                     const totalAssignments = state.candidates.reduce((sum, c) => sum + ((c.assignedPrograms || []).length), 0);
+                    const tpl = state.posterTemplates || DEFAULT_POSTER_TEMPLATES;
+                    const configuredModelsCount = [tpl.winnerModel1, tpl.winnerModel2, tpl.winnerModel3, tpl.resultModel1, tpl.resultModel2, tpl.resultModel3].filter(Boolean).length;
+
                     mainContent = `
-                        <div class="max-w-2xl mx-auto mt-8 space-y-6">
+                        <div class="max-w-3xl mx-auto mt-6 space-y-6">
                             <!-- Live Backup Summary Card -->
                             <div class="glass-card p-5 rounded-2xl border border-sky-500/40 bg-slate-900/80 shadow-xl">
                                 <h3 class="font-bold text-sky-400 text-sm uppercase tracking-wider mb-3">📊 Current Data Included in Backup</h3>
-                                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+                                <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 text-center">
                                     <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800"><div class="text-2xl font-black text-emerald-400 num-font">${state.programs.length}</div><div class="text-[10px] font-bold uppercase text-slate-400">Programs</div></div>
                                     <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800"><div class="text-2xl font-black text-sky-400 num-font">${state.candidates.length}</div><div class="text-[10px] font-bold uppercase text-slate-400">Candidates</div></div>
                                     <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800"><div class="text-2xl font-black text-indigo-400 num-font">${totalAssignments}</div><div class="text-[10px] font-bold uppercase text-slate-400">Program Assigns</div></div>
                                     <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800"><div class="text-2xl font-black text-amber-400 num-font">${state.results.length}</div><div class="text-[10px] font-bold uppercase text-slate-400">Results</div></div>
+                                    <div class="col-span-2 sm:col-span-1 bg-slate-950/80 p-3 rounded-xl border border-pink-500/30"><div class="text-2xl font-black text-pink-400 num-font">${configuredModelsCount}</div><div class="text-[10px] font-bold uppercase text-pink-300">Poster Links</div></div>
                                 </div>
+                            </div>
+
+                            <!-- Poster Design Background Models (2 or 3 Models for Winner & 1st/2nd/3rd Result Posters) -->
+                            <div class="glass-card p-6 rounded-2xl border border-pink-500/40 bg-slate-900/90 shadow-xl">
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 border-b border-slate-800 pb-3">
+                                    <div>
+                                        <h3 class="font-bold text-pink-400 text-lg flex items-center gap-2">🎨 Poster Design Background Models (Cloud & Backup Synced)</h3>
+                                        <p class="text-xs text-slate-400 mt-0.5">Add 2 or 3 background image links (GitHub Raw / Imgur / Direct PNG/JPG) for Candidate Photo Posters and 1st•2nd•3rd Result Posters. All links are saved in the database and included in your JSON backup file.</p>
+                                    </div>
+                                </div>
+                                <form onsubmit="window.savePosterTemplates(event)" class="space-y-5">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <!-- Individual Candidate Winner Photo Poster Models -->
+                                        <div class="bg-slate-950/70 p-4 rounded-xl border border-sky-500/30 space-y-3">
+                                            <div class="flex justify-between items-center">
+                                                <h4 class="text-xs font-black uppercase tracking-wider text-sky-400">📸 Candidate Photo Poster Models</h4>
+                                                <select id="tplActiveWinner" class="bg-slate-900 border border-sky-500/40 text-[11px] text-sky-300 font-bold rounded-lg px-2 py-1 outline-none">
+                                                    <option value="1" ${Number(tpl.activeWinnerModel)===1?'selected':''}>Default: Model 1</option>
+                                                    <option value="2" ${Number(tpl.activeWinnerModel)===2?'selected':''}>Default: Model 2</option>
+                                                    <option value="3" ${Number(tpl.activeWinnerModel)===3?'selected':''}>Default: Model 3</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Model 1 Image URL (Primary)</label>
+                                                <input type="url" id="tplWinner1" value="${tpl.winnerModel1 || ''}" placeholder="https://.../poster-model-1.png" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-sky-500 font-mono">
+                                            </div>
+                                            <div>
+                                                <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Model 2 Image URL (Optional)</label>
+                                                <input type="url" id="tplWinner2" value="${tpl.winnerModel2 || ''}" placeholder="https://.../poster-model-2.png" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-sky-500 font-mono">
+                                            </div>
+                                            <div>
+                                                <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Model 3 Image URL (Optional)</label>
+                                                <input type="url" id="tplWinner3" value="${tpl.winnerModel3 || ''}" placeholder="https://.../poster-model-3.png" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-sky-500 font-mono">
+                                            </div>
+                                        </div>
+
+                                        <!-- 1st, 2nd & 3rd Podium Result Poster Models -->
+                                        <div class="bg-slate-950/70 p-4 rounded-xl border border-amber-500/30 space-y-3">
+                                            <div class="flex justify-between items-center">
+                                                <h4 class="text-xs font-black uppercase tracking-wider text-amber-400">🏆 1st•2nd•3rd Result Poster Models</h4>
+                                                <select id="tplActiveResult" class="bg-slate-900 border border-amber-500/40 text-[11px] text-amber-300 font-bold rounded-lg px-2 py-1 outline-none">
+                                                    <option value="1" ${Number(tpl.activeResultModel)===1?'selected':''}>Default: Model 1</option>
+                                                    <option value="2" ${Number(tpl.activeResultModel)===2?'selected':''}>Default: Model 2</option>
+                                                    <option value="3" ${Number(tpl.activeResultModel)===3?'selected':''}>Default: Model 3</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Result Model 1 Image URL (Primary)</label>
+                                                <input type="url" id="tplResult1" value="${tpl.resultModel1 || ''}" placeholder="https://.../result-model-1.png" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-amber-500 font-mono">
+                                            </div>
+                                            <div>
+                                                <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Result Model 2 Image URL (Optional)</label>
+                                                <input type="url" id="tplResult2" value="${tpl.resultModel2 || ''}" placeholder="https://.../result-model-2.png" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-amber-500 font-mono">
+                                            </div>
+                                            <div>
+                                                <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Result Model 3 Image URL (Optional)</label>
+                                                <input type="url" id="tplResult3" value="${tpl.resultModel3 || ''}" placeholder="https://.../result-model-3.png" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-amber-500 font-mono">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button type="submit" id="saveTemplatesBtn" class="w-full bg-gradient-to-r from-pink-600 to-indigo-600 hover:from-pink-500 hover:to-indigo-500 text-white font-bold py-3 rounded-xl shadow-lg transition text-sm">💾 Save Poster Background Models</button>
+                                </form>
                             </div>
 
                             <!-- Legacy Migration Card -->
