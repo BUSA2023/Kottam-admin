@@ -216,12 +216,16 @@
                     </div>
                 </div>
 
-                <div class="mt-4 pt-3 border-t border-slate-700/50">
+                <div class="mt-4 pt-3 border-t border-slate-700/50 space-y-2">
                     <label class="text-[12px] font-bold text-slate-200 flex items-center gap-2 cursor-pointer bg-slate-800/50 p-3 rounded-lg border border-slate-600">
                         <input type="checkbox" id="editProgExempt" class="w-5 h-5 accent-emerald-500"> 
                         Exclude from Participant Limits
                     </label>
-                    <p class="text-[9px] text-slate-400 mt-1 italic pl-1">Check this to allow candidates to join this event even if their Stage/Non-Stage slots are full.</p>
+                    <label class="text-[12px] font-bold text-red-300 flex items-center gap-2 cursor-pointer bg-red-950/30 p-3 rounded-lg border border-red-700/50">
+                        <input type="checkbox" id="editProgCancelled" class="w-5 h-5 accent-red-500"> 
+                        🚫 Mark Program as Cancelled
+                    </label>
+                    <p class="text-[9px] text-slate-400 mt-1 italic pl-1">Cancelled programs are excluded from active limits and displayed with a Cancelled badge on the portal.</p>
                 </div>
 
                 <div class="flex gap-3 justify-end pt-4 border-t border-slate-700/50 mt-4">
@@ -366,11 +370,25 @@
             activeResultModel: 1
         };
 
+        const DEFAULT_FINALE_CONFIG = {
+            festEnded: true,
+            championTitle: "OVERALL CHAMPIONS - URAVA S04",
+            championSubtitle: "Congratulations to the victorious team of Aawaaze Funoon Season 04!",
+            cancelledNotice: "Official Notice: 1 Program was cancelled by the Fest Committee.",
+            trolls: [
+                { id: 't1', target: 'Runner-Up Team', text: 'അടുത്ത സീസണിൽ നോക്കാം മക്കളേ... കപ്പ് ഞങ്ങൾക്കിരിക്കട്ടെ! 🏆😂', voiceText: 'Adutha seasonil nokkaam makkale, cup njangalkku irikkatte!', soundType: 'laugh', audioUrl: '' },
+                { id: 't2', target: 'Point Table Lookers', text: 'പോയിന്റ് ടേബിൾ നോക്കി കണ്ണ് തള്ളിയോ? ഇതൊക്കെയെന്ത്! 🔥😎', voiceText: 'Point table nokki kannu thalliyo? Ithokke enthu!', soundType: 'horn', audioUrl: '' },
+                { id: 't3', target: 'Cancelled Program', text: 'ഒരു പ്രോഗ്രാം ക്യാൻസൽ ആയതുകൊണ്ട് രക്ഷപ്പെട്ടു എന്ന് കരുതണ്ട! 🤣🎤', voiceText: 'Oru program cancel aayathukondu rakshappettu ennu karuthanda!', soundType: 'sad', audioUrl: '' },
+                { id: 't4', target: 'Champions', text: 'കപ്പും തൂക്കി... ഗ്രൗണ്ടും തൂക്കി... ഇനി ട്രോളുകളുടെ പൂരം! 👑🎺', voiceText: 'Cuppum thookki, groundum thookki, ini trollukalude pooram!', soundType: 'thug', audioUrl: '' }
+            ]
+        };
+
         let state = {
             isAuthenticated: isAuthStatus,
             tab: 'dashboard', 
             candidates: [], programs: [], results: [],
             posterTemplates: { ...DEFAULT_POSTER_TEMPLATES },
+            finaleConfig: { ...DEFAULT_FINALE_CONFIG },
             searchQuery: '', searchProgQuery: '', searchResQuery: '', searchPtsQuery: '',
             filterTeam: 'All', filterCat: 'All', filterResultCat: 'All',
             filterPtsCat: 'All', filterPtsTeam: 'All',
@@ -388,6 +406,7 @@
                         candidates: state.candidates,
                         results: state.results,
                         posterTemplates: state.posterTemplates,
+                        finaleConfig: state.finaleConfig,
                         savedAt: new Date().toLocaleString()
                     }));
                 }
@@ -441,8 +460,9 @@
                     const data = snap.data();
                     state.programs = data.programs || []; 
                     state.posterTemplates = { ...DEFAULT_POSTER_TEMPLATES, ...(data.posterTemplates || {}) };
+                    state.finaleConfig = { ...DEFAULT_FINALE_CONFIG, ...(data.finaleConfig || {}), trolls: (data.finaleConfig && Array.isArray(data.finaleConfig.trolls)) ? data.finaleConfig.trolls : DEFAULT_FINALE_CONFIG.trolls };
                 } else { 
-                    setDoc(getDocRef('settings', 'config'), { programs: [], posterTemplates: DEFAULT_POSTER_TEMPLATES }, { merge: true }).catch(e=>{}); 
+                    setDoc(getDocRef('settings', 'config'), { programs: [], posterTemplates: DEFAULT_POSTER_TEMPLATES, finaleConfig: DEFAULT_FINALE_CONFIG }, { merge: true }).catch(e=>{}); 
                 }
                 updateLocalSafetyCache();
                 window.render();
@@ -497,10 +517,14 @@
 
                         let migratedProgs = [];
                         let migratedTemplates = { ...state.posterTemplates };
+                        let migratedFinale = { ...state.finaleConfig };
                         if (oldConfigSnap.exists()) {
                             if (oldConfigSnap.data().programs) migratedProgs = oldConfigSnap.data().programs;
                             if (oldConfigSnap.data().posterTemplates) {
                                 migratedTemplates = { ...DEFAULT_POSTER_TEMPLATES, ...oldConfigSnap.data().posterTemplates, ...state.posterTemplates };
+                            }
+                            if (oldConfigSnap.data().finaleConfig) {
+                                migratedFinale = { ...DEFAULT_FINALE_CONFIG, ...oldConfigSnap.data().finaleConfig, ...state.finaleConfig };
                             }
                         }
 
@@ -511,7 +535,7 @@
                             if (!existingProgIds.has(p.id)) mergedPrograms.push(p);
                         });
 
-                        await setDoc(getDocRef('settings', 'config'), { programs: mergedPrograms, posterTemplates: migratedTemplates }, { merge: true });
+                        await setDoc(getDocRef('settings', 'config'), { programs: mergedPrograms, posterTemplates: migratedTemplates, finaleConfig: migratedFinale }, { merge: true });
 
                         let candCount = 0;
                         for (const cDoc of oldCandsSnap.docs) {
@@ -549,7 +573,8 @@
                     async () => {
                         await setDoc(getDocRef('settings', 'config'), { 
                             programs: cached.programs || [],
-                            posterTemplates: { ...DEFAULT_POSTER_TEMPLATES, ...(cached.posterTemplates || {}) }
+                            posterTemplates: { ...DEFAULT_POSTER_TEMPLATES, ...(cached.posterTemplates || {}) },
+                            finaleConfig: { ...DEFAULT_FINALE_CONFIG, ...(cached.finaleConfig || {}) }
                         }, { merge: true });
                         for (const c of (cached.candidates || [])) {
                             await setDoc(getDocRef('candidates', c.id), c, { merge: true });
@@ -659,6 +684,7 @@
             document.getElementById('editProgFormat').value = p.format || 'Individual';
             document.getElementById('editProgPts').value = p.pointScheme || '10,5,3';
             document.getElementById('editProgExempt').checked = p.limitExempt || false;
+            document.getElementById('editProgCancelled').checked = p.cancelled || false;
             document.getElementById('editProgModal').style.display = 'flex';
         };
 
@@ -675,12 +701,93 @@
                     type: document.getElementById('editProgType').value,
                     format: document.getElementById('editProgFormat').value,
                     pointScheme: document.getElementById('editProgPts').value,
-                    limitExempt: document.getElementById('editProgExempt').checked
+                    limitExempt: document.getElementById('editProgExempt').checked,
+                    cancelled: document.getElementById('editProgCancelled').checked
                 } : p);
                 await setDoc(getDocRef('settings', 'config'), { programs: updated }, { merge: true });
+                setDoc(doc(legacyDb, 'artifacts', appId, 'public', 'data', 'settings', 'config'), { programs: updated }, { merge: true }).catch(()=>{});
                 window.showAlert("Program updated!"); document.getElementById('editProgModal').style.display = 'none';
             } catch(err) { window.showAlert("Error.", "error"); }
             finally { btn.innerText = 'Save Settings'; btn.disabled = false; }
+        };
+
+        window.toggleCancelProgram = async (id) => {
+            const p = state.programs.find(x => x.id === id);
+            if (!p) return;
+            const newStatus = !p.cancelled;
+            const updated = state.programs.map(x => x.id === id ? { ...x, cancelled: newStatus } : x);
+            try {
+                await setDoc(getDocRef('settings', 'config'), { programs: updated }, { merge: true });
+                setDoc(doc(legacyDb, 'artifacts', appId, 'public', 'data', 'settings', 'config'), { programs: updated }, { merge: true }).catch(()=>{});
+                window.showAlert(newStatus ? `🚫 ${p.name} marked as Cancelled!` : `✅ ${p.name} restored to Active!`);
+            } catch (e) {
+                window.showAlert("Failed to update program status.", "error");
+            }
+        };
+
+        window.saveFinaleSettings = async (e) => {
+            if (e) e.preventDefault();
+            const festEnded = document.getElementById('finFestEnded').checked;
+            const championTitle = document.getElementById('finTitle').value.trim() || "OVERALL CHAMPIONS - URAVA S04";
+            const championSubtitle = document.getElementById('finSubtitle').value.trim();
+            const cancelledNotice = document.getElementById('finCancelNotice').value.trim();
+
+            const updatedFinale = {
+                ...state.finaleConfig,
+                festEnded,
+                championTitle,
+                championSubtitle,
+                cancelledNotice
+            };
+            try {
+                await setDoc(getDocRef('settings', 'config'), { finaleConfig: updatedFinale }, { merge: true });
+                setDoc(doc(legacyDb, 'artifacts', appId, 'public', 'data', 'settings', 'config'), { finaleConfig: updatedFinale }, { merge: true }).catch(()=>{});
+                state.finaleConfig = updatedFinale;
+                window.showAlert(festEnded ? "🏆 Grand Finale & Champion Popup Activated Live!" : "Finale settings saved!");
+                if (festEnded) window.fireConfetti();
+            } catch (err) {
+                window.showAlert("Error saving finale config: " + err.message, "error");
+            }
+        };
+
+        window.addTrollItem = async (e) => {
+            e.preventDefault();
+            const target = document.getElementById('trTarget').value.trim() || 'Fest Troll';
+            const text = document.getElementById('trText').value.trim();
+            const voiceText = document.getElementById('trVoiceText').value.trim() || text;
+            const soundType = document.getElementById('trSound').value;
+            const audioUrl = document.getElementById('trAudioUrl').value.trim();
+            if (!text) return;
+
+            const newTroll = { id: 'tr' + Date.now(), target, text, voiceText, soundType, audioUrl, timestamp: Date.now() };
+            const updatedFinale = {
+                ...state.finaleConfig,
+                trolls: [newTroll, ...(state.finaleConfig.trolls || [])]
+            };
+            try {
+                await setDoc(getDocRef('settings', 'config'), { finaleConfig: updatedFinale }, { merge: true });
+                setDoc(doc(legacyDb, 'artifacts', appId, 'public', 'data', 'settings', 'config'), { finaleConfig: updatedFinale }, { merge: true }).catch(()=>{});
+                state.finaleConfig = updatedFinale;
+                e.target.reset();
+                window.showAlert("😂 Troll Voice & Text Added to Portal!");
+            } catch (err) {
+                window.showAlert("Error adding troll: " + err.message, "error");
+            }
+        };
+
+        window.deleteTrollItem = async (id) => {
+            const updatedFinale = {
+                ...state.finaleConfig,
+                trolls: (state.finaleConfig.trolls || []).filter(t => t.id !== id)
+            };
+            try {
+                await setDoc(getDocRef('settings', 'config'), { finaleConfig: updatedFinale }, { merge: true });
+                setDoc(doc(legacyDb, 'artifacts', appId, 'public', 'data', 'settings', 'config'), { finaleConfig: updatedFinale }, { merge: true }).catch(()=>{});
+                state.finaleConfig = updatedFinale;
+                window.showAlert("Troll removed.");
+            } catch (err) {
+                window.showAlert("Error removing troll.", "error");
+            }
         };
 
         window.addCandidate = async (e) => {
@@ -733,7 +840,9 @@
         };
 
         let currentAssignCandidateId = null;
-        
+        let currentGroupProgId = null;
+        let editingResultProgId = null;
+
         window.getCategoryLimits = (cat) => {
             if (cat === 'Junior') return { stage: 5, nonStage: 4 };
             if (cat === 'Senior') return { stage: 5, nonStage: 5 };
@@ -744,7 +853,7 @@
             let usage = { stage: 0, nonStage: 0 };
             assignedArray.forEach(pId => {
                 const prog = state.programs.find(p => p.id === pId);
-                if (prog && prog.format !== 'Group' && prog.limitExempt !== true) {
+                if (prog && !prog.cancelled && prog.format !== 'Group' && prog.limitExempt !== true) {
                     if (prog.type === 'Stage') usage.stage++;
                     if (prog.type === 'Non-Stage') usage.nonStage++;
                 }
@@ -778,13 +887,14 @@
             let html = '';
             eligibleProgs.forEach(p => {
                 const isChecked = assigned.includes(p.id);
-                let isDisabled = false;
-                if (!isChecked && p.format !== 'Group' && p.limitExempt !== true) {
+                let isDisabled = Boolean(p.cancelled);
+                if (!isChecked && !p.cancelled && p.format !== 'Group' && p.limitExempt !== true) {
                     if (p.type === 'Stage' && usage.stage >= limits.stage) isDisabled = true;
                     if (p.type === 'Non-Stage' && usage.nonStage >= limits.nonStage) isDisabled = true;
                 }
                 let specialBadge = '';
-                if (p.format === 'Group') specialBadge = '<span class="ml-2 text-[8px] bg-pink-900/50 text-pink-300 border border-pink-700/50 px-1 py-0.5 rounded uppercase font-bold">Group (Exempt)</span>';
+                if (p.cancelled) specialBadge = '<span class="ml-2 text-[8px] bg-red-900 text-red-200 border border-red-600 px-1 py-0.5 rounded uppercase font-black">🚫 Cancelled</span>';
+                else if (p.format === 'Group') specialBadge = '<span class="ml-2 text-[8px] bg-pink-900/50 text-pink-300 border border-pink-700/50 px-1 py-0.5 rounded uppercase font-bold">Group (Exempt)</span>';
                 else if (p.limitExempt === true) specialBadge = '<span class="ml-2 text-[8px] bg-purple-900/50 text-purple-300 border border-purple-700/50 px-1 py-0.5 rounded uppercase font-bold">Limit Exempt</span>';
 
                 html += `<label class="flex items-center justify-between p-3 bg-slate-800/50 border border-slate-700 rounded-lg cursor-pointer hover:bg-slate-700/50 transition ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}">
@@ -795,7 +905,7 @@
             document.getElementById('assignCheckboxes').innerHTML = html;
         };
 
-        window.handleCheckboxChange = (cb) => {
+        window.handleCheckboxChange = () => {
             const candidate = state.candidates.find(c => c.id === currentAssignCandidateId);
             const eligibleProgs = state.programs.filter(p => p.cat === candidate.cat);
             const checkboxes = document.querySelectorAll('.prog-checkbox');
@@ -814,47 +924,38 @@
             catch (e) { window.showAlert("Error saving", "error"); } finally { btn.innerText = 'Save Selection'; btn.disabled = false; }
         };
 
-        let currentGroupProgId = null;
-
         window.openGroupAssign = (progId) => {
             const prog = state.programs.find(p => p.id === progId);
             if (!prog) return;
             currentGroupProgId = progId;
-            document.getElementById('groupModalTitle').innerText = `👥 Manage Group Candidates: ${prog.name}`;
+            document.getElementById('groupModalTitle').innerText = `👥 ${prog.name} — Group Members`;
             document.getElementById('groupModalSubtitle').innerText = `#${prog.progNo || ''} • ${prog.cat} Category • Two Team Groups`;
 
-            const renderTeamChecklist = (teamName, containerId) => {
-                const cands = state.candidates
+            const renderTeamChecklist = (teamName, containerId, accentClass) => {
+                const teamCands = state.candidates
                     .filter(c => c.cat === prog.cat && c.team === teamName)
                     .sort((a,b) => Number(String(a.regNo).replace(/\D/g, '')) - Number(String(b.regNo).replace(/\D/g, '')));
-                
-                if (cands.length === 0) {
-                    document.getElementById(containerId).innerHTML = `<div class="text-xs text-slate-500 p-4 text-center">No ${prog.cat} candidates in ${teamName}</div>`;
+                const box = document.getElementById(containerId);
+                if (teamCands.length === 0) {
+                    box.innerHTML = `<div class="text-xs text-slate-500 p-4 text-center">No ${prog.cat} candidates in ${teamName}</div>`;
                     return;
                 }
-                document.getElementById(containerId).innerHTML = cands.map(c => {
-                    const checked = (c.assignedPrograms || []).includes(progId);
-                    return `
-                        <label class="flex items-center justify-between p-2 bg-slate-800/60 hover:bg-slate-800 border border-slate-700/70 rounded-lg cursor-pointer transition">
-                            <div class="flex items-center gap-2">
-                                <span class="text-[11px] font-mono font-bold text-sky-300 bg-slate-950 px-1.5 py-0.5 rounded border border-slate-800">#${c.regNo}</span>
-                                <span class="text-xs font-bold text-white">${c.name}</span>
-                            </div>
-                            <input type="checkbox" value="${c.id}" data-team="${teamName}" class="group-cand-cb w-4 h-4 accent-pink-500 rounded" ${checked ? 'checked' : ''}>
-                        </label>
-                    `;
+                box.innerHTML = teamCands.map(c => {
+                    const isChecked = (c.assignedPrograms || []).includes(progId);
+                    return `<label class="flex items-center justify-between p-2 rounded-lg bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 cursor-pointer text-xs">
+                        <span class="font-semibold text-white"><span class="font-mono text-sky-400 mr-1.5">#${c.regNo}</span>${c.name}</span>
+                        <input type="checkbox" data-team="${teamName}" value="${c.id}" class="group-cand-chk w-4 h-4 ${accentClass} rounded" ${isChecked ? 'checked' : ''}>
+                    </label>`;
                 }).join('');
             };
 
-            renderTeamChecklist('Al-Masūdi', 'groupListMasudi');
-            renderTeamChecklist('Al-Qazwini', 'groupListQazwini');
+            renderTeamChecklist('Al-Masūdi', 'groupListMasudi', 'accent-sky-500');
+            renderTeamChecklist('Al-Qazwini', 'groupListQazwini', 'accent-emerald-500');
             document.getElementById('groupAssignModal').style.display = 'flex';
         };
 
         window.toggleAllGroupTeam = (teamName, checkState) => {
-            document.querySelectorAll(`.group-cand-cb[data-team="${teamName}"]`).forEach(cb => {
-                cb.checked = checkState;
-            });
+            document.querySelectorAll(`.group-cand-chk[data-team="${teamName}"]`).forEach(chk => { chk.checked = checkState; });
         };
 
         window.closeGroupAssign = () => {
@@ -862,64 +963,57 @@
             currentGroupProgId = null;
         };
 
-        let editingResultProgId = null;
+        window.saveGroupAssign = async () => {
+            if (!currentGroupProgId) return;
+            const prog = state.programs.find(p => p.id === currentGroupProgId);
+            if (!prog) return;
+            const btn = document.getElementById('saveGroupAssignBtn');
+            btn.innerText = 'Saving...'; btn.disabled = true;
+
+            try {
+                const selectedIds = new Set(Array.from(document.querySelectorAll('.group-cand-chk:checked')).map(el => el.value));
+                const catCands = state.candidates.filter(c => c.cat === prog.cat);
+
+                for (const c of catCands) {
+                    const currentArr = Array.isArray(c.assignedPrograms) ? [...c.assignedPrograms] : [];
+                    const hasProg = currentArr.includes(currentGroupProgId);
+                    const shouldHave = selectedIds.has(c.id);
+                    if (shouldHave && !hasProg) {
+                        currentArr.push(currentGroupProgId);
+                        await updateDoc(getDocRef('candidates', c.id), { assignedPrograms: currentArr });
+                    } else if (!shouldHave && hasProg) {
+                        const filtered = currentArr.filter(pid => pid !== currentGroupProgId);
+                        await updateDoc(getDocRef('candidates', c.id), { assignedPrograms: filtered });
+                    }
+                }
+                window.showAlert("Both Group Teams Updated!");
+                window.closeGroupAssign();
+                if (state.tab === 'results' && document.getElementById('rProg')?.value === prog.id) {
+                    window.populateResultDropdowns();
+                }
+            } catch (err) {
+                window.showAlert("Failed: " + err.message, "error");
+            } finally {
+                btn.innerText = 'Save Both Groups'; btn.disabled = false;
+            }
+        };
 
         window.editResult = (progId) => {
-            const res = state.results.find(r => r.progId === progId);
-            if (!res) return;
             editingResultProgId = progId;
             state.tab = 'results';
             window.render();
-            setTimeout(() => {
-                const progSelect = document.getElementById('rProg');
-                if (progSelect) {
-                    progSelect.value = progId;
-                    window.populateResultDropdowns(res);
-                    progSelect.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-            }, 50);
+            const selectEl = document.getElementById('rProg');
+            if (selectEl) {
+                selectEl.value = progId;
+                const existingRes = state.results.find(r => r.progId === progId);
+                window.populateResultDropdowns(existingRes);
+                selectEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
         };
 
         window.cancelEditResult = () => {
             editingResultProgId = null;
             window.render();
-        };
-
-        window.saveGroupAssign = async () => {
-            if (!currentGroupProgId) return;
-            const prog = state.programs.find(p => p.id === currentGroupProgId);
-            if (!prog) return;
-
-            const btn = document.getElementById('saveGroupAssignBtn');
-            btn.innerText = 'Saving Groups...';
-            btn.disabled = true;
-
-            try {
-                const checkboxes = Array.from(document.querySelectorAll('.group-cand-cb'));
-                const selectedCandIds = new Set(checkboxes.filter(cb => cb.checked).map(cb => cb.value));
-                const eligibleCands = state.candidates.filter(c => c.cat === prog.cat);
-
-                for (const c of eligibleCands) {
-                    const currentAssigned = new Set(c.assignedPrograms || []);
-                    const shouldHave = selectedCandIds.has(c.id);
-                    const currentlyHas = currentAssigned.has(currentGroupProgId);
-
-                    if (shouldHave && !currentlyHas) {
-                        currentAssigned.add(currentGroupProgId);
-                        await updateDoc(getDocRef('candidates', c.id), { assignedPrograms: Array.from(currentAssigned) });
-                    } else if (!shouldHave && currentlyHas) {
-                        currentAssigned.delete(currentGroupProgId);
-                        await updateDoc(getDocRef('candidates', c.id), { assignedPrograms: Array.from(currentAssigned) });
-                    }
-                }
-                window.showAlert("Both Team Groups Saved!");
-                window.closeGroupAssign();
-            } catch (err) {
-                window.showAlert("Error saving group: " + err.message, "error");
-            } finally {
-                btn.innerText = 'Save Both Groups';
-                btn.disabled = false;
-            }
         };
 
         window.populateResultDropdowns = (existingRes = null) => {
@@ -938,10 +1032,10 @@
                 const qCount = state.candidates.filter(c => c.cat === prog.cat && c.team === 'Al-Qazwini' && (c.assignedPrograms || []).includes(progId)).length;
 
                 const detectSelectedTeam = (arr) => {
-                    const list = Array.isArray(arr) ? arr : [];
-                    for (const val of list) {
-                        if (String(val).startsWith('TEAM:')) return String(val);
-                        const c = state.candidates.find(x => x.id === val);
+                    const list = Array.isArray(arr) ? arr : (arr ? [arr] : []);
+                    for (const id of list) {
+                        if (String(id).startsWith('TEAM:')) return String(id);
+                        const c = state.candidates.find(x => x.id === id);
                         if (c && c.team) return `TEAM:${c.team}`;
                     }
                     return "";
@@ -1063,6 +1157,7 @@
                 candidates: state.candidates, 
                 results: state.results, 
                 posterTemplates: state.posterTemplates,
+                finaleConfig: state.finaleConfig,
                 exportDate: new Date().toISOString() 
             };
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
@@ -1097,7 +1192,8 @@
                         async () => {
                             window.showAlert("Restoring all data to database...", "success");
                             const mergedTemplates = { ...DEFAULT_POSTER_TEMPLATES, ...(data.posterTemplates || {}) };
-                            await setDoc(getDocRef('settings', 'config'), { programs: data.programs, posterTemplates: mergedTemplates }, { merge: true });
+                            const mergedFinale = { ...DEFAULT_FINALE_CONFIG, ...(data.finaleConfig || {}) };
+                            await setDoc(getDocRef('settings', 'config'), { programs: data.programs, posterTemplates: mergedTemplates, finaleConfig: mergedFinale }, { merge: true });
                             for (const c of data.candidates) {
                                 await setDoc(getDocRef('candidates', c.id), c, { merge: true });
                             }
@@ -1364,6 +1460,7 @@
                     <button onclick="window.switchTab('candidates')" class="px-5 py-4 font-bold text-sm whitespace-nowrap transition-colors ${state.tab==='candidates'?'tab-active':'tab-inactive'}">Candidates</button>
                     <button onclick="window.switchTab('programs')" class="px-5 py-4 font-bold text-sm whitespace-nowrap transition-colors ${state.tab==='programs'?'tab-active':'tab-inactive'}">Programs</button>
                     <button onclick="window.switchTab('results')" class="px-5 py-4 font-bold text-sm whitespace-nowrap transition-colors ${state.tab==='results'?'tab-active':'tab-inactive'}">Results</button>
+                    <button onclick="window.switchTab('finale')" class="px-5 py-4 font-bold text-sm whitespace-nowrap transition-colors ${state.tab==='finale'?'tab-active text-amber-400':'tab-inactive text-amber-300/80'}">🏆 Finale & Trolls</button>
                     <button onclick="window.switchTab('settings')" class="px-5 py-4 font-bold text-sm whitespace-nowrap transition-colors ${state.tab==='settings'?'tab-active':'tab-inactive'}">⚙️ Settings & Sync</button>
                 </nav>`;
                 
@@ -1720,15 +1817,17 @@
                                     ${progs.map(p => {
                                         const enrolledCount = state.candidates.filter(c => c.assignedPrograms && c.assignedPrograms.includes(p.id)).length;
                                         let badges = [];
+                                        if(p.cancelled) badges.push('<span class="bg-red-900 border border-red-500 text-red-200 px-1.5 py-0.5 rounded text-[8px] uppercase font-black">🚫 Cancelled</span>');
                                         if(p.format === 'Group') badges.push('<span class="bg-pink-900/80 border border-pink-700 text-pink-200 px-1.5 py-0.5 rounded text-[8px] uppercase">Group (Exempt)</span>');
                                         if(p.limitExempt) badges.push('<span class="bg-purple-900/80 border border-purple-700 text-purple-200 px-1.5 py-0.5 rounded text-[8px] uppercase">Limit Exempt</span>');
                                         
-                                        return `<div class="bg-slate-800/60 p-3 rounded-lg border border-slate-700 flex flex-col group shadow-inner">
+                                        return `<div class="bg-slate-800/60 p-3 rounded-lg border ${p.cancelled ? 'border-red-500/60 bg-red-950/20 opacity-80' : 'border-slate-700'} flex flex-col group shadow-inner">
                                             <div class="flex justify-between items-start mb-1">
-                                                <div class="text-white text-sm font-semibold leading-tight flex flex-wrap items-center gap-1">
+                                                <div class="${p.cancelled ? 'line-through text-slate-400' : 'text-white'} text-sm font-semibold leading-tight flex flex-wrap items-center gap-1">
                                                     <span class="text-sky-400 font-mono text-xs mr-1">#${p.progNo}</span>${p.name} ${badges.join(' ')}
                                                 </div>
                                                 <div class="flex gap-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition shrink-0">
+                                                    <button onclick="window.toggleCancelProgram('${p.id}')" class="${p.cancelled ? 'text-amber-300' : 'text-orange-400'} text-xs font-semibold px-1">${p.cancelled ? 'Restore' : 'Cancel'}</button>
                                                     <button onclick="window.openEditProg('${p.id}')" class="text-emerald-400 text-xs font-semibold px-1">Edit</button>
                                                     <button onclick="window.deleteProgram('${p.id}')" class="text-red-400 text-xs font-semibold px-1">Del</button>
                                                 </div>
@@ -1812,6 +1911,114 @@
                                 </div>
                             </div>
                         </div>`;
+                }
+
+                if (state.tab === 'finale') {
+                    const fin = state.finaleConfig || DEFAULT_FINALE_CONFIG;
+                    const cancelledProgs = state.programs.filter(p => p.cancelled);
+                    const mPts = stats['Al-Masūdi'].total;
+                    const qPts = stats['Al-Qazwini'].total;
+                    const champTeam = mPts >= qPts ? 'Al-Masūdi' : 'Al-Qazwini';
+                    const runnerTeam = mPts >= qPts ? 'Al-Qazwini' : 'Al-Masūdi';
+
+                    mainContent = `
+                        <div class="max-w-5xl mx-auto mt-4 space-y-6">
+                            <!-- 1. Fest End & Overall Champions Popup Control -->
+                            <div class="glass-card p-6 rounded-2xl border border-amber-500/50 bg-gradient-to-br from-slate-900 via-amber-950/20 to-slate-900 shadow-2xl">
+                                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 pb-3 border-b border-slate-800">
+                                    <div>
+                                        <h3 class="text-xl font-black text-amber-400 flex items-center gap-2">🏆 Fest End & Overall Champions Popup</h3>
+                                        <p class="text-xs text-slate-300">Enable the Grand Finale mode so visitors on the Candidate Portal see the Overall Champions Celebration Popup & Cancelled Program Notice!</p>
+                                    </div>
+                                    <div class="px-3 py-1.5 rounded-xl border ${fin.festEnded ? 'bg-emerald-500/20 border-emerald-400 text-emerald-300' : 'bg-slate-800 border-slate-700 text-slate-400'} text-xs font-black uppercase">
+                                        ${fin.festEnded ? '🎉 FINALE POPUP LIVE' : '⏳ FEST IN PROGRESS'}
+                                    </div>
+                                </div>
+
+                                <form onsubmit="window.saveFinaleSettings(event)" class="space-y-4">
+                                    <label class="flex items-center justify-between p-4 rounded-xl bg-amber-500/10 border border-amber-500/40 cursor-pointer">
+                                        <div>
+                                            <span class="text-sm font-black text-amber-300 block">🎉 Declare Fest Ended & Show Overall Champions Popup on Portal</span>
+                                            <span class="text-xs text-slate-300">Current Leader: <b class="text-white">${champTeam} (${Math.max(mPts, qPts)} Pts)</b> vs ${runnerTeam} (${Math.min(mPts, qPts)} Pts)</span>
+                                        </div>
+                                        <input type="checkbox" id="finFestEnded" ${fin.festEnded ? 'checked' : ''} class="w-6 h-6 accent-amber-500 rounded">
+                                    </label>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Champion Popup Main Heading</label>
+                                            <input type="text" id="finTitle" value="${fin.championTitle || ''}" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-white font-bold text-xs outline-none focus:border-amber-400">
+                                        </div>
+                                        <div>
+                                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Champion Subtitle / Message</label>
+                                            <input type="text" id="finSubtitle" value="${fin.championSubtitle || ''}" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-white text-xs outline-none focus:border-amber-400">
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-[10px] font-bold text-red-400 uppercase mb-1">🚫 Cancelled Program Official Notice (Optional)</label>
+                                        <input type="text" id="finCancelNotice" value="${fin.cancelledNotice || ''}" placeholder="e.g. Note: Program #BDF0012 was officially cancelled by the committee." class="w-full bg-slate-950 border border-red-500/40 rounded-xl px-3.5 py-2.5 text-red-200 text-xs outline-none focus:border-red-400">
+                                        <p class="text-[11px] text-slate-400 mt-1.5">Currently Marked Cancelled Programs (${cancelledProgs.length}): <b class="text-red-300">${cancelledProgs.map(p => `#${p.progNo} ${p.name}`).join(', ') || 'None (Go to Programs tab and click "Cancel" on any program)'}</b></p>
+                                    </div>
+
+                                    <button type="submit" class="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-black py-3 rounded-xl text-xs uppercase tracking-wider shadow-lg transition">💾 Save & Publish Grand Finale Settings</button>
+                                </form>
+                            </div>
+
+                            <!-- 2. Troll Voice & Texts Manager -->
+                            <div class="glass-card p-6 rounded-2xl border border-pink-500/40 bg-slate-900/90 shadow-xl">
+                                <h3 class="text-lg font-black text-pink-400 mb-1">🎭 Troll Voice & Funny Texts Studio</h3>
+                                <p class="text-xs text-slate-400 mb-4">Add funny troll dialogues, Malayalam/English voice TTS lines, sound effects, or custom MP3 audio links for the Candidate Portal's <b>🎭 Trolls</b> page!</p>
+
+                                <form onsubmit="window.addTrollItem(event)" class="bg-slate-950/80 p-4 rounded-xl border border-slate-800 space-y-3 mb-5">
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                        <div>
+                                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Target Team / Tag</label>
+                                            <input type="text" id="trTarget" placeholder="e.g. Al-Qazwini / Al-Masūdi / All" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-xs outline-none focus:border-pink-500">
+                                        </div>
+                                        <div>
+                                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Sound Effect Preset</label>
+                                            <select id="trSound" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-pink-300 font-bold text-xs outline-none">
+                                                <option value="laugh">😂 Funny Laugh + Trombone</option>
+                                                <option value="horn">📯 MLG Airhorn Fanfare</option>
+                                                <option value="sad">🎻 Sad Violin / Fail</option>
+                                                <option value="thug">🕶️ Thug Life Bass Drop</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Custom Audio MP3 Link (Optional)</label>
+                                            <input type="url" id="trAudioUrl" placeholder="https://.../troll-audio.mp3" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-xs outline-none font-mono">
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                        <div>
+                                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Troll Display Text (Malayalam / English)</label>
+                                            <input type="text" id="trText" placeholder="e.g. കപ്പ് ഞങ്ങൾക്കിരിക്കട്ടെ മക്കളേ! 🏆😂" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-xs outline-none focus:border-pink-500">
+                                        </div>
+                                        <div>
+                                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Voice Pronunciation Text (Spoken by Troll Voice)</label>
+                                            <input type="text" id="trVoiceText" placeholder="e.g. Cup njangalkku irikkatte makkale!" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sky-300 text-xs outline-none focus:border-pink-500">
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="bg-pink-600 hover:bg-pink-500 text-white font-black px-5 py-2.5 rounded-xl text-xs uppercase tracking-wider shadow-lg transition">+ Add Troll Card & Voice</button>
+                                </form>
+
+                                <div class="space-y-2.5">
+                                    ${(fin.trolls || []).map(t => `
+                                        <div class="bg-slate-800/70 border border-slate-700 p-3.5 rounded-xl flex justify-between items-center gap-3">
+                                            <div>
+                                                <span class="text-[10px] font-black uppercase bg-pink-500/20 text-pink-300 px-2 py-0.5 rounded border border-pink-500/30">${t.target}</span>
+                                                <span class="text-[10px] text-slate-400 ml-2 uppercase">🔊Effect: ${t.soundType}</span>
+                                                <p class="text-white font-bold text-sm mt-1">${t.text}</p>
+                                                <p class="text-[11px] text-sky-400 italic">🗣️ Voice: "${t.voiceText || t.text}"</p>
+                                            </div>
+                                            <button onclick="window.deleteTrollItem('${t.id}')" class="text-red-400 hover:text-white bg-red-950/40 hover:bg-red-600 px-3 py-1.5 rounded-lg text-xs font-bold border border-red-800/50 transition shrink-0">Delete</button>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    `;
                 }
 
                 if (state.tab === 'settings') {
