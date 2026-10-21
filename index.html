@@ -6,7 +6,6 @@
     <title>Urava Season 04 - Fest Manager</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@400;600;700;800&family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
     <style>
         body { font-family: 'Anek Malayalam', sans-serif; background-color: #020617; color: #f8fafc; overflow-x: hidden; }
@@ -421,12 +420,30 @@
         window.updatePtsSearch = (val) => { state.searchPtsQuery = val; window.render(); const s = document.getElementById('searchPtsInput'); if(s) {s.focus(); s.setSelectionRange(s.value.length, s.value.length);} };
 
         window.fireConfetti = () => {
-            var duration = 3 * 1000; var end = Date.now() + duration;
-            (function frame() {
-                confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#38bdf8', '#34d399', '#f8fafc', '#818cf8'] });
-                confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#38bdf8', '#34d399', '#f8fafc', '#818cf8'] });
-                if (Date.now() < end) { requestAnimationFrame(frame); }
-            }());
+            try {
+                const colors = ['#38bdf8', '#34d399', '#f8fafc', '#818cf8', '#fbbf24'];
+                const container = document.createElement('div');
+                container.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:9999;overflow:hidden;';
+                document.body.appendChild(container);
+
+                for (let i = 0; i < 50; i++) {
+                    const p = document.createElement('div');
+                    const size = Math.random() * 8 + 6;
+                    const startX = Math.random() * 100;
+                    const drift = (Math.random() - 0.5) * 200;
+                    const dur = Math.random() * 1500 + 1300;
+                    const delay = Math.random() * 250;
+                    p.style.cssText = `position:absolute;top:-20px;left:${startX}%;width:${size}px;height:${size * 0.65}px;background:${colors[i % colors.length]};border-radius:2px;`;
+                    container.appendChild(p);
+                    if (typeof p.animate === 'function') {
+                        p.animate([
+                            { transform: 'translate3d(0, 0, 0) rotate(0deg)', opacity: 1 },
+                            { transform: `translate3d(${drift}px, ${window.innerHeight + 60}px, 0) rotate(${Math.random() * 720}deg)`, opacity: 0 }
+                        ], { duration: dur, delay, easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)', fill: 'forwards' });
+                    }
+                }
+                setTimeout(() => { if (container.parentNode) container.parentNode.removeChild(container); }, 3200);
+            } catch (e) {}
         };
 
         window.showAlert = (msg, type = 'success') => {
@@ -758,45 +775,54 @@
         window.autoWriteTrollDialogue = (type = 'dialogue') => {
             const mPts = window.latestAdminStats?.['Al-Masūdi']?.total || 0;
             const qPts = window.latestAdminStats?.['Al-Qazwini']?.total || 0;
-            const champ = mPts >= qPts ? 'Al-Masūdi' : 'Al-Qazwini';
-            const loser = mPts >= qPts ? 'Al-Qazwini' : 'Al-Masūdi';
+            const champMl = mPts >= qPts ? 'അൽ മസൂദി' : 'അൽ ഖസ്‌വിനി';
+            const loserMl = mPts >= qPts ? 'അൽ ഖസ്‌വിനി' : 'അൽ മസൂദി';
             const diff = Math.abs(mPts - qPts);
 
             if (type === 'song') {
                 const songs = [
-                    { target: `Roast Song (${loser})`, style: 'AI Malayalam Parody Song', text: `തരികിട തരികിട താളത്തിൽ കപ്പും തൂക്കി ${champ}! പോയിന്റ് ടേബിൾ നോക്കിയിരുന്ന് കണ്ണീരൊഴുക്കി ${loser}! 🎶😂`, sound: 'laugh' },
-                    { target: `Champions Rap (${champ})`, style: 'Malayalam Kuthu Rap', text: `${diff} പോയിന്റ് ലീഡിൽ ഞങ്ങൾ കപ്പും കൊണ്ട് പറന്നു പോയി! ഇനി അടുത്ത വർഷം കാണാം മക്കളേ ടാറ്റാ ബൈ ബൈ! 🎤🔥`, sound: 'horn' }
+                    { target: `ട്രോൾ പാട്ട് (${loserMl})`, style: 'മലയാളം പാരഡി ഗാനം', text: `തരികിട തരികിട താളത്തിൽ കപ്പും തൂക്കി ${champMl}! പോയിന്റ് ടേബിൾ നോക്കിയിരുന്ന് കണ്ണീരൊഴുക്കി ${loserMl}! 🎶😂`, sound: 'laugh' },
+                    { target: `ചാമ്പ്യൻസ് റാപ്പ് (${champMl})`, style: 'മലയാളം മാസ്സ് പാട്ട്', text: `${diff} പോയിന്റ് ലീഡിൽ ${champMl} കപ്പും കൊണ്ട് പറന്നു പോയി! ഇനി അടുത്ത വർഷം കാണാം ${loserMl} മക്കളേ ടാറ്റാ ബൈ ബൈ! 🎤🔥`, sound: 'horn' }
                 ];
                 const pick = songs[Math.floor(Math.random() * songs.length)];
                 document.getElementById('trTarget').value = pick.target;
                 document.getElementById('trText').value = pick.text;
                 document.getElementById('trVoiceText').value = pick.text.replace(/[🎶😂🎤🔥]/g, '');
                 document.getElementById('trSound').value = pick.sound;
-                window.showAlert("🎵 Malayalam Troll Song Lyrics Generated!");
+                window.showAlert("🎵 ഫുൾ മലയാളം ട്രോൾ പാട്ട് തയ്യാറായി!");
             } else {
                 const dialogues = [
-                    { target: `Runner-Up (${loser})`, style: 'Rajamanikyam (Bellary Raja)', text: `തിരുവനന്തപുരം ഭാഷയിൽ പറഞ്ഞാൽ ${loser} ടീമിന്റെ സീൻ കോൺട്രയാണ് മക്കളേ! കപ്പ് ${champ} എടുത്തു! 🏆😎`, sound: 'thug' },
-                    { target: `${loser} Bench`, style: 'Punjabi House (Ramanan)', text: `മുതലാളീ ജയിച്ചേ! ${diff} പോയിന്റ് വ്യത്യാസത്തിൽ പോയിന്റ് ടേബിൾ നോക്കി കണ്ണ് തള്ളിയോ മക്കളേ! 😂🎉`, sound: 'laugh' },
-                    { target: 'Kalaprathiba Tie-Break', style: 'Pulival Kalyanam (Manavalan)', text: `ഇൻഡിവിജ്വൽ പോയിന്റ് സമമായപ്പോൾ ഗ്രൂപ്പ് പോയിന്റ് വെച്ച് കലാപ്രതിഭ തൂക്കി! 🌟🔥`, sound: 'horn' }
+                    { target: `റണ്ണറപ്പ് ട്രോൾ (${loserMl})`, style: 'രാജമാണിക്യം (ബെല്ലാരി രാജ)', text: `തിരുവനന്തപുരം ഭാഷയിൽ പറഞ്ഞാൽ ${loserMl} ടീമിന്റെ സീൻ കോൺട്രയാണ് മക്കളേ! കപ്പ് ഞങ്ങടെ ${champMl} അങ്ങ് എടുത്തു! 🏆😎`, sound: 'thug' },
+                    { target: `${loserMl} ബെഞ്ച്`, style: 'പഞ്ചാബി ഹൗസ് (രമണൻ)', text: `മുതലാളീ ജയിച്ചേ! ${diff} പോയിന്റ് വ്യത്യാസത്തിൽ പോയിന്റ് ടേബിൾ നോക്കി ${loserMl} കണ്ണ് തള്ളിപ്പോയേ! 😂🎉`, sound: 'laugh' },
+                    { target: 'കലാപ്രതിഭ ടൈ-ബ്രേക്ക്', style: 'പുലിവാൽ കല്യാണം (മണവാളൻ)', text: `ഇൻഡിവിജ്വൽ പോയിന്റ് സമമായപ്പോൾ ഗ്രൂപ്പ് പോയിന്റ് വെച്ച് കലാപ്രതിഭ തൂക്കി മക്കളേ! 🌟🔥`, sound: 'horn' }
                 ];
                 const pick = dialogues[Math.floor(Math.random() * dialogues.length)];
                 document.getElementById('trTarget').value = `${pick.target} • ${pick.style}`;
                 document.getElementById('trText').value = pick.text;
                 document.getElementById('trVoiceText').value = pick.text.replace(/[🏆😎😂🎉🌟🔥]/g, '');
                 document.getElementById('trSound').value = pick.sound;
-                window.showAlert("🎬 Malayalam Cinema Dialogue Generated!");
+                window.showAlert("🎬 ഫുൾ മലയാളം സിനിമാ ഡയലോഗ് തയ്യാറായി!");
             }
         };
 
         window.previewAdminTrollVoice = (text) => {
             if (!text) return;
+            const pureMl = String(text)
+                .replace(/Al-Masūdi|Al-Masudi/gi, 'അൽ മസൂദി')
+                .replace(/Al-Qazwini/gi, 'അൽ ഖസ്‌വിനി')
+                .replace(/[^\p{L}\p{N}\p{M}\s.,!?-]/gu, ' ')
+                .trim();
+            window.showAlert("🔊 ഒറിജിനൽ മലയാളം ശബ്ദം പ്ലേ ചെയ്യുന്നു...");
             if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-                const utter = new SpeechSynthesisUtterance(text);
-                utter.lang = 'ml-IN';
-                utter.rate = 1.0;
-                window.speechSynthesis.speak(utter);
-                window.showAlert("🔊 Playing Malayalam Voice Preview...");
+                try {
+                    window.speechSynthesis.cancel();
+                    const voices = window.speechSynthesis.getVoices() || [];
+                    const mlVoice = voices.find(v => v.lang && (v.lang.toLowerCase().includes('ml') || v.name.toLowerCase().includes('malayalam')));
+                    const utter = new SpeechSynthesisUtterance(pureMl);
+                    utter.lang = 'ml-IN';
+                    if (mlVoice) utter.voice = mlVoice;
+                    window.speechSynthesis.speak(utter);
+                } catch (e) {}
             }
         };
 
